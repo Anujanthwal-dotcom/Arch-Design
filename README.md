@@ -2,6 +2,7 @@
 
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/AnujAnthwal.arch-for-LLD-design?color=blue&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design)
 [![Website Live Demo](https://img.shields.io/badge/Website-Live%20Demo-38bdf8?style=flat&logo=googlechrome&logoColor=white)](https://anujanthwal-dotcom.github.io/Arch-Design/)
+[![Docs & CLI Reference](https://img.shields.io/badge/Docs-Agent%20Skills%20%26%20CLI-8b5cf6?style=flat&logo=gitbook&logoColor=white)](https://anujanthwal-dotcom.github.io/Arch-Design/#docs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 Arch Design is an interactive visual architecture canvas for Visual Studio Code. It allows software architects, engineers, and AI coding agents to map, design, and inspect modules, services, functions, and external infrastructure dependencies.
@@ -42,10 +43,47 @@ Alternatively, create any file ending with `.arch` in your workspace and click t
 - **Auto Layout**: Click the Layout button in the toolbar to automatically organize and align nodes.
 
 ### 3. Equip AI Coding Agents (Agent Skill)
-Arch Design includes an open **Agent Skill** so AI assistants (Antigravity, Claude Code, Cursor, Windsurf) can read, understand, and draw `.arch` diagrams:
+Arch Design includes an open **Agent Skill** specification so modern AI coding assistants (Google Antigravity, Claude Code, Cursor, Windsurf, Copilot, Cline, Aider) can natively read, understand, validate, and draw `.arch` diagrams.
+
+#### Installation
 - Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`).
 - Select **Arch: Install Agent Skill**.
-- Choose **Current Workspace** (`.agents/skills/arch-design/` & `AGENTS.md`) or **Global Profile**.
+- Choose your preferred scope:
+  - **Current Workspace (`.agents/skills/arch-design/` & `AGENTS.md`)**: Recommended for projects and shared team repositories.
+  - **Global User Profile (`~/.gemini/config/skills/arch-design/`)**: Available across all projects on your machine.
+
+#### Agent Discovery & Compatibility
+
+| Coding Agent | Discovery Mechanism | Setup Needed |
+| :--- | :--- | :--- |
+| **Google Antigravity** | Scans `.agents/skills/` & global config | Zero-config (native skill discovery) |
+| **Claude Code** | Reads `AGENTS.md` and `CLAUDE.md` | Auto-configured via root `AGENTS.md` |
+| **Cursor (Composer)** | Reads `.cursorrules` and `AGENTS.md` | Auto-configured via root `AGENTS.md` |
+| **Windsurf (Cascade)**| Reads `.windsurfrules` and `AGENTS.md` | Auto-configured via root `AGENTS.md` |
+
+#### Bundled CLI Tools for Agents & Developers
+The skill includes standalone Node.js tools in `.agents/skills/arch-design/scripts/` so agents and CI workflows never make syntax errors or guess coordinate math:
+
+```bash
+# 1. Validate schema integrity & architecture rules
+node .agents/skills/arch-design/scripts/validate.js architecture.arch
+
+# 2. Auto-layout visual coordinates using Dagre graph ranking
+node .agents/skills/arch-design/scripts/layout.js architecture.arch
+```
+
+#### Prompt Recipes for Coding Agents
+
+- **Generate Code from a Diagram:**
+  > *"Inspect our architecture in `architecture.arch`. Implement the service and functions specified in the canvas, strictly respecting parameter types, return signatures, and external database connections."*
+
+- **Create a Diagram for a New Feature:**
+  > *"Use the Arch Design skill to create a visual architecture diagram `user-auth.arch` for our user authentication service. Include a UserModule, AuthService, verifyToken function, and PostgreSQL external store. Run layout.js and validate.js when finished."*
+
+- **Audit Codebase for Architecture Compliance:**
+  > *"Compare our implementation in `src/` against `architecture.arch`. Identify any services calling unauthorized databases or functions bypassing domain boundaries according to our Low-Level Design rules."*
+
+For complete guides and interactive examples, check out the [Documentation & CLI Reference](https://anujanthwal-dotcom.github.io/Arch-Design/#docs).
 
 ---
 
