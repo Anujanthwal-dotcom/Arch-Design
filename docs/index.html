@@ -25,6 +25,19 @@
 </head>
 <body>
 
+  <!-- Top Announcement / Star Banner -->
+  <aside class="announcement-banner">
+    <div class="container banner-inner">
+      <span>⭐ <strong>Love Arch Design?</strong> Help us grow by starring the repository on GitHub!</span>
+      <a href="https://github.com/Anujanthwal-dotcom/Arch-Design" target="_blank" class="banner-star-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        Star on GitHub
+      </a>
+    </div>
+  </aside>
+
   <!-- Navigation -->
   <nav>
     <div class="container nav-content">
@@ -37,6 +50,12 @@
         <a href="#features">Features</a>
         <a href="#rules">Rules</a>
         <a href="#quickstart">Quickstart</a>
+        <a href="https://github.com/Anujanthwal-dotcom/Arch-Design" target="_blank" class="nav-star-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+          <span>Star</span>
+        </a>
         <a href="https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design" target="_blank" class="btn-nav-install">Install in VS Code</a>
       </div>
     </div>
@@ -65,10 +84,10 @@
           Install from Marketplace
         </a>
         <a href="https://github.com/Anujanthwal-dotcom/Arch-Design" target="_blank" class="btn-secondary">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="#eab308">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
           </svg>
-          View on GitHub
+          Star on GitHub
         </a>
       </div>
 
@@ -103,73 +122,182 @@
           </div>
         </div>
 
+        <!-- Extension Native Toolbar -->
+        <div class="ext-toolbar">
+          <button class="ext-toolbar-btn" id="btnAddModule">+ Module</button>
+          <button class="ext-toolbar-btn" id="btnAddService">+ Service</button>
+          <button class="ext-toolbar-btn" id="btnAddFunction">+ Function</button>
+          <button class="ext-toolbar-btn" id="btnAddExternal">+ External</button>
+          <div class="ext-toolbar-separator"></div>
+          <button class="ext-toolbar-btn" id="btnAutoLayout" title="Auto-arrange cards using Dagre layout">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            Auto Layout
+          </button>
+          <div class="ext-toolbar-separator"></div>
+          <button class="ext-toolbar-btn active" id="btnFocusToggle">Focus Mode: ON</button>
+          <div class="ext-focus-badge" id="focusBadge">
+            <span class="focus-badge-title" id="focusBadgeTitle">AuthService</span>
+            <span class="focus-badge-counts">
+              <span class="focus-incoming-dot" id="focusInCount">● 1 in</span>
+              <span class="focus-outgoing-dot" id="focusOutCount">● 2 out</span>
+            </span>
+          </div>
+        </div>
+
         <div class="demo-viewport" id="canvasView">
-          <div class="canvas-mockup">
-            
-            <!-- Module Node -->
-            <div class="arch-card" id="card-module">
-              <div class="card-header">
-                <span class="type-badge badge-module">MODULE</span>
-                <span class="card-title">Authentication</span>
-              </div>
-              <div class="card-body">
-                <div class="card-desc">Domain boundary handling user auth &amp; session tokens.</div>
-                <div class="card-field">
-                  <span class="field-label">Scope</span>
-                  <span class="field-val">login, signup, JWT issuance</span>
-                </div>
-              </div>
-            </div>
+          <div class="canvas-container" id="canvasContainer">
+            <!-- Stepped SVG Edges Layer -->
+            <svg class="canvas-edges-layer" id="edgesLayer" viewBox="0 0 980 440" preserveAspectRatio="none">
+              <defs>
+                <marker id="arrow-default" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#969696" />
+                </marker>
+                <marker id="arrow-outgoing" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8" />
+                </marker>
+                <marker id="arrow-incoming" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1 L 10 5 L 0 9 z" fill="#4ade80" />
+                </marker>
+              </defs>
+              
+              <!-- Edge 1: Module -> Service -->
+              <path id="edge-m1-s1" class="canvas-edge" d="M 280 120 L 350 120" marker-end="url(#arrow-default)" />
+              
+              <!-- Edge 2: Service -> Function -->
+              <path id="edge-s1-f1" class="canvas-edge" d="M 610 120 L 645 120 L 645 90 L 680 90" marker-end="url(#arrow-default)" />
+              
+              <!-- Edge 3: Service -> External -->
+              <path id="edge-s1-e1" class="canvas-edge" d="M 610 120 L 645 120 L 645 280 L 680 280" marker-end="url(#arrow-default)" />
+            </svg>
 
-            <!-- Service Node -->
-            <div class="arch-card" id="card-service">
-              <div class="card-header">
-                <span class="type-badge badge-service">SERVICE</span>
-                <span class="card-title">AuthService</span>
-              </div>
-              <div class="card-body">
-                <div class="card-desc">Business logic for credential verification &amp; tokens.</div>
-                <div class="card-field">
-                  <span class="field-label">Dependency</span>
-                  <span class="field-val">UserStore, CryptoEngine</span>
+            <!-- Interactive LLD Nodes Layer -->
+            <div class="canvas-nodes-layer" id="nodesLayer">
+              
+              <!-- 1. Module Node -->
+              <div class="lld-card" id="card-m1" style="left: 20px; top: 40px;" data-type="module" data-title="Authentication">
+                <div class="rf-handle rf-handle-right"></div>
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <span class="grip-dots">&#8942;&#8942;</span>
+                    <span class="type-badge badge-module">MODULE</span>
+                    <span class="card-label">Authentication</span>
+                  </div>
+                  <div class="card-header-actions">
+                    <button class="card-action-btn" title="Collapse">&#9662;</button>
+                    <button class="card-action-btn btn-delete" title="Delete" data-node="card-m1">&times;</button>
+                  </div>
+                </div>
+                <div class="card-content">
+                  <div class="card-desc-box">User authentication domain &amp; session tokens boundary.</div>
+                  <div class="card-field-group">
+                    <span class="card-field-label">Scope</span>
+                    <span class="card-field-value">login, register, JWT issuance</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Function Node -->
-            <div class="arch-card" id="card-func">
-              <div class="card-header">
-                <span class="type-badge badge-function">FUNCTION</span>
-                <span class="card-title">verifyToken</span>
-              </div>
-              <div class="card-body">
-                <div class="card-desc">Decodes and verifies incoming Bearer JWT claims.</div>
-                <div class="card-field">
-                  <span class="field-label">Param: token</span>
-                  <span class="field-val">string (Bearer JWT)</span>
+              <!-- 2. Service Node -->
+              <div class="lld-card" id="card-s1" style="left: 350px; top: 40px;" data-type="service" data-title="AuthService">
+                <div class="rf-handle rf-handle-left"></div>
+                <div class="rf-handle rf-handle-right"></div>
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <span class="grip-dots">&#8942;&#8942;</span>
+                    <span class="type-badge badge-service">SERVICE</span>
+                    <span class="card-label">AuthService</span>
+                  </div>
+                  <div class="card-header-actions">
+                    <button class="card-action-btn" title="Collapse">&#9662;</button>
+                    <button class="card-action-btn btn-delete" title="Delete" data-node="card-s1">&times;</button>
+                  </div>
                 </div>
-                <div class="card-field">
-                  <span class="field-label">Returns</span>
-                  <span class="field-val">TokenPayload</span>
+                <div class="card-content">
+                  <div class="card-desc-box">Core service coordinating credentials and crypto validation.</div>
+                  <div class="card-field-group">
+                    <span class="card-field-label">Type Reference</span>
+                    <span class="card-field-value">services/AuthService</span>
+                  </div>
+                  <div class="card-field-group">
+                    <span class="card-field-label">Dependencies</span>
+                    <span class="card-field-value">UserStore, CryptoEngine</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- External Node -->
-            <div class="arch-card" id="card-external">
-              <div class="card-header">
-                <span class="type-badge badge-external">EXTERNAL</span>
-                <span class="card-title">PostgreSQL</span>
-              </div>
-              <div class="card-body">
-                <div class="card-desc">Primary relational store for user credentials.</div>
-                <div class="card-field">
-                  <span class="field-label">Tech</span>
-                  <span class="field-val">postgres : 5432</span>
+              <!-- 3. Function Node -->
+              <div class="lld-card" id="card-f1" style="left: 680px; top: 20px;" data-type="function" data-title="verifyToken">
+                <div class="rf-handle rf-handle-left"></div>
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <span class="grip-dots">&#8942;&#8942;</span>
+                    <span class="type-badge badge-function">FUNCTION</span>
+                    <span class="card-label">verifyToken</span>
+                  </div>
+                  <div class="card-header-actions">
+                    <button class="card-action-btn" title="Collapse">&#9662;</button>
+                    <button class="card-action-btn btn-delete" title="Delete" data-node="card-f1">&times;</button>
+                  </div>
+                </div>
+                <div class="card-content">
+                  <div class="card-desc-box">Decodes signature and validates Bearer token claims.</div>
+                  <div class="card-field-group">
+                    <span class="card-field-label">Parameter</span>
+                    <span class="card-field-value">token: string (Bearer JWT)</span>
+                  </div>
+                  <div class="card-field-group">
+                    <span class="card-field-label">Returns</span>
+                    <span class="card-field-value">TokenPayload: claims</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
+              <!-- 4. External Node -->
+              <div class="lld-card" id="card-e1" style="left: 680px; top: 220px;" data-type="external" data-title="PostgreSQL">
+                <div class="rf-handle rf-handle-left"></div>
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <span class="grip-dots">&#8942;&#8942;</span>
+                    <span class="type-badge badge-external">EXTERNAL</span>
+                    <span class="card-label">PostgreSQL</span>
+                  </div>
+                  <div class="card-header-actions">
+                    <button class="card-action-btn" title="Collapse">&#9662;</button>
+                    <button class="card-action-btn btn-delete" title="Delete" data-node="card-e1">&times;</button>
+                  </div>
+                </div>
+                <div class="card-content">
+                  <div class="tech-badge-row">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L2 7v10l10 5 10-5V7l-10-5zm0 2.3l7.5 3.75L12 11.8 4.5 8.05 12 4.3zM4 9.8l7 3.5v7.4l-7-3.5V9.8zm9 10.9v-7.4l7-3.5v7.4l-7 3.5z"/>
+                    </svg>
+                    <span>postgres : 5432</span>
+                  </div>
+                  <div class="card-desc-box">Primary persistent relational store for user records.</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ReactFlow Zoom/Fit Controls Overlay -->
+          <div class="rf-controls-panel">
+            <button class="rf-control-btn" id="ctrlZoomIn" title="Zoom In">+</button>
+            <button class="rf-control-btn" id="ctrlZoomOut" title="Zoom Out">&minus;</button>
+            <button class="rf-control-btn" id="ctrlFitView" title="Fit View">&#x26F6;</button>
+            <button class="rf-control-btn" id="ctrlLock" title="Lock">&#x1F512;</button>
+          </div>
+
+          <!-- ReactFlow MiniMap Overlay -->
+          <div class="rf-minimap-panel" title="Canvas MiniMap">
+            <svg class="minimap-svg" viewBox="0 0 1000 480">
+              <rect class="minimap-node-module" x="20" y="40" width="260" height="150" rx="6"></rect>
+              <rect class="minimap-node-service" x="350" y="40" width="260" height="190" rx="6"></rect>
+              <rect class="minimap-node-function" x="680" y="20" width="260" height="170" rx="6"></rect>
+              <rect class="minimap-node-external" x="680" y="220" width="260" height="150" rx="6"></rect>
+              <rect class="minimap-mask" x="0" y="0" width="1000" height="480"></rect>
+            </svg>
           </div>
         </div>
 
@@ -373,6 +501,29 @@
         <p>Never lose track of your system dependencies or architectural boundaries again.</p>
         <a href="https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design" target="_blank" class="btn-primary">
           Get Arch Design for VS Code
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dedicated GitHub Star Promotion -->
+  <section class="star-promo-section">
+    <div class="container">
+      <div class="star-promo-card">
+        <div class="star-icon-burst">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+        </div>
+        <h2>Support Open Source with a GitHub Star</h2>
+        <p>
+          Arch Design is 100% free and open-source under the MIT license. If this tool saves you design time, clarifies system boundaries, or powers your AI coding agents, leaving a star on GitHub means the world and helps other engineers discover it!
+        </p>
+        <a href="https://github.com/Anujanthwal-dotcom/Arch-Design" target="_blank" class="btn-star-glow">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+          Star on GitHub
         </a>
       </div>
     </div>
