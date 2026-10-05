@@ -148,8 +148,8 @@
 
         <div class="demo-viewport" id="canvasView">
           <div class="canvas-container" id="canvasContainer">
-            <!-- Stepped SVG Edges Layer -->
-            <svg class="canvas-edges-layer" id="edgesLayer" viewBox="0 0 980 440" preserveAspectRatio="none">
+            <!-- Stepped SVG Edges Layer (1:1 with canvas pixel coordinates) -->
+            <svg class="canvas-edges-layer" id="edgesLayer">
               <defs>
                 <marker id="arrow-default" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
                   <path d="M 0 1 L 10 5 L 0 9 z" fill="#969696" />
@@ -163,24 +163,24 @@
               </defs>
               
               <!-- Edge 1: Module -> Service -->
-              <path id="edge-m1-s1" class="canvas-edge" d="M 280 120 L 350 120" marker-end="url(#arrow-default)" />
+              <path id="edge-m1-s1" class="canvas-edge" d="M 300 135 L 370 135" marker-end="url(#arrow-default)" />
               
               <!-- Edge 2: Service -> Function -->
-              <path id="edge-s1-f1" class="canvas-edge" d="M 610 120 L 645 120 L 645 90 L 680 90" marker-end="url(#arrow-default)" />
+              <path id="edge-s1-f1" class="canvas-edge" d="M 630 135 L 665 135 L 665 110 L 700 110" marker-end="url(#arrow-default)" />
               
               <!-- Edge 3: Service -> External -->
-              <path id="edge-s1-e1" class="canvas-edge" d="M 610 120 L 645 120 L 645 280 L 680 280" marker-end="url(#arrow-default)" />
+              <path id="edge-s1-e1" class="canvas-edge" d="M 630 135 L 665 135 L 665 300 L 700 300" marker-end="url(#arrow-default)" />
             </svg>
 
             <!-- Interactive LLD Nodes Layer -->
             <div class="canvas-nodes-layer" id="nodesLayer">
               
               <!-- 1. Module Node -->
-              <div class="lld-card" id="card-m1" style="left: 20px; top: 40px;" data-type="module" data-title="Authentication">
+              <div class="lld-card" id="card-m1" style="left: 40px; top: 60px;" data-type="module" data-title="Authentication">
                 <div class="rf-handle rf-handle-right"></div>
                 <div class="card-header">
                   <div class="card-header-left">
-                    <span class="grip-dots">&#8942;&#8942;</span>
+                    <span class="grip-dots" title="Drag card">&#8942;&#8942;</span>
                     <span class="type-badge badge-module">MODULE</span>
                     <span class="card-label">Authentication</span>
                   </div>
@@ -199,12 +199,12 @@
               </div>
 
               <!-- 2. Service Node -->
-              <div class="lld-card" id="card-s1" style="left: 350px; top: 40px;" data-type="service" data-title="AuthService">
+              <div class="lld-card" id="card-s1" style="left: 370px; top: 60px;" data-type="service" data-title="AuthService">
                 <div class="rf-handle rf-handle-left"></div>
                 <div class="rf-handle rf-handle-right"></div>
                 <div class="card-header">
                   <div class="card-header-left">
-                    <span class="grip-dots">&#8942;&#8942;</span>
+                    <span class="grip-dots" title="Drag card">&#8942;&#8942;</span>
                     <span class="type-badge badge-service">SERVICE</span>
                     <span class="card-label">AuthService</span>
                   </div>
@@ -227,11 +227,11 @@
               </div>
 
               <!-- 3. Function Node -->
-              <div class="lld-card" id="card-f1" style="left: 680px; top: 20px;" data-type="function" data-title="verifyToken">
+              <div class="lld-card" id="card-f1" style="left: 700px; top: 30px;" data-type="function" data-title="verifyToken">
                 <div class="rf-handle rf-handle-left"></div>
                 <div class="card-header">
                   <div class="card-header-left">
-                    <span class="grip-dots">&#8942;&#8942;</span>
+                    <span class="grip-dots" title="Drag card">&#8942;&#8942;</span>
                     <span class="type-badge badge-function">FUNCTION</span>
                     <span class="card-label">verifyToken</span>
                   </div>
@@ -254,11 +254,11 @@
               </div>
 
               <!-- 4. External Node -->
-              <div class="lld-card" id="card-e1" style="left: 680px; top: 220px;" data-type="external" data-title="PostgreSQL">
+              <div class="lld-card" id="card-e1" style="left: 700px; top: 230px;" data-type="external" data-title="PostgreSQL">
                 <div class="rf-handle rf-handle-left"></div>
                 <div class="card-header">
                   <div class="card-header-left">
-                    <span class="grip-dots">&#8942;&#8942;</span>
+                    <span class="grip-dots" title="Drag card">&#8942;&#8942;</span>
                     <span class="type-badge badge-external">EXTERNAL</span>
                     <span class="card-label">PostgreSQL</span>
                   </div>

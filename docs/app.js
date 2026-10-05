@@ -1,4 +1,4 @@
-// Arch Design - Interactive Miniature Model Script
+// Arch Design - Interactive Miniature Model Controller
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Copy Command to Clipboard
@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
       tabJson.classList.remove('active');
       canvasView.style.display = 'block';
       jsonView.classList.remove('active');
+      requestAnimationFrame(updateEdgePaths);
     });
 
     tabJson.addEventListener('click', () => {
@@ -50,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. Real Extension Miniature Canvas Controller
   const canvasContainer = document.getElementById('canvasContainer');
   const nodesLayer = document.getElementById('nodesLayer');
-  const edgesLayer = document.getElementById('edgesLayer');
   const focusBadge = document.getElementById('focusBadge');
   const focusBadgeTitle = document.getElementById('focusBadgeTitle');
   const focusInCount = document.getElementById('focusInCount');
@@ -62,25 +62,130 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeFocusedNodeId = null;
   let currentZoom = 1.0;
 
-  // Graph Definition mirroring Arch Design sample.arch
+  // Graph Edges definition
   const graphEdges = [
     { id: 'edge-m1-s1', source: 'card-m1', target: 'card-s1', pathId: 'edge-m1-s1' },
     { id: 'edge-s1-f1', source: 'card-s1', target: 'card-f1', pathId: 'edge-s1-f1' },
     { id: 'edge-s1-e1', source: 'card-s1', target: 'card-e1', pathId: 'edge-s1-e1' }
   ];
 
-  // Helper to get all card elements
   function getCards() {
     return Array.from(document.querySelectorAll('.lld-card'));
   }
 
-  // Helper to get all edge SVG path elements
   function getEdgeElements() {
     return Array.from(document.querySelectorAll('.canvas-edge'));
   }
 
+  // Calculate pixel center of a card's connection handle relative to canvasContainer
+  function getHandleCenter(cardId, isRight) {
+    const card = document.getElementById(cardId);
+    if (!card || !canvasContainer) return null;
+    const handle = card.querySelector(isRight ? '.rf-handle-right' : '.rf-handle-left');
+    if (!handle) return null;
+
+    const hRect = handle.getBoundingClientRect();
+    const cRect = canvasContainer.getBoundingClientRect();
+
+    return {
+      x: (hRect.left + hRect.width / 2 - cRect.left) / currentZoom,
+      y: (hRect.top + hRect.height / 2 - cRect.top) / currentZoom
+    };
+  }
+
+  // Dynamically update SVG stepped paths so lines connect 100% pixel-perfect to handles
+  function updateEdgePaths() {
+    const m1Handle = getHandleCenter('card-m1', true);
+    const s1LeftHandle = getHandleCenter('card-s1', false);
+    const s1RightHandle = getHandleCenter('card-s1', true);
+    const f1Handle = getHandleCenter('card-f1', false);
+    const e1Handle = getHandleCenter('card-e1', false);
+
+    // Edge 1: Module -> Service
+    if (m1Handle && s1LeftHandle) {
+      const p1 = document.getElementById('edge-m1-s1');
+      if (p1) {
+        const midX = (m1Handle.x + s1LeftHandle.x) / 2;
+        p1.setAttribute('d', `M ${m1Handle.x} ${m1Handle.y} L ${midX} ${m1Handle.y} L ${midX} ${s1LeftHandle.y} L ${s1LeftHandle.x} ${s1LeftHandle.y}`);
+      }
+    }
+
+    // Edge 2: Service -> Function
+    if (s1RightHandle && f1Handle) {
+      const p2 = document.getElementById('edge-s1-f1');
+      if (p2) {
+        const midX = (s1RightHandle.x + f1Handle.x) / 2;
+        p2.setAttribute('d', `M ${s1RightHandle.x} ${s1RightHandle.y} L ${midX} ${s1RightHandle.y} L ${midX} ${f1Handle.y} L ${f1Handle.x} ${f1Handle.y}`);
+      }
+    }
+
+    // Edge 3: Service -> External
+    if (s1RightHandle && e1Handle) {
+      const p3 = document.getElementById('edge-s1-e1');
+      if (p3) {
+        const midX = (s1RightHandle.x + e1Handle.x) / 2;
+        p3.setAttribute('d', `M ${s1RightHandle.x} ${s1RightHandle.y} L ${midX} ${s1RightHandle.y} L ${midX} ${e1Handle.y} L ${e1Handle.x} ${e1Handle.y}`);
+      }
+    }
+  }
+
+  // Enable dragging on cards for realistic canvas feel
+  function makeCardDraggable(card) {
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let initialLeft = 0;
+    let initialTop = 0;
+
+    const onPointerDown = (e) => {
+      // Don't drag if clicking buttons or inputs
+      if (e.target.closest('button') || e.target.closest('input')) return;
+
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      initialLeft = parseFloat(card.style.left) || card.offsetLeft;
+      initialTop = parseFloat(card.style.top) || card.offsetTop;
+
+      card.style.zIndex = '50';
+      card.style.cursor = 'grabbing';
+      card.setPointerCapture(e.pointerId);
+
+      e.stopPropagation();
+    };
+
+    const onPointerMove = (e) => {
+      if (!isDragging) return;
+      const dx = (e.clientX - startX) / currentZoom;
+      const dy = (e.clientY - startY) / currentZoom;
+
+      card.style.left = `${Math.max(10, initialLeft + dx)}px`;
+      card.style.top = `${Math.max(10, initialTop + dy)}px`;
+
+      updateEdgePaths();
+    };
+
+    const onPointerUp = (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      card.style.zIndex = '2';
+      card.style.cursor = 'pointer';
+      try {
+        card.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+      updateEdgePaths();
+    };
+
+    card.addEventListener('pointerdown', onPointerDown);
+    card.addEventListener('pointermove', onPointerMove);
+    card.addEventListener('pointerup', onPointerUp);
+    card.addEventListener('pointercancel', onPointerUp);
+  }
+
   // Attach card click handlers
   function bindCardEvents(card) {
+    makeCardDraggable(card);
+
     card.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!focusModeEnabled) return;
@@ -102,14 +207,15 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
           card.remove();
           clearFocus();
-        }, 200);
+          updateEdgePaths();
+        }, 150);
       });
     }
   }
 
   getCards().forEach(bindCardEvents);
 
-  // Apply Focus Mode Logic (matching src/editor/App.tsx)
+  // Apply Focus Mode Logic
   function applyFocus(nodeId) {
     activeFocusedNodeId = nodeId;
     const cards = getCards();
@@ -129,7 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Update Cards
     cards.forEach(c => {
       c.classList.remove('primary', 'connected', 'dimmed');
       if (c.id === nodeId) {
@@ -141,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Update Edges
     edges.forEach(edgeEl => {
       edgeEl.classList.remove('incoming', 'outgoing', 'dimmed');
       const edgeDef = graphEdges.find(e => e.pathId === edgeEl.id);
@@ -159,7 +263,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Update Toolbar Focus Badge
     const activeCard = document.getElementById(nodeId);
     if (activeCard && focusBadge) {
       const title = activeCard.getAttribute('data-title') || 'Card';
@@ -187,10 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Click on canvas background clears focus
+  // Click background clears focus
   if (canvasView) {
-    canvasView.addEventListener('click', () => {
-      clearFocus();
+    canvasView.addEventListener('click', (e) => {
+      if (e.target === canvasView || e.target === canvasContainer || e.target.tagName === 'svg') {
+        clearFocus();
+      }
     });
   }
 
@@ -209,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Auto Layout Simulation (Dagre Layout)
+  // Auto Layout Animation (Dagre Simulation)
   if (btnAutoLayout) {
     btnAutoLayout.addEventListener('click', () => {
       clearFocus();
@@ -218,27 +323,34 @@ document.addEventListener('DOMContentLoaded', () => {
       const f1 = document.getElementById('card-f1');
       const e1 = document.getElementById('card-e1');
 
-      if (m1) m1.style.transform = 'scale(0.97)';
-      if (s1) s1.style.transform = 'scale(0.97)';
-      if (f1) f1.style.transform = 'scale(0.97)';
-      if (e1) e1.style.transform = 'scale(0.97)';
+      if (m1) { m1.style.transition = 'all 0.3s ease'; m1.style.left = '40px'; m1.style.top = '60px'; }
+      if (s1) { s1.style.transition = 'all 0.3s ease'; s1.style.left = '370px'; s1.style.top = '60px'; }
+      if (f1) { f1.style.transition = 'all 0.3s ease'; f1.style.left = '700px'; f1.style.top = '30px'; }
+      if (e1) { e1.style.transition = 'all 0.3s ease'; e1.style.left = '700px'; e1.style.top = '230px'; }
 
-      setTimeout(() => {
-        if (m1) { m1.style.left = '20px'; m1.style.top = '40px'; m1.style.transform = 'none'; }
-        if (s1) { s1.style.left = '350px'; s1.style.top = '40px'; s1.style.transform = 'none'; }
-        if (f1) { f1.style.left = '680px'; f1.style.top = '20px'; f1.style.transform = 'none'; }
-        if (e1) { e1.style.left = '680px'; e1.style.top = '220px'; e1.style.transform = 'none'; }
-      }, 150);
+      // Update edges during transition
+      let frames = 0;
+      const step = () => {
+        updateEdgePaths();
+        if (++frames < 20) requestAnimationFrame(step);
+        else {
+          if (m1) m1.style.transition = '';
+          if (s1) s1.style.transition = '';
+          if (f1) f1.style.transition = '';
+          if (e1) e1.style.transition = '';
+        }
+      };
+      requestAnimationFrame(step);
     });
   }
 
-  // Add Dynamic Node Handler (+ Module, + Service, + Function, + External)
+  // Add Dynamic Nodes
   let newNodeCounter = 1;
   const addButtons = [
-    { id: 'btnAddModule', type: 'module', label: 'OrderModule', badge: 'MODULE', badgeClass: 'badge-module', desc: 'Domain boundary for orders & checkout transactions.' },
-    { id: 'btnAddService', type: 'service', label: 'PaymentService', badge: 'SERVICE', badgeClass: 'badge-service', desc: 'Handles Stripe & PayPal webhook verifications.' },
-    { id: 'btnAddFunction', type: 'function', label: 'chargeCustomer', badge: 'FUNCTION', badgeClass: 'badge-function', desc: 'Charges payment gateway and records transaction.' },
-    { id: 'btnAddExternal', type: 'external', label: 'RedisCache', badge: 'EXTERNAL', badgeClass: 'badge-external', desc: 'Sub-millisecond in-memory cache for session locks.' }
+    { id: 'btnAddModule', type: 'module', label: 'OrderModule', badge: 'MODULE', badgeClass: 'badge-module', desc: 'Domain boundary for orders & transactions.' },
+    { id: 'btnAddService', type: 'service', label: 'PaymentService', badge: 'SERVICE', badgeClass: 'badge-service', desc: 'Coordinates Stripe & PayPal webhook verifications.' },
+    { id: 'btnAddFunction', type: 'function', label: 'chargeCustomer', badge: 'FUNCTION', badgeClass: 'badge-function', desc: 'Charges payment gateway and records order.' },
+    { id: 'btnAddExternal', type: 'external', label: 'RedisCache', badge: 'EXTERNAL', badgeClass: 'badge-external', desc: 'Sub-millisecond cache for user session locks.' }
   ];
 
   addButtons.forEach(cfg => {
@@ -251,17 +363,16 @@ document.addEventListener('DOMContentLoaded', () => {
       newCard.className = 'lld-card';
       newCard.id = newCardId;
       newCard.setAttribute('data-type', cfg.type);
-      newCard.setAttribute('data-title', `${cfg.label} #${newNodeCounter}`);
-      newCard.style.left = `${100 + (newNodeCounter * 25) % 400}px`;
-      newCard.style.top = `${180 + (newNodeCounter * 20) % 150}px`;
-      newCard.style.animation = 'fadeIn 0.25s ease';
+      newCard.setAttribute('data-title', `${cfg.label}`);
+      newCard.style.left = `${120 + (newNodeCounter * 30) % 360}px`;
+      newCard.style.top = `${200 + (newNodeCounter * 20) % 120}px`;
 
       newCard.innerHTML = `
         <div class="rf-handle rf-handle-left"></div>
         <div class="rf-handle rf-handle-right"></div>
         <div class="card-header">
           <div class="card-header-left">
-            <span class="grip-dots">&#8942;&#8942;</span>
+            <span class="grip-dots" title="Drag card">&#8942;&#8942;</span>
             <span class="type-badge ${cfg.badgeClass}">${cfg.badge}</span>
             <span class="card-label">${cfg.label}</span>
           </div>
@@ -277,6 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       nodesLayer.appendChild(newCard);
       bindCardEvents(newCard);
+      updateEdgePaths();
     });
   });
 
@@ -289,6 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctrlZoomIn.addEventListener('click', () => {
       currentZoom = Math.min(1.3, currentZoom + 0.1);
       canvasContainer.style.transform = `scale(${currentZoom})`;
+      setTimeout(updateEdgePaths, 220);
     });
   }
 
@@ -296,6 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctrlZoomOut.addEventListener('click', () => {
       currentZoom = Math.max(0.7, currentZoom - 0.1);
       canvasContainer.style.transform = `scale(${currentZoom})`;
+      setTimeout(updateEdgePaths, 220);
     });
   }
 
@@ -303,6 +417,12 @@ document.addEventListener('DOMContentLoaded', () => {
     ctrlFitView.addEventListener('click', () => {
       currentZoom = 1.0;
       canvasContainer.style.transform = 'scale(1.0)';
+      setTimeout(updateEdgePaths, 220);
     });
   }
+
+  // Initial path calculation on page load and window resize
+  window.addEventListener('resize', updateEdgePaths);
+  setTimeout(updateEdgePaths, 50);
+  setTimeout(updateEdgePaths, 300);
 });

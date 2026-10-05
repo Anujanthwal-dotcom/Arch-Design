@@ -428,21 +428,24 @@ nav {
 /* Extension Canvas Viewport */
 .demo-viewport {
   position: relative;
-  min-height: 520px;
+  min-height: 500px;
   background-color: #121214;
   background-image: radial-gradient(#2a2a32 1.5px, transparent 1.5px);
   background-size: 16px 16px;
-  padding: 30px;
-  overflow: hidden;
+  padding: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
   user-select: none;
 }
 
 .canvas-container {
   position: relative;
+  min-width: 980px;
   width: 100%;
-  min-height: 480px;
+  min-height: 460px;
+  transform-origin: 0 0;
   transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
-  transform-origin: center center;
 }
 
 /* SVG Edges Layer */
@@ -1122,12 +1125,22 @@ footer a:hover {
 }
 
 @media (max-width: 768px) {
-  .canvas-mockup {
-    flex-direction: column;
-    align-items: center;
+  .hero h1 {
+    font-size: 2.1rem;
+    letter-spacing: -0.5px;
   }
-  .arch-card {
-    width: 100%;
-    max-width: 320px;
+  .rf-minimap-panel {
+    display: none;
+  }
+  .rf-controls-panel {
+    bottom: 12px;
+    left: 12px;
+  }
+  .ext-toolbar {
+    padding: 6px 8px;
+    gap: 3px;
+  }
+  .banner-inner {
+    font-size: 0.8rem;
   }
 }
