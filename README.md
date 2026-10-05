@@ -1,10 +1,10 @@
-# Arch - Visual Architecture Canvas
+# Arch Design - Visual Architecture Canvas
 
 [![Visual Studio Marketplace Version](https://img.shields.io/visual-studio-marketplace/v/AnujAnthwal.arch-for-LLD-design?color=blue&label=VS%20Code%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design)
 [![Website Live Demo](https://img.shields.io/badge/Website-Live%20Demo-38bdf8?style=flat&logo=googlechrome&logoColor=white)](https://anujanthwal.github.io/agent-arch/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-Arch is an interactive visual architecture canvas for Visual Studio Code. It allows software architects, engineers, and AI coding agents to map, design, and inspect modules, services, functions, and external infrastructure dependencies.
+Arch Design is an interactive visual architecture canvas for Visual Studio Code. It allows software architects, engineers, and AI coding agents to map, design, and inspect modules, services, functions, and external infrastructure dependencies.
 
 The `.arch` file format is saved as structured JSON, making it intuitive for humans to design visually and seamless for AI coding agents to implement faithfully.
 
