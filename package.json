@@ -1,0 +1,102 @@
+{
+  "name": "arch-for-LLD-design",
+  "publisher": "AnujAnthwal",
+  "displayName": "Arch Design",
+  "description": "Visual architecture canvas for mapping modules, services, functions and external dependencies",
+  "icon": "media/icon.png",
+  "version": "0.0.4",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnujAnthwal/agent-arch"
+  },
+  "homepage": "https://anujanthwal.github.io/agent-arch/",
+  "categories": [
+    "Visualization",
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "arch",
+    "architecture",
+    "system-design",
+    "low-level-design",
+    "diagram",
+    "canvas",
+    "software-design"
+  ],
+  "activationEvents": [
+    "onCustomEditor:lldCanvas.editor",
+    "onCommand:lldCanvas.newFile"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "arch",
+        "aliases": [
+          "Arch",
+          "arch"
+        ],
+        "extensions": [
+          ".arch",
+          ".lld"
+        ],
+        "icon": {
+          "light": "./media/icons/arch-light.svg",
+          "dark": "./media/icons/arch-dark.svg"
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "lldCanvas.newFile",
+        "title": "New Architecture File",
+        "category": "Arch"
+      }
+    ],
+    "customEditors": [
+      {
+        "viewType": "lldCanvas.editor",
+        "displayName": "Arch",
+        "selector": [
+          {
+            "filenamePattern": "*.arch"
+          },
+          {
+            "filenamePattern": "*.lld"
+          }
+        ],
+        "priority": "default"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "node build.js",
+    "package": "npx @vscode/vsce package --allow-missing-repository",
+    "watch": "node build.js --watch",
+    "test": "node test/verify.js",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/node": "16.x",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/uuid": "^9.0.7",
+    "@types/vscode": "^1.74.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@dagrejs/dagre": "^3.1.1",
+    "@types/dagre": "^0.7.54",
+    "@xyflow/react": "^12.3.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "uuid": "^9.0.1"
+  }
+}

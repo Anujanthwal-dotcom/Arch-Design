@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arch - Visual Architecture Canvas for VS Code</title>
+  <meta name="description" content="Visual architecture canvas for mapping modules, services, functions, and external dependencies. Built for software engineers and AI coding agents.">
+  <meta name="keywords" content="VS Code extension, system design, low-level design, LLD, architecture diagram, software design, AI coding agent">
+
+  <!-- Open Graph / Social Sharing Meta Tags -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Arch - Visual Architecture Canvas for VS Code">
+  <meta property="og:description" content="Design low-level software architecture visually. Native VS Code extension with AI-agent-friendly JSON schema.">
+  <meta property="og:image" content="./assets/icon.png">
+
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Arch - Visual Architecture Canvas">
+  <meta name="twitter:description" content="Interactive visual architecture canvas for mapping modules, services, functions and external dependencies in VS Code.">
+  <meta name="twitter:image" content="./assets/icon.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="./assets/icon.png">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <div class="container nav-content">
+      <a href="#" class="nav-logo">
+        <img src="./assets/icon.png" alt="Arch Logo">
+        <span>Arch</span>
+      </a>
+      <div class="nav-links">
+        <a href="#demo">Preview</a>
+        <a href="#features">Features</a>
+        <a href="#rules">Rules</a>
+        <a href="#quickstart">Quickstart</a>
+        <a href="https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design" target="_blank" class="btn-nav-install">Install in VS Code</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <div class="badge-pill">
+        <span class="dot"></span>
+        VS Code Extension &bull; AI Agent Ready
+      </div>
+      <h1>
+        Design Software Architecture Visually.<br>
+        <span class="gradient">Built for Humans &amp; AI Agents.</span>
+      </h1>
+      <p class="lead">
+        Map modules, services, functions, and infrastructure dependencies in an interactive native canvas. Saved as clean JSON that developers love and AI coding agents can implement.
+      </p>
+
+      <div class="hero-actions">
+        <a href="https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design" target="_blank" class="btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.14 7.5a1.5 1.5 0 0 0-.88-.41L5.94 5.86 3.12 3.15a1 1 0 0 0-1.41 0 1 1 0 0 0 0 1.41L4.35 7.2 2 9.55a1 1 0 0 0 0 1.41l3.54 3.54a1 1 0 0 0 1.41 0l3.05-3.05 7.14 1.19c.35.06.71-.05.97-.29.26-.24.39-.59.34-.94l-.74-4.45a1.5 1.5 0 0 0-.57-.41z"/>
+          </svg>
+          Install from Marketplace
+        </a>
+        <a href="https://github.com/AnujAnthwal/agent-arch" target="_blank" class="btn-secondary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          View on GitHub
+        </a>
+      </div>
+
+      <div class="install-box">
+        <span>Quick Install:</span>
+        <code id="installCmd">ext install AnujAnthwal.arch-for-LLD-design</code>
+        <button id="copyBtn" class="btn-copy" title="Copy to clipboard">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive Demo Showcase -->
+  <section class="demo-section" id="demo">
+    <div class="container">
+      <div class="demo-window">
+        <div class="demo-titlebar">
+          <div class="window-controls">
+            <span class="window-dot dot-red"></span>
+            <span class="window-dot dot-yellow"></span>
+            <span class="window-dot dot-green"></span>
+          </div>
+          <div class="demo-tab-group">
+            <button class="demo-tab active" id="tabCanvas">Interactive Canvas</button>
+            <button class="demo-tab" id="tabJson">.arch JSON Schema</button>
+          </div>
+          <div style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono);">
+            architecture.arch
+          </div>
+        </div>
+
+        <div class="demo-viewport" id="canvasView">
+          <div class="canvas-mockup">
+            
+            <!-- Module Node -->
+            <div class="arch-card" id="card-module">
+              <div class="card-header">
+                <span class="type-badge badge-module">MODULE</span>
+                <span class="card-title">Authentication</span>
+              </div>
+              <div class="card-body">
+                <div class="card-desc">Domain boundary handling user auth &amp; session tokens.</div>
+                <div class="card-field">
+                  <span class="field-label">Scope</span>
+                  <span class="field-val">login, signup, JWT issuance</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Service Node -->
+            <div class="arch-card" id="card-service">
+              <div class="card-header">
+                <span class="type-badge badge-service">SERVICE</span>
+                <span class="card-title">AuthService</span>
+              </div>
+              <div class="card-body">
+                <div class="card-desc">Business logic for credential verification &amp; tokens.</div>
+                <div class="card-field">
+                  <span class="field-label">Dependency</span>
+                  <span class="field-val">UserStore, CryptoEngine</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Function Node -->
+            <div class="arch-card" id="card-func">
+              <div class="card-header">
+                <span class="type-badge badge-function">FUNCTION</span>
+                <span class="card-title">verifyToken</span>
+              </div>
+              <div class="card-body">
+                <div class="card-desc">Decodes and verifies incoming Bearer JWT claims.</div>
+                <div class="card-field">
+                  <span class="field-label">Param: token</span>
+                  <span class="field-val">string (Bearer JWT)</span>
+                </div>
+                <div class="card-field">
+                  <span class="field-label">Returns</span>
+                  <span class="field-val">TokenPayload</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- External Node -->
+            <div class="arch-card" id="card-external">
+              <div class="card-header">
+                <span class="type-badge badge-external">EXTERNAL</span>
+                <span class="card-title">PostgreSQL</span>
+              </div>
+              <div class="card-body">
+                <div class="card-desc">Primary relational store for user credentials.</div>
+                <div class="card-field">
+                  <span class="field-label">Tech</span>
+                  <span class="field-val">postgres : 5432</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- JSON Mockup View -->
+        <pre class="json-mockup" id="jsonView"><code>{
+  <span class="json-key">"version"</span>: <span class="json-num">2</span>,
+  <span class="json-key">"name"</span>: <span class="json-str">"auth-system"</span>,
+  <span class="json-key">"nodes"</span>: [
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"m1"</span>,
+      <span class="json-key">"type"</span>: <span class="json-str">"module"</span>,
+      <span class="json-key">"label"</span>: <span class="json-str">"Authentication"</span>,
+      <span class="json-key">"description"</span>: <span class="json-str">"User auth &amp; session tokens"</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"s1"</span>,
+      <span class="json-key">"type"</span>: <span class="json-str">"service"</span>,
+      <span class="json-key">"label"</span>: <span class="json-str">"AuthService"</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"f1"</span>,
+      <span class="json-key">"type"</span>: <span class="json-str">"function"</span>,
+      <span class="json-key">"label"</span>: <span class="json-str">"verifyToken"</span>,
+      <span class="json-key">"parameters"</span>: [{ <span class="json-key">"name"</span>: <span class="json-str">"token"</span>, <span class="json-key">"type"</span>: <span class="json-str">"string"</span> }]
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-str">"e1"</span>,
+      <span class="json-key">"type"</span>: <span class="json-str">"external"</span>,
+      <span class="json-key">"label"</span>: <span class="json-str">"PostgreSQL"</span>,
+      <span class="json-key">"tech"</span>: <span class="json-str">"postgres"</span>
+    }
+  ],
+  <span class="json-key">"edges"</span>: [
+    { <span class="json-key">"from"</span>: <span class="json-str">"m1"</span>, <span class="json-key">"to"</span>: <span class="json-str">"s1"</span>, <span class="json-key">"type"</span>: <span class="json-str">"contains"</span> },
+    { <span class="json-key">"from"</span>: <span class="json-str">"s1"</span>, <span class="json-key">"to"</span>: <span class="json-str">"f1"</span>, <span class="json-key">"type"</span>: <span class="json-str">"contains"</span> },
+    { <span class="json-key">"from"</span>: <span class="json-str">"s1"</span>, <span class="json-key">"to"</span>: <span class="json-str">"e1"</span>, <span class="json-key">"type"</span>: <span class="json-str">"uses"</span> }
+  ]
+}</code></pre>
+      </div>
+      <p style="text-align:center;color:var(--text-dim);font-size:0.85rem;margin-top:14px;">
+        💡 <em>Click any card above to simulate <strong>Focus Mode</strong> (isolates upstream &amp; downstream dependencies).</em>
+      </p>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>Engineered for Clean Software Design</h2>
+        <p>Everything you need to turn high-level thoughts into concrete, verifiable low-level architectures.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+          </div>
+          <h3>Structured 4-Tier Hierarchy</h3>
+          <p>Organize systems cleanly with domain Modules, Services, typed Functions, and External infrastructure nodes.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h3>Focus Mode Tracing</h3>
+          <p>Click any card to highlight its full upstream and downstream path with animated flows while dimming unrelated cards.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <h3>Enforced Guardrails</h3>
+          <p>Built-in connection rules prevent invalid architecture shortcuts (e.g. functions directly importing modules or external databases driving business logic).</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+          </div>
+          <h3>AI Coding Agent Ready</h3>
+          <p>Direct `.arch` JSON specification ready for LLMs (Claude, GPT, Gemini) to parse and generate accurate code scaffolding.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <h3>Dagre Auto-Layout</h3>
+          <p>Instant node alignment and hierarchy organization with one click on the toolbar layout engine.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
+          <h3>Infrastructure Tech Badges</h3>
+          <p>Pre-packaged logos and recognition for PostgreSQL, Redis, MongoDB, MySQL, Kafka, RabbitMQ, S3, and more.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architectural Rules Section -->
+  <section class="rules-section" id="rules">
+    <div class="container">
+      <div class="section-header">
+        <h2>Architecture Connection Rules</h2>
+        <p>Arch keeps system designs clean by enforcing explicit relationship boundaries.</p>
+      </div>
+
+      <div class="rules-card">
+        <table class="rules-table">
+          <thead>
+            <tr>
+              <th>Source Node</th>
+              <th>Target Node</th>
+              <th>Relationship</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="type-badge badge-module">Module</span></td>
+              <td><span class="type-badge badge-service">Service</span></td>
+              <td>Module encapsulates service</td>
+              <td><span style="color:#22c55e;">&#10003; Allowed</span></td>
+            </tr>
+            <tr>
+              <td><span class="type-badge badge-service">Service</span></td>
+              <td><span class="type-badge badge-function">Function</span></td>
+              <td>Service contains and executes function</td>
+              <td><span style="color:#22c55e;">&#10003; Allowed</span></td>
+            </tr>
+            <tr>
+              <td><span class="type-badge badge-service">Service</span></td>
+              <td><span class="type-badge badge-external">External</span></td>
+              <td>Service connects to database, queue, or cache</td>
+              <td><span style="color:#22c55e;">&#10003; Allowed</span></td>
+            </tr>
+            <tr>
+              <td><span class="type-badge badge-module">Module</span></td>
+              <td><span class="type-badge badge-external">External</span></td>
+              <td>Module depends on external dependency</td>
+              <td><span style="color:#22c55e;">&#10003; Allowed</span></td>
+            </tr>
+            <tr>
+              <td><span class="type-badge badge-function">Function</span></td>
+              <td><span class="type-badge badge-module">Module</span></td>
+              <td>Function referencing parent module</td>
+              <td><span style="color:#ef4444;">&#10005; Blocked (Violates LLD)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quickstart -->
+  <section class="steps-section" id="quickstart">
+    <div class="container">
+      <div class="section-header">
+        <h2>Start in 60 Seconds</h2>
+        <p>No separate browser tabs or external SaaS logins required.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h3>Install Extension</h3>
+          <p>Search for <strong>"Arch"</strong> in the VS Code Extensions marketplace or run <code>ext install AnujAnthwal.arch-for-LLD-design</code>.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h3>Create .arch File</h3>
+          <p>Press <kbd>Ctrl+Shift+P</kbd> / <kbd>Cmd+Shift+P</kbd> and run <strong>Arch: New Architecture File</strong>, or create any file ending with <code>.arch</code>.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h3>Design &amp; Implement</h3>
+          <p>Drag nodes, define parameters and return types, auto-arrange with Dagre layout, and feed directly to AI coding agents.</p>
+        </div>
+      </div>
+
+      <div class="cta-banner">
+        <h2>Bring Clarity to Your Codebase</h2>
+        <p>Never lose track of your system dependencies or architectural boundaries again.</p>
+        <a href="https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design" target="_blank" class="btn-primary">
+          Get Arch for VS Code
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 Arch by <strong>Anuj Anthwal</strong>. Released under the MIT License.</p>
+      <p style="margin-top:8px;">
+        <a href="https://github.com/AnujAnthwal/agent-arch" target="_blank">GitHub Repository</a> &bull;
+        <a href="https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design" target="_blank">VS Code Marketplace</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
