@@ -4,7 +4,7 @@
   "displayName": "Arch Design",
   "description": "Visual architecture canvas for mapping modules, services, functions and external dependencies",
   "icon": "media/icon.png",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.74.0"
   },
