@@ -41,6 +41,12 @@ Alternatively, create any file ending with `.arch` in your workspace and click t
 - **Focus Mode**: Click on any card to isolate and trace its complete dependency tree.
 - **Auto Layout**: Click the Layout button in the toolbar to automatically organize and align nodes.
 
+### 3. Equip AI Coding Agents (Agent Skill)
+Arch Design includes an open **Agent Skill** so AI assistants (Antigravity, Claude Code, Cursor, Windsurf) can read, understand, and draw `.arch` diagrams:
+- Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P`).
+- Select **Arch: Install Agent Skill**.
+- Choose **Current Workspace** (`.agents/skills/arch-design/` & `AGENTS.md`) or **Global Profile**.
+
 ---
 
 ## Architectural Rules

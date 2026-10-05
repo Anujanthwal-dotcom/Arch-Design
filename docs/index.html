@@ -49,6 +49,8 @@
         <a href="#demo">Preview</a>
         <a href="#features">Features</a>
         <a href="#rules">Rules</a>
+        <a href="#agents">Agent Skill</a>
+        <a href="#docs">Docs &amp; CLI</a>
         <a href="#quickstart">Quickstart</a>
         <a href="https://github.com/Anujanthwal-dotcom/Arch-Design" target="_blank" class="nav-star-btn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
@@ -116,6 +118,7 @@
           <div class="demo-tab-group">
             <button class="demo-tab active" id="tabCanvas">Interactive Canvas</button>
             <button class="demo-tab" id="tabJson">.arch JSON Schema</button>
+            <button class="demo-tab" id="tabDocs">Agent &amp; CLI Docs</button>
           </div>
           <div style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono);">
             architecture.arch
@@ -336,6 +339,40 @@
     { <span class="json-key">"from"</span>: <span class="json-str">"s1"</span>, <span class="json-key">"to"</span>: <span class="json-str">"e1"</span>, <span class="json-key">"type"</span>: <span class="json-str">"uses"</span> }
   ]
 }</code></pre>
+
+        <!-- Demo Window Agent & CLI Docs View -->
+        <div class="demo-docs-view" id="docsView">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <h4 style="color:#fff;font-size:1.15rem;margin:0;">⚡ Agent Skill Quick Reference</h4>
+            <a href="#docs" style="color:#38bdf8;font-size:12.5px;text-decoration:none;font-weight:600;">View Full Documentation &rarr;</a>
+          </div>
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:16px;">
+            AI coding agents (Antigravity, Claude Code, Cursor, Windsurf) use these standalone CLI tools to validate syntax and auto-assign Dagre layout coordinates:
+          </p>
+
+          <div class="docs-code-card">
+            <div class="docs-code-card-header">
+              <span>CLI Validator (Syntax &amp; Architecture Rules)</span>
+              <button class="docs-code-copy-btn" data-copy="node .agents/skills/arch-design/scripts/validate.js architecture.arch">Copy</button>
+            </div>
+            <pre class="docs-code-content">node .agents/skills/arch-design/scripts/validate.js architecture.arch</pre>
+          </div>
+
+          <div class="docs-code-card">
+            <div class="docs-code-card-header">
+              <span>CLI Auto-Layouter (Calculates Clean Coordinates)</span>
+              <button class="docs-code-copy-btn" data-copy="node .agents/skills/arch-design/scripts/layout.js architecture.arch">Copy</button>
+            </div>
+            <pre class="docs-code-content">node .agents/skills/arch-design/scripts/layout.js architecture.arch</pre>
+          </div>
+
+          <div class="docs-code-card" style="margin-bottom:0;">
+            <div class="docs-code-card-header">
+              <span>VS Code 1-Click Installation</span>
+            </div>
+            <pre class="docs-code-content">Press Ctrl+Shift+P / Cmd+Shift+P &rarr; Select "Arch: Install Agent Skill"</pre>
+          </div>
+        </div>
       </div>
       <p style="text-align:center;color:var(--text-dim);font-size:0.85rem;margin-top:14px;">
         💡 <em>Click any card above to simulate <strong>Focus Mode</strong> (isolates upstream &amp; downstream dependencies).</em>
@@ -463,6 +500,300 @@
               <td><span class="type-badge badge-module">Module</span></td>
               <td>Function referencing parent module</td>
               <td><span style="color:#ef4444;">&#10005; Blocked (Violates LLD)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Agent Skills Section -->
+  <section class="agent-skills-section" id="agents">
+    <div class="container" style="text-align: center;">
+      <div class="agent-badge-pill">
+        <span>⚡ Built for Modern AI Coding Agents</span>
+      </div>
+      <h2>Empower AI Agents to Read &amp; Draw Diagrams</h2>
+      <p style="color:var(--text-muted);font-size:1.1rem;max-width:700px;margin:0 auto 20px;">
+        Arch Design includes an open <strong>Agent Skill</strong> specification. Your AI assistants can inspect system boundaries before writing code, and automatically generate schema-valid <code>.arch</code> diagrams on demand.
+      </p>
+
+      <div class="agent-logos-row">
+        <span class="agent-logo-chip">Google Antigravity</span>
+        <span class="agent-logo-chip">Claude Code</span>
+        <span class="agent-logo-chip">Cursor (Composer)</span>
+        <span class="agent-logo-chip">Windsurf (Cascade)</span>
+        <span class="agent-logo-chip">Cline / Aider</span>
+      </div>
+
+      <div class="features-grid" style="text-align: left;">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(168,85,247,0.1);color:#c084fc;">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </div>
+          <h3>1. Understand Before Coding</h3>
+          <p>Agents inspect <code>.arch</code> files to identify service boundaries, method signatures, parameter types, and database dependencies before touching a single line of code.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(56,189,248,0.1);color:#38bdf8;">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+          </div>
+          <h3>2. Draw Diagrams on Demand</h3>
+          <p>Simply prompt your agent: <em>"Create an architecture diagram for our new order processing workflow with Kafka and Redis."</em> The agent outputs a valid <code>.arch</code> file instantly.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(74,222,128,0.1);color:#4ade80;">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3>3. 1-Click Workspace Setup</h3>
+          <p>Run <strong>Arch: Install Agent Skill</strong> from the VS Code Command Palette to equip your current project or global agent environment in 1 click.</p>
+        </div>
+      </div>
+
+      <!-- Agent Terminal Workflow Preview -->
+      <div class="terminal-card" style="text-align: left;">
+        <div class="terminal-header">
+          <span class="window-dot dot-red"></span>
+          <span class="window-dot dot-yellow"></span>
+          <span class="window-dot dot-green"></span>
+          <span style="font-size:11px;color:var(--text-dim);font-family:var(--font-mono);margin-left:8px;">agent-workflow.sh</span>
+        </div>
+        <div class="terminal-body">
+          <span class="term-comment"># AI Agent validates schema and connection rules</span><br>
+          $ <span class="term-cmd">node .agents/skills/arch-design/scripts/validate.js architecture.arch</span><br>
+          <span class="term-success">&#10003; Validation Passed: 'architecture.arch' is schema-compliant. Nodes: 6, Edges: 5</span><br><br>
+          <span class="term-comment"># AI Agent auto-arranges visual positions via Dagre (no manual pixel guessing)</span><br>
+          $ <span class="term-cmd">node .agents/skills/arch-design/scripts/layout.js architecture.arch</span><br>
+          <span class="term-success">&#10003; Successfully updated coordinates in: 'architecture.arch'</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dedicated Documentation Center -->
+  <section class="docs-center-section" id="docs">
+    <div class="container">
+      <div class="section-header">
+        <h2>Documentation &amp; CLI Reference</h2>
+        <p>Complete guides, CLI scripts, prompts, and schema references for developers and AI coding agents.</p>
+      </div>
+
+      <!-- Docs Navigation Tabs -->
+      <div class="docs-tab-nav">
+        <button class="docs-nav-btn active" data-panel="panel-setup">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+          Skill Setup &amp; Installation
+        </button>
+        <button class="docs-nav-btn" data-panel="panel-cli">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          CLI Tools &amp; Scripts
+        </button>
+        <button class="docs-nav-btn" data-panel="panel-prompts">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+          </svg>
+          Agent Prompt Cheatsheet
+        </button>
+        <button class="docs-nav-btn" data-panel="panel-schema">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          JSON v2 Specification
+        </button>
+      </div>
+
+      <!-- Panel 1: Skill Setup & Installation -->
+      <div class="docs-content-panel active" id="panel-setup">
+        <h3>⚡ Installing the Arch Design Agent Skill</h3>
+        <p class="subhead">
+          Equip any AI coding agent with the knowledge to read, understand, validate, and draw <code>.arch</code> diagrams.
+        </p>
+
+        <h4 style="color:#e2e8f0;margin:20px 0 10px;">Method A: VS Code 1-Click Install (Easiest)</h4>
+        <div class="docs-code-card">
+          <div class="docs-code-card-header">
+            <span>VS Code Command Palette</span>
+            <button class="docs-code-copy-btn" data-copy="Arch: Install Agent Skill">Copy</button>
+          </div>
+          <pre class="docs-code-content">1. Press Ctrl+Shift+P (or Cmd+Shift+P on macOS)
+2. Type and select: Arch: Install Agent Skill
+3. Choose scope:
+   &bull; "Current Workspace (.agents/skills/arch-design/)" &rarr; Best for repositories and teams
+   &bull; "Global User Profile (~/.gemini/config/skills/)" &rarr; Best across all personal projects</pre>
+        </div>
+
+        <h4 style="color:#e2e8f0;margin:24px 0 10px;">Method B: Manual Installation (Git Clone)</h4>
+        <div class="docs-code-card">
+          <div class="docs-code-card-header">
+            <span>Terminal</span>
+            <button class="docs-code-copy-btn" data-copy="git clone https://github.com/Anujanthwal-dotcom/Arch-Design.git /tmp/arch && mkdir -p .agents/skills && cp -r /tmp/arch/.agents/skills/arch-design .agents/skills/ && cp /tmp/arch/AGENTS.md ./">Copy</button>
+          </div>
+          <pre class="docs-code-content"># Copy skill package into your project
+git clone https://github.com/Anujanthwal-dotcom/Arch-Design.git /tmp/arch
+mkdir -p .agents/skills
+cp -r /tmp/arch/.agents/skills/arch-design .agents/skills/
+cp /tmp/arch/AGENTS.md ./</pre>
+        </div>
+
+        <h4 style="color:#e2e8f0;margin:24px 0 10px;">Multi-Agent Compatibility Table</h4>
+        <table class="rules-table">
+          <thead>
+            <tr>
+              <th>Coding Agent</th>
+              <th>How It Discovers the Skill</th>
+              <th>Setup Needed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Google Antigravity / Gemini CLI</strong></td>
+              <td>Scans <code>.agents/skills/</code> and global config natively</td>
+              <td>Zero setup (Automatic discovery)</td>
+            </tr>
+            <tr>
+              <td><strong>Claude Code (Anthropic)</strong></td>
+              <td>Reads root <code>AGENTS.md</code> &amp; <code>CLAUDE.md</code></td>
+              <td>Pointer in <code>AGENTS.md</code> (Included)</td>
+            </tr>
+            <tr>
+              <td><strong>Cursor (Composer / Agent)</strong></td>
+              <td>Reads <code>.cursor/rules/</code> &amp; <code>.cursorrules</code></td>
+              <td>Pointer in <code>AGENTS.md</code> / rules</td>
+            </tr>
+            <tr>
+              <td><strong>Windsurf (Cascade)</strong></td>
+              <td>Reads <code>.windsurfrules</code> &amp; workspace docs</td>
+              <td>Pointer in <code>AGENTS.md</code> (Included)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Panel 2: CLI Tools & Scripts -->
+      <div class="docs-content-panel" id="panel-cli">
+        <h3>🛠 CLI Tools for Agents &amp; Developers</h3>
+        <p class="subhead">
+          Standalone Node.js scripts bundled with the skill so agents never make syntax errors or have to guess pixel math.
+        </p>
+
+        <h4 style="color:#e2e8f0;margin:20px 0 10px;">1. CLI Architecture Validator</h4>
+        <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:8px;">
+          Verifies JSON schema integrity, required attributes, edge definitions, and architectural separation of concerns. Exits with code 0 on success, or code 1 with actionable error descriptions.
+        </p>
+        <div class="docs-code-card">
+          <div class="docs-code-card-header">
+            <span>Terminal</span>
+            <button class="docs-code-copy-btn" data-copy="node .agents/skills/arch-design/scripts/validate.js architecture.arch">Copy</button>
+          </div>
+          <pre class="docs-code-content">node .agents/skills/arch-design/scripts/validate.js architecture.arch
+
+# Sample output:
+# &#10003; Validation Passed: 'architecture.arch' is schema-compliant. Nodes: 6, Edges: 5</pre>
+        </div>
+
+        <h4 style="color:#e2e8f0;margin:24px 0 10px;">2. CLI Dagre Auto-Layouter</h4>
+        <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:8px;">
+          Automatically assigns non-overlapping <code>(x, y)</code> visual coordinates using Dagre topological graph ranking. AI agents can generate nodes with <code>pos: { x: 0, y: 0 }</code> and run this command to lay them out cleanly.
+        </p>
+        <div class="docs-code-card">
+          <div class="docs-code-card-header">
+            <span>Terminal</span>
+            <button class="docs-code-copy-btn" data-copy="node .agents/skills/arch-design/scripts/layout.js architecture.arch">Copy</button>
+          </div>
+          <pre class="docs-code-content"># In-place auto-layout:
+node .agents/skills/arch-design/scripts/layout.js architecture.arch
+
+# Or output to a new file:
+node .agents/skills/arch-design/scripts/layout.js architecture.arch ./output.arch</pre>
+        </div>
+      </div>
+
+      <!-- Panel 3: Agent Prompts Cheatsheet -->
+      <div class="docs-content-panel" id="panel-prompts">
+        <h3>💬 AI Agent Prompting Cheatsheet</h3>
+        <p class="subhead">
+          Tested, high-performing prompts to use with Antigravity, Claude Code, Cursor, or Windsurf.
+        </p>
+
+        <div class="docs-prompt-item">
+          <div class="docs-prompt-header">
+            <span>1. Implement Code from an Architecture Diagram</span>
+            <button class="docs-code-copy-btn" data-copy="Inspect our architecture diagram in architecture.arch. Implement the service and functions specified in the canvas, strictly respecting parameter types, return signatures, and external database connections.">Copy Prompt</button>
+          </div>
+          <div class="docs-prompt-text">
+            "Inspect our architecture diagram in architecture.arch. Implement the service and functions specified in the canvas, strictly respecting parameter types, return signatures, and external database connections."
+          </div>
+        </div>
+
+        <div class="docs-prompt-item">
+          <div class="docs-prompt-header">
+            <span>2. Generate an Architecture Diagram for a New Feature</span>
+            <button class="docs-code-copy-btn" data-copy="Use the Arch Design skill to create a visual architecture diagram user-auth.arch for our user authentication microservice. Include a UserModule, AuthService, verifyToken function, and PostgreSQL external store. Run layout.js and validate.js when finished.">Copy Prompt</button>
+          </div>
+          <div class="docs-prompt-text">
+            "Use the Arch Design skill to create a visual architecture diagram user-auth.arch for our user authentication microservice. Include a UserModule, AuthService, verifyToken function, and PostgreSQL external store. Run layout.js and validate.js when finished."
+          </div>
+        </div>
+
+        <div class="docs-prompt-item">
+          <div class="docs-prompt-header">
+            <span>3. Audit Codebase for Architecture Compliance</span>
+            <button class="docs-code-copy-btn" data-copy="Compare our implementation in src/ against architecture.arch. Identify any services calling unauthorized databases or functions bypassing domain boundaries according to our Low-Level Design rules.">Copy Prompt</button>
+          </div>
+          <div class="docs-prompt-text">
+            "Compare our implementation in src/ against architecture.arch. Identify any services calling unauthorized databases or functions bypassing domain boundaries according to our Low-Level Design rules."
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 4: JSON v2 Schema Reference -->
+      <div class="docs-content-panel" id="panel-schema">
+        <h3>📋 JSON Schema v2 Reference</h3>
+        <p class="subhead">
+          Detailed schema structure for <code>.arch</code> visual canvas files.
+        </p>
+
+        <table class="rules-table">
+          <thead>
+            <tr>
+              <th>Node Type</th>
+              <th>Key Fields</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>module</code></td>
+              <td><code>id</code>, <code>label</code>, <code>description</code>, <code>properties[]</code></td>
+              <td>Top-level domain boundary or package.</td>
+            </tr>
+            <tr>
+              <td><code>service</code></td>
+              <td><code>id</code>, <code>label</code>, <code>typeRef</code>, <code>properties[]</code></td>
+              <td>Business logic service class or controller.</td>
+            </tr>
+            <tr>
+              <td><code>function</code></td>
+              <td><code>id</code>, <code>label</code>, <code>parameters[]</code>, <code>returns[]</code></td>
+              <td>Routines with typed inputs, outputs, and descriptions.</td>
+            </tr>
+            <tr>
+              <td><code>external</code></td>
+              <td><code>id</code>, <code>label</code>, <code>tech</code></td>
+              <td>Infrastructure: <code>postgres</code>, <code>mysql</code>, <code>redis</code>, <code>mongodb</code>, <code>kafka</code>, <code>s3</code>, <code>rabbitmq</code>.</td>
             </tr>
           </tbody>
         </table>

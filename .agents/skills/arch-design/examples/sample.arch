@@ -1,0 +1,206 @@
+{
+  "version": 2,
+  "name": "auth-system",
+  "nodes": [
+    {
+      "id": "a8f12b3c-4d56-4e78-9f01-1234567890ab",
+      "type": "module",
+      "label": "Auth",
+      "pos": {
+        "x": 60,
+        "y": 543
+      },
+      "description": "Authentication and authorization domainjkhkh\n",
+      "properties": [
+        {
+          "id": "p1",
+          "title": "Responsibility",
+          "description": "Handles user login, signup, token refresh and session management"
+        },
+        {
+          "id": "p2",
+          "title": "Scope",
+          "description": "User identity and access control"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "type": "service",
+      "label": "AuthService",
+      "pos": {
+        "x": 480,
+        "y": 587
+      },
+      "description": "Core authentication business logic",
+      "properties": [
+        {
+          "id": "p3",
+          "title": "Pattern",
+          "description": "Stateless service"
+        }
+      ],
+      "typeRef": "services/AuthService",
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "c0f34d5e-6f78-6f90-bg23-3456789012cd",
+      "type": "function",
+      "label": "validateToken",
+      "pos": {
+        "x": 900,
+        "y": 1158
+      },
+      "description": "Validates JWT token and returns decoded claims",
+      "properties": [
+        {
+          "id": "p5",
+          "title": "Throws",
+          "description": "TokenExpiredError, InvalidTokenError"
+        }
+      ],
+      "parameters": [
+        {
+          "id": "i1",
+          "name": "token",
+          "type": "string",
+          "required": true,
+          "description": "JWT access token"
+        },
+        {
+          "id": "i2",
+          "name": "options",
+          "type": "ValidateOptions",
+          "required": false,
+          "description": "Validation configuration options"
+        }
+      ],
+      "returns": [
+        {
+          "id": "r1",
+          "name": "claims",
+          "type": "JwtClaims",
+          "required": true,
+          "description": "Decoded and verified JWT claims"
+        }
+      ],
+      "isCollapsed": false
+    },
+    {
+      "id": "d1f45e6f-7g89-7g01-ch34-4567890123de",
+      "type": "function",
+      "label": "generateToken",
+      "pos": {
+        "x": 900,
+        "y": 666
+      },
+      "description": "Generates access and refresh tokens for authenticated user",
+      "properties": [],
+      "parameters": [
+        {
+          "id": "i3",
+          "name": "userId",
+          "type": "string",
+          "required": true,
+          "description": "User identifier"
+        },
+        {
+          "id": "i4",
+          "name": "payload",
+          "type": "TokenPayload",
+          "required": false,
+          "description": "Additional claims to include"
+        }
+      ],
+      "returns": [
+        {
+          "id": "r2",
+          "name": "tokens",
+          "type": "TokenPair",
+          "required": true,
+          "description": "Access and refresh token pair"
+        }
+      ],
+      "isCollapsed": false
+    },
+    {
+      "id": "e2f56f7g-8h90-8h12-di45-5678901234ef",
+      "type": "external",
+      "label": "users-db",
+      "pos": {
+        "x": 900,
+        "y": 363
+      },
+      "description": "User identity and credentials store",
+      "properties": [
+        {
+          "id": "p6",
+          "title": "Purpose",
+          "description": "Read/write user records and credentials"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "tech": "postgres",
+      "isCollapsed": false
+    },
+    {
+      "id": "f3f67g8h-9i01-9i23-ej56-6789012345fg",
+      "type": "external",
+      "label": "token-cache",
+      "pos": {
+        "x": 900,
+        "y": 60
+      },
+      "description": "Stores token blacklist and session data",
+      "properties": [
+        {
+          "id": "p7",
+          "title": "Purpose",
+          "description": "Token revocation and rate limiting"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "tech": "redis",
+      "isCollapsed": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge1",
+      "from": "a8f12b3c-4d56-4e78-9f01-1234567890ab",
+      "to": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "type": "contains"
+    },
+    {
+      "id": "edge2",
+      "from": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "to": "c0f34d5e-6f78-6f90-bg23-3456789012cd",
+      "type": "contains"
+    },
+    {
+      "id": "edge3",
+      "from": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "to": "d1f45e6f-7g89-7g01-ch34-4567890123de",
+      "type": "contains"
+    },
+    {
+      "id": "edge4",
+      "from": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "to": "e2f56f7g-8h90-8h12-di45-5678901234ef",
+      "type": "contains"
+    },
+    {
+      "id": "edge5",
+      "from": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "to": "f3f67g8h-9i01-9i23-ej56-6789012345fg",
+      "type": "contains"
+    }
+  ]
+}

@@ -25,28 +25,81 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 2. Tab Switching (Interactive Canvas vs. JSON Schema)
+  // 2. Tab Switching in Demo Window (Interactive Canvas, JSON Schema, Agent & CLI Docs)
   const tabCanvas = document.getElementById('tabCanvas');
   const tabJson = document.getElementById('tabJson');
+  const tabDocs = document.getElementById('tabDocs');
   const canvasView = document.getElementById('canvasView');
   const jsonView = document.getElementById('jsonView');
+  const docsView = document.getElementById('docsView');
+  const extToolbar = document.querySelector('.ext-toolbar');
 
-  if (tabCanvas && tabJson && canvasView && jsonView) {
-    tabCanvas.addEventListener('click', () => {
-      tabCanvas.classList.add('active');
-      tabJson.classList.remove('active');
-      canvasView.style.display = 'block';
-      jsonView.classList.remove('active');
+  function selectDemoTab(tab) {
+    if (tabCanvas) tabCanvas.classList.toggle('active', tab === 'canvas');
+    if (tabJson) tabJson.classList.toggle('active', tab === 'json');
+    if (tabDocs) tabDocs.classList.toggle('active', tab === 'docs');
+
+    if (canvasView) canvasView.style.display = tab === 'canvas' ? 'block' : 'none';
+    if (jsonView) jsonView.classList.toggle('active', tab === 'json');
+    if (docsView) docsView.classList.toggle('active', tab === 'docs');
+
+    if (extToolbar) {
+      extToolbar.style.display = tab === 'canvas' ? 'flex' : 'none';
+    }
+
+    if (tab === 'canvas') {
       requestAnimationFrame(updateEdgePaths);
-    });
-
-    tabJson.addEventListener('click', () => {
-      tabJson.classList.add('active');
-      tabCanvas.classList.remove('active');
-      canvasView.style.display = 'none';
-      jsonView.classList.add('active');
-    });
+    }
   }
+
+  if (tabCanvas) tabCanvas.addEventListener('click', () => selectDemoTab('canvas'));
+  if (tabJson) tabJson.addEventListener('click', () => selectDemoTab('json'));
+  if (tabDocs) tabDocs.addEventListener('click', () => selectDemoTab('docs'));
+
+  // 2b. Documentation Center Tabs Navigation (#docs)
+  const docsNavBtns = document.querySelectorAll('.docs-nav-btn');
+  const docsPanels = document.querySelectorAll('.docs-content-panel');
+
+  docsNavBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetPanelId = btn.getAttribute('data-panel');
+      if (!targetPanelId) return;
+
+      docsNavBtns.forEach(b => b.classList.remove('active'));
+      docsPanels.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const targetPanel = document.getElementById(targetPanelId);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+    });
+  });
+
+  // 2c. Copy Buttons in Code Cards & Prompt Items
+  const docsCopyBtns = document.querySelectorAll('.docs-code-copy-btn');
+  docsCopyBtns.forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const textToCopy = btn.getAttribute('data-copy');
+      if (!textToCopy) return;
+
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+        const originalText = btn.innerText;
+        btn.innerText = 'Copied!';
+        btn.style.color = '#22c55e';
+        btn.style.borderColor = 'rgba(34, 197, 94, 0.4)';
+        setTimeout(() => {
+          btn.innerText = originalText;
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy text', err);
+      }
+    });
+  });
 
   // 3. Real Extension Miniature Canvas Controller
   const canvasContainer = document.getElementById('canvasContainer');

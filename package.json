@@ -4,7 +4,7 @@
   "displayName": "Arch Design",
   "description": "Visual architecture canvas for mapping modules, services, functions and external dependencies",
   "icon": "media/icon.png",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -29,7 +29,8 @@
   ],
   "activationEvents": [
     "onCustomEditor:lldCanvas.editor",
-    "onCommand:lldCanvas.newFile"
+    "onCommand:lldCanvas.newFile",
+    "onCommand:lldCanvas.initAgentSkill"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -54,6 +55,11 @@
       {
         "command": "lldCanvas.newFile",
         "title": "New Architecture File",
+        "category": "Arch"
+      },
+      {
+        "command": "lldCanvas.initAgentSkill",
+        "title": "Install Agent Skill",
         "category": "Arch"
       }
     ],
