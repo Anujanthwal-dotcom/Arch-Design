@@ -19,8 +19,11 @@
   <meta name="twitter:description" content="Interactive visual architecture canvas for mapping modules, services, functions and external dependencies in VS Code.">
   <meta name="twitter:image" content="./assets/icon.png">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="./assets/icon.png">
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -38,9 +41,9 @@
     </div>
   </aside>
 
-  <!-- Navigation -->
-  <nav>
-    <div class="container nav-content">
+  <!-- Navigation: Floating Island -->
+  <div class="nav-island-wrapper">
+    <nav class="nav-floating-island">
       <a href="#" class="nav-logo">
         <img src="./assets/icon.png" alt="Arch Design Logo">
         <span>Arch Design</span>
@@ -52,55 +55,47 @@
         <a href="#agents">Agent Skill</a>
         <a href="#docs">Docs &amp; CLI</a>
         <a href="#quickstart">Quickstart</a>
+      </div>
+      <div class="nav-actions">
         <a href="https://github.com/Anujanthwal-dotcom/Arch-Design" target="_blank" class="nav-star-btn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
           </svg>
           <span>Star</span>
         </a>
-        <a href="https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design" target="_blank" class="btn-nav-install">Install in VS Code</a>
+        <a href="https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design" target="_blank" class="btn-nav-install">Install Free</a>
       </div>
-    </div>
-  </nav>
+    </nav>
+  </div>
 
   <!-- Hero Section -->
   <header class="hero">
-    <div class="container">
-      <div class="badge-pill">
-        <span class="dot"></span>
-        VS Code Extension &bull; AI Agent Ready
+    <div class="container hero-container">
+      <div class="pill-badge">
+        <span class="badge-dot"></span>
+        <span class="badge-text">Arch Design is live &bull; AI Agent Ready</span>
       </div>
-      <h1>
+      <h1 class="hero-title">
         Design Software Architecture Visually.<br>
-        <span class="gradient">Built for Humans &amp; AI Agents.</span>
+        <span class="gradient-text">Built for Humans &amp; AI Agents.</span>
       </h1>
-      <p class="lead">
+      <p class="hero-description">
         <strong>Arch Design</strong> lets you map modules, services, functions, and infrastructure dependencies directly in VS Code. Saved as clean JSON that developers love and AI coding agents can implement faithfully.
       </p>
 
       <div class="hero-actions">
         <a href="https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design" target="_blank" class="btn-primary">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19.14 7.5a1.5 1.5 0 0 0-.88-.41L5.94 5.86 3.12 3.15a1 1 0 0 0-1.41 0 1 1 0 0 0 0 1.41L4.35 7.2 2 9.55a1 1 0 0 0 0 1.41l3.54 3.54a1 1 0 0 0 1.41 0l3.05-3.05 7.14 1.19c.35.06.71-.05.97-.29.26-.24.39-.59.34-.94l-.74-4.45a1.5 1.5 0 0 0-.57-.41z"/>
           </svg>
           Install from Marketplace
         </a>
         <a href="https://github.com/Anujanthwal-dotcom/Arch-Design" target="_blank" class="btn-secondary">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="#eab308">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#eab308">
             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
           </svg>
           Star on GitHub
         </a>
-      </div>
-
-      <div class="install-box">
-        <span>Quick Install:</span>
-        <code id="installCmd">ext install AnujAnthwal.arch-for-LLD-design</code>
-        <button id="copyBtn" class="btn-copy" title="Copy to clipboard">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-        </button>
       </div>
     </div>
   </header>
@@ -388,65 +383,90 @@
         <p>Everything you need to turn high-level thoughts into concrete, verifiable low-level architectures.</p>
       </div>
 
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
+      <!-- Asymmetric 12-Column Bento Grid -->
+      <div class="bento-grid">
+        <!-- Bento Card 1: 4-Tier Hierarchy (Span 7) -->
+        <div class="bento-card bento-col-7">
+          <div class="bento-card-top">
+            <div class="bento-card-header-text">
+              <h3>Structured 4-Tier Hierarchy</h3>
+              <p>Organize complex codebases into distinct domain Modules, Services, typed Functions, and External infrastructure nodes.</p>
+            </div>
           </div>
-          <h3>Structured 4-Tier Hierarchy</h3>
-          <p>Organize systems cleanly with domain Modules, Services, typed Functions, and External infrastructure nodes.</p>
+          <div class="bento-preview-box">
+            <div class="bento-tier-chips">
+              <span class="type-badge badge-module">Module Boundary</span>
+              <span class="type-badge badge-service">Service Coordinator</span>
+              <span class="type-badge badge-function">Typed Function</span>
+              <span class="type-badge badge-external">External Store</span>
+            </div>
+          </div>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+        <!-- Bento Card 2: Focus Mode Tracing (Span 5) -->
+        <div class="bento-card bento-col-5">
+          <div class="bento-card-top">
+            <div class="bento-card-header-text">
+              <h3>Focus Mode Tracing</h3>
+              <p>Click any card to isolate full upstream and downstream call chains with animated glowing data flows.</p>
+            </div>
           </div>
-          <h3>Focus Mode Tracing</h3>
-          <p>Click any card to highlight its full upstream and downstream path with animated flows while dimming unrelated cards.</p>
+          <div class="bento-preview-box bento-focus-preview">
+            <div class="bento-pulse-badge">
+              <span class="bento-pulse-dot"></span>
+              <span>1 Upstream &bull; 2 Downstream</span>
+            </div>
+          </div>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
+        <!-- Bento Card 3: Enforced Guardrails (Span 4) -->
+        <div class="bento-card bento-col-4">
+          <div class="bento-card-top">
+            <div class="bento-card-header-text">
+              <h3>Enforced Guardrails</h3>
+              <p>Strict low-level design rules block illegal imports, circular dependencies, and leaked database references.</p>
+            </div>
           </div>
-          <h3>Enforced Guardrails</h3>
-          <p>Built-in connection rules prevent invalid architecture shortcuts (e.g. functions directly importing modules or external databases driving business logic).</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-            </svg>
+        <!-- Bento Card 4: AI Coding Agent Ready (Span 4 - AI Accent) -->
+        <div class="bento-card bento-col-4 bento-card-ai">
+          <div class="bento-card-top">
+            <div class="bento-card-header-text">
+              <h3>AI Coding Agent Ready</h3>
+              <p>Standardized JSON v2 specification parsed directly by Claude, Gemini, Antigravity, and Cursor.</p>
+            </div>
           </div>
-          <h3>AI Coding Agent Ready</h3>
-          <p>Direct `.arch` JSON specification ready for LLMs (Claude, GPT, Gemini) to parse and generate accurate code scaffolding.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
+        <!-- Bento Card 5: Dagre Auto-Layout (Span 4) -->
+        <div class="bento-card bento-col-4">
+          <div class="bento-card-top">
+            <div class="bento-card-header-text">
+              <h3>Dagre Auto-Layout</h3>
+              <p>Topological graph alignment engine auto-calculates non-overlapping coordinates in a single click.</p>
+            </div>
           </div>
-          <h3>Dagre Auto-Layout</h3>
-          <p>Instant node alignment and hierarchy organization with one click on the toolbar layout engine.</p>
         </div>
 
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-            </svg>
+        <!-- Bento Card 6: Infrastructure Tech Badges (Span 12) -->
+        <div class="bento-card bento-col-12">
+          <div class="bento-card-top">
+            <div class="bento-card-header-text">
+              <h3>Built-in Infrastructure Recognition</h3>
+              <p>Native badge support and connection points for industry-standard databases, caches, queues, and object storage.</p>
+            </div>
           </div>
-          <h3>Infrastructure Tech Badges</h3>
-          <p>Pre-packaged logos and recognition for PostgreSQL, Redis, MongoDB, MySQL, Kafka, RabbitMQ, S3, and more.</p>
+          <div class="bento-tech-chips">
+            <span class="bento-chip">PostgreSQL</span>
+            <span class="bento-chip">Redis</span>
+            <span class="bento-chip">MongoDB</span>
+            <span class="bento-chip">Apache Kafka</span>
+            <span class="bento-chip">RabbitMQ</span>
+            <span class="bento-chip">MySQL</span>
+            <span class="bento-chip">AWS S3</span>
+            <span class="bento-chip">ClickHouse</span>
+          </div>
         </div>
       </div>
     </div>
@@ -540,32 +560,16 @@
 
       <div class="features-grid" style="text-align: left;">
         <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(168,85,247,0.1);color:#c084fc;">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-          </div>
           <h3>1. Understand Before Coding</h3>
           <p>Agents inspect <code>.arch</code> files to identify service boundaries, method signatures, parameter types, and database dependencies before touching a single line of code.</p>
         </div>
 
         <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(56,189,248,0.1);color:#38bdf8;">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-          </div>
           <h3>2. Draw Diagrams on Demand</h3>
           <p>Simply prompt your agent: <em>"Create an architecture diagram for our new order processing workflow with Kafka and Redis."</em> The agent outputs a valid <code>.arch</code> file instantly.</p>
         </div>
 
         <div class="feature-card">
-          <div class="feature-icon" style="background:rgba(74,222,128,0.1);color:#4ade80;">
-            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
           <h3>3. 1-Click Workspace Setup</h3>
           <p>Run <strong>Arch: Install Agent Skill</strong> from the VS Code Command Palette to equip your current project or global agent environment in 1 click.</p>
         </div>
@@ -825,7 +829,7 @@ node .agents/skills/arch-design/scripts/layout.js architecture.arch ./output.arc
         <div class="step-card">
           <div class="step-num">01</div>
           <h3>Install Extension</h3>
-          <p>Search for <strong>"Arch Design"</strong> in the VS Code Extensions marketplace or run <code>ext install AnujAnthwal.arch-for-LLD-design</code>.</p>
+          <p>Search for <strong>"Arch Design"</strong> in the VS Code Extensions marketplace.</p>
         </div>
         <div class="step-card">
           <div class="step-num">02</div>
@@ -853,11 +857,6 @@ node .agents/skills/arch-design/scripts/layout.js architecture.arch ./output.arc
   <section class="star-promo-section">
     <div class="container">
       <div class="star-promo-card">
-        <div class="star-icon-burst">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-          </svg>
-        </div>
         <h2>Support Open Source with a GitHub Star</h2>
         <p>
           Arch Design is 100% free and open-source under the MIT license. If this tool saves you design time, clarifies system boundaries, or powers your AI coding agents, leaving a star on GitHub means the world and helps other engineers discover it!
