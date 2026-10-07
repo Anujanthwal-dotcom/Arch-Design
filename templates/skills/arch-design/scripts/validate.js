@@ -123,12 +123,12 @@ doc.edges.forEach((edge, idx) => {
     const sType = sourceNode.type;
     const tType = targetNode.type;
 
-    // Check allowed LLD relationships
+    // Check allowed LLD relationships (Child -> Parent injection)
     const isAllowed =
-      (sType === 'module' && tType === 'service') ||
-      (sType === 'service' && tType === 'function') ||
-      (sType === 'service' && tType === 'external') ||
-      (sType === 'module' && tType === 'external') ||
+      (sType === 'service' && tType === 'module') ||
+      (sType === 'function' && tType === 'service') ||
+      (sType === 'external' && tType === 'service') ||
+      (sType === 'external' && tType === 'module') ||
       (sType === 'service' && tType === 'service');
 
     if (!isAllowed) {

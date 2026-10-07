@@ -137,20 +137,20 @@ Represents third-party infrastructure, databases, caches, message brokers, or ex
 
 ## 3. Edge Schema
 
-Edges represent directional relationships between cards.
+Edges represent directional dependency injection relationships between cards, pointing from child / dependency to parent / consumer.
 
 ```json
 {
   "id": "edge-1",
-  "from": "m1",
-  "to": "s1",
-  "type": "contains"
+  "from": "s1",
+  "to": "m1",
+  "type": "injects"
 }
 ```
 
 | Field | Type | Description |
 | :--- | :--- | :--- |
-| `id` | `string` | Unique edge ID (e.g. `"edge-m1-s1"`). |
-| `from` | `string` | Source node `id`. |
-| `to` | `string` | Target node `id`. |
-| `type` | `string` | Relationship type: `"contains"` (parent-child) or `"uses"` (dependency). |
+| `id` | `string` | Unique edge ID (e.g. `"edge-s1-m1"`). |
+| `from` | `string` | Source node `id` (Child / Dependency). |
+| `to` | `string` | Target node `id` (Parent / Consumer). |
+| `type` | `string` | Relationship type: `"injects"` (service/external dependency injection) or `"implements"` (function implementation). |

@@ -29,6 +29,10 @@ export const ServiceNode: React.FC<NodeProps> = ({ data, id, selected }) => {
     updateNodeData(id, { description });
   };
 
+  const updateTypeRef = (typeRef: string) => {
+    updateNodeData(id, { typeRef });
+  };
+
   const addProperty = () => {
     const newProp: Property = {
       id: generateId(),
@@ -54,7 +58,19 @@ export const ServiceNode: React.FC<NodeProps> = ({ data, id, selected }) => {
 
   return (
     <div className={`lld-node service ${selected ? 'selected' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
-      <Handle type="target" position={Position.Left} />
+      <Handle
+        type="target"
+        position={Position.Top}
+        id="top"
+        className="card-receiver-handle"
+      />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="bottom"
+        className="card-bottom-handle nodrag"
+        title="Drag to connect"
+      />
       <div className="node-header">
         <div className="node-header-left">
           <span className="node-grip-handle" title="Drag card">
@@ -98,6 +114,17 @@ export const ServiceNode: React.FC<NodeProps> = ({ data, id, selected }) => {
             key={nodeData.description}
             onBlur={(e) => updateDescription(e.target.value)}
             placeholder="Description..."
+          />
+        </div>
+
+        <div className="field-group">
+          <span className="field-label">TypeRef:</span>
+          <input
+            className="field-input nodrag"
+            defaultValue={nodeData.typeRef || ''}
+            key={nodeData.typeRef}
+            onBlur={(e) => updateTypeRef(e.target.value)}
+            placeholder="services/AuthService..."
           />
         </div>
         
@@ -155,7 +182,6 @@ export const ServiceNode: React.FC<NodeProps> = ({ data, id, selected }) => {
         </div>
       </div>
       )}
-      <Handle type="source" position={Position.Right} />
     </div>
   );
 };

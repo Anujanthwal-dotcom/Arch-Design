@@ -4,7 +4,7 @@
   "displayName": "Arch Design",
   "description": "Visual architecture canvas for mapping modules, services, functions and external dependencies",
   "icon": "media/icon.png",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -93,6 +93,8 @@
     "@types/react-dom": "^18.2.0",
     "@types/uuid": "^9.0.7",
     "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "esbuild": "^0.28.2",
     "eslint": "^8.56.0",
     "typescript": "^5.3.3"

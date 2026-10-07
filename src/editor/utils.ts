@@ -34,23 +34,28 @@ export const checkValidConnection = (
     return false;
   }
 
-  // module -> service
-  if (sourceType === 'module' && targetType === 'service') {
+  // service -> module (service injected into module)
+  if (sourceType === 'service' && targetType === 'module') {
     return true;
   }
 
-  // service -> function
-  if (sourceType === 'service' && targetType === 'function') {
+  // function -> service (function implements / registered into service)
+  if (sourceType === 'function' && targetType === 'service') {
     return true;
   }
 
-  // service -> external
-  if (sourceType === 'service' && targetType === 'external') {
+  // external -> service (external infrastructure injected into service)
+  if (sourceType === 'external' && targetType === 'service') {
     return true;
   }
 
-  // module -> external
-  if (sourceType === 'module' && targetType === 'external') {
+  // external -> module (external infrastructure injected into module)
+  if (sourceType === 'external' && targetType === 'module') {
+    return true;
+  }
+
+  // service -> service (dependency service injected into consumer service)
+  if (sourceType === 'service' && targetType === 'service') {
     return true;
   }
 

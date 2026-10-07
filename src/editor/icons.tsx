@@ -55,6 +55,14 @@ const getTechIcon = (tech: string): React.ReactNode => {
       </svg>
     );
   }
+
+  if (t.includes('rabbitmq') || t.includes('rabbit')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 13.5c-.8 0-1.5.3-2 .8V7.5C17 5 15 3 12.5 3S8 5 8 7.5v1.2C6.8 9.3 6 10.5 6 12v3c0 2.2 1.8 4 4 4h5c2.2 0 4-1.8 4-4v-1.5zm-9-6c0-1.4 1.1-2.5 2.5-2.5S15 6.1 15 7.5v3.1c-.8-.4-1.8-.6-2.5-.6s-1.7.2-2.5.6V7.5zM17 15c0 1.1-.9 2-2 2h-5c-1.1 0-2-.9-2-2v-3c0-.9.6-1.7 1.5-1.9.8.6 1.7.9 2.5.9s1.7-.3 2.5-.9c.9.2 1.5 1 1.5 1.9v3z"/>
+      </svg>
+    );
+  }
   
   // Generic external icon
   return (

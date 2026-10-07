@@ -115,11 +115,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeFocusedNodeId = null;
   let currentZoom = 1.0;
 
-  // Graph Edges definition
+  // Graph Edges definition (Child -> Parent Dependency Injection)
   const graphEdges = [
-    { id: 'edge-m1-s1', source: 'card-m1', target: 'card-s1', pathId: 'edge-m1-s1' },
-    { id: 'edge-s1-f1', source: 'card-s1', target: 'card-f1', pathId: 'edge-s1-f1' },
-    { id: 'edge-s1-e1', source: 'card-s1', target: 'card-e1', pathId: 'edge-s1-e1' }
+    { id: 'edge-s1-m1', source: 'card-s1', target: 'card-m1', pathId: 'edge-s1-m1' },
+    { id: 'edge-f1-s1', source: 'card-f1', target: 'card-s1', pathId: 'edge-f1-s1' },
+    { id: 'edge-e1-s1', source: 'card-e1', target: 'card-s1', pathId: 'edge-e1-s1' }
   ];
 
   function getCards() {
@@ -154,30 +154,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const f1Handle = getHandleCenter('card-f1', false);
     const e1Handle = getHandleCenter('card-e1', false);
 
-    // Edge 1: Module -> Service
-    if (m1Handle && s1LeftHandle) {
-      const p1 = document.getElementById('edge-m1-s1');
+    // Edge 1: Service -> Module (injects)
+    if (s1LeftHandle && m1Handle) {
+      const p1 = document.getElementById('edge-s1-m1');
       if (p1) {
-        const midX = (m1Handle.x + s1LeftHandle.x) / 2;
-        p1.setAttribute('d', `M ${m1Handle.x} ${m1Handle.y} L ${midX} ${m1Handle.y} L ${midX} ${s1LeftHandle.y} L ${s1LeftHandle.x} ${s1LeftHandle.y}`);
+        const midX = (s1LeftHandle.x + m1Handle.x) / 2;
+        p1.setAttribute('d', `M ${s1LeftHandle.x} ${s1LeftHandle.y} L ${midX} ${s1LeftHandle.y} L ${midX} ${m1Handle.y} L ${m1Handle.x} ${m1Handle.y}`);
       }
     }
 
-    // Edge 2: Service -> Function
-    if (s1RightHandle && f1Handle) {
-      const p2 = document.getElementById('edge-s1-f1');
+    // Edge 2: Function -> Service (implements)
+    if (f1Handle && s1RightHandle) {
+      const p2 = document.getElementById('edge-f1-s1');
       if (p2) {
-        const midX = (s1RightHandle.x + f1Handle.x) / 2;
-        p2.setAttribute('d', `M ${s1RightHandle.x} ${s1RightHandle.y} L ${midX} ${s1RightHandle.y} L ${midX} ${f1Handle.y} L ${f1Handle.x} ${f1Handle.y}`);
+        const midX = (f1Handle.x + s1RightHandle.x) / 2;
+        p2.setAttribute('d', `M ${f1Handle.x} ${f1Handle.y} L ${midX} ${f1Handle.y} L ${midX} ${s1RightHandle.y} L ${s1RightHandle.x} ${s1RightHandle.y}`);
       }
     }
 
-    // Edge 3: Service -> External
-    if (s1RightHandle && e1Handle) {
-      const p3 = document.getElementById('edge-s1-e1');
+    // Edge 3: External -> Service (injects)
+    if (e1Handle && s1RightHandle) {
+      const p3 = document.getElementById('edge-e1-s1');
       if (p3) {
-        const midX = (s1RightHandle.x + e1Handle.x) / 2;
-        p3.setAttribute('d', `M ${s1RightHandle.x} ${s1RightHandle.y} L ${midX} ${s1RightHandle.y} L ${midX} ${e1Handle.y} L ${e1Handle.x} ${e1Handle.y}`);
+        const midX = (e1Handle.x + s1RightHandle.x) / 2;
+        p3.setAttribute('d', `M ${e1Handle.x} ${e1Handle.y} L ${midX} ${e1Handle.y} L ${midX} ${s1RightHandle.y} L ${s1RightHandle.x} ${s1RightHandle.y}`);
       }
     }
   }

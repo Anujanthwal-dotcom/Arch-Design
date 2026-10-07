@@ -64,15 +64,17 @@ If errors are reported, correct the JSON structure until validation passes with 
 
 ## 3. Allowed Architectural Rules Quick Reference
 
-Arch Design enforces strict Low-Level Design separation of concerns:
+Arch Design enforces Low-Level Design separation of concerns with child-to-parent dependency injection:
 
-- ✅ **Module $\rightarrow$ Service** (`contains`)
-- ✅ **Service $\rightarrow$ Function** (`contains`)
-- ✅ **Service $\rightarrow$ External** (`uses`)
-- ✅ **Module $\rightarrow$ External** (`uses`)
-- ✅ **Service $\rightarrow$ Service** (`uses`)
-- ❌ **Function $\rightarrow$ Module / Service / External** (Blocked)
-- ❌ **External $\rightarrow$ Service** (Blocked)
+- ✅ **Service $\rightarrow$ Module** (`injects`)
+- ✅ **Function $\rightarrow$ Service** (`implements`)
+- ✅ **External $\rightarrow$ Service** (`injects`)
+- ✅ **External $\rightarrow$ Module** (`injects`)
+- ✅ **Service $\rightarrow$ Service** (`injects`)
+- ❌ **Module $\rightarrow$ Service / Function / External** (Blocked)
+- ❌ **Service $\rightarrow$ Function / External** (Blocked)
+- ❌ **Function $\rightarrow$ Module / External** (Blocked)
+- ❌ **External $\rightarrow$ External** (Blocked)
 - ❌ **Self-loops & duplicate edges** (Blocked)
 
 ---

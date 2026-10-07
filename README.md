@@ -93,12 +93,13 @@ Arch enforces clean separation of concerns:
 
 | Source | Target | Relationship |
 | :--- | :--- | :--- |
-| **Module** | **Service** | Module encapsulates service |
-| **Service** | **Function** | Service contains function |
-| **Service** | **External** | Service connects to external dependency |
-| **Module** | **External** | Module depends on external dependency |
+| **Service** | **Module** | Service is injected into module (`injects`) |
+| **Function** | **Service** | Function implements / provides method to service (`implements`) |
+| **External** | **Service** | External dependency is injected into service (`injects`) |
+| **External** | **Module** | External dependency is injected into module (`injects`) |
+| **Service** | **Service** | Dependency service is injected into consumer service (`injects`) |
 
-Direct invalid connections (such as functions directly calling modules or externals driving services) are blocked to maintain architectural integrity.
+Direct invalid connections (such as functions directly calling modules or parent modules driving children) are blocked to maintain architectural Low-Level Design integrity.
 
 ---
 
@@ -155,9 +156,9 @@ Arch files are stored in human-readable and agent-parsable JSON (v2).
     }
   ],
   "edges": [
-    { "id": "e1", "from": "m1", "to": "s1", "type": "contains" },
-    { "id": "e2", "from": "s1", "to": "f1", "type": "contains" },
-    { "id": "e3", "from": "s1", "to": "e1", "type": "uses" }
+    { "id": "e1", "from": "s1", "to": "m1", "type": "injects" },
+    { "id": "e2", "from": "f1", "to": "s1", "type": "implements" },
+    { "id": "e3", "from": "e1", "to": "s1", "type": "injects" }
   ]
 }
 ```

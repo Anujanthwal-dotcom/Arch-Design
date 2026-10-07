@@ -1,0 +1,36 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "no-restricted-properties": [
+      "error",
+      {
+        "object": "url",
+        "property": "parse",
+        "message": "url.parse() is deprecated (DEP0169). Use the WHATWG URL API ('new URL(...)') instead."
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.object.name='url'][callee.property.name='parse']",
+        "message": "url.parse() is deprecated (DEP0169). Use the WHATWG URL API ('new URL(...)') instead."
+      }
+    ]
+  },
+  "ignorePatterns": [
+    "out",
+    "dist",
+    "node_modules",
+    "*.vsix",
+    "build.js",
+    "test/verify.js",
+    "docs/**",
+    ".agents/**"
+  ]
+}

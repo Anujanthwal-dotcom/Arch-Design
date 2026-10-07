@@ -21,6 +21,7 @@ import { ModuleNode } from './nodes/ModuleNode';
 import { ServiceNode } from './nodes/ServiceNode';
 import { FunctionNode } from './nodes/FunctionNode';
 import { ExternalNode } from './nodes/ExternalNode';
+import { FloatingEdge } from './edges/FloatingEdge';
 import { checkValidConnection, generateId } from './utils';
 import { applyDagreLayout, resolveCollisionOnDrag } from './dagreLayout';
 import { LLDDocument, LLDNode, Edge as LLDFileEdge } from '../types';
@@ -32,6 +33,12 @@ const nodeTypes = {
   service: ServiceNode,
   function: FunctionNode,
   external: ExternalNode,
+};
+
+const edgeTypes = {
+  floating: FloatingEdge,
+  step: FloatingEdge,
+  default: FloatingEdge,
 };
 
 const defaultMarker = {
@@ -263,11 +270,19 @@ export const AppContent: React.FC = () => {
       if (!checkValidConnection(params, nodes, edges)) {
         return;
       }
+      const sNode = nodes.find((n) => n.id === params.source);
+      const tNode = nodes.find((n) => n.id === params.target);
+      const sType = sNode?.data?.nodeType || sNode?.type;
+      const tType = tNode?.data?.nodeType || tNode?.type;
+      const edgeType =
+        sType === 'function' && tType === 'service' ? 'implements' : 'injects';
+
       const newEdge: Edge = {
         id: generateId(),
         source: params.source!,
         target: params.target!,
-        type: 'step',
+        type: 'floating',
+        data: { edgeType },
         markerEnd: defaultMarker,
         style: {
           strokeDasharray: '5,5',
@@ -313,12 +328,25 @@ export const AppContent: React.FC = () => {
       return lldNode;
     });
 
-    const lldEdges: LLDFileEdge[] = edges.map((edge) => ({
-      id: edge.id,
-      from: edge.source,
-      to: edge.target,
-      type: edge.label?.toString() || 'contains',
-    }));
+    const nodeTypeMap = new Map(
+      nodes.map((n) => [n.id, (n.data?.nodeType || n.type) as string])
+    );
+
+    const lldEdges: LLDFileEdge[] = edges.map((edge) => {
+      let edgeType = (edge.data as any)?.edgeType || edge.label?.toString();
+      if (!edgeType) {
+        const sType = nodeTypeMap.get(edge.source);
+        const tType = nodeTypeMap.get(edge.target);
+        edgeType =
+          sType === 'function' && tType === 'service' ? 'implements' : 'injects';
+      }
+      return {
+        id: edge.id,
+        from: edge.source,
+        to: edge.target,
+        type: edgeType,
+      };
+    });
 
     const doc: LLDDocument = {
       version: 2,
@@ -344,7 +372,7 @@ export const AppContent: React.FC = () => {
           module: 100,
           service: 480,
           function: 860,
-          external: 480,
+          external: 860,
         };
         const colX = typeColumns[type] || 100;
         const nodesInCol = nodes.filter((n) => Math.abs(n.position.x - colX) < 180);
@@ -419,7 +447,10 @@ export const AppContent: React.FC = () => {
               id: edge.id,
               source: edge.from,
               target: edge.to,
-              type: 'step',
+              type: 'floating',
+              data: {
+                edgeType: edge.type,
+              },
               markerEnd: defaultMarker,
               style: {
                 strokeDasharray: '5,5',
@@ -525,10 +556,10 @@ export const AppContent: React.FC = () => {
               </span>
               {activeNodeId && (
                 <span className="focus-badge-counts">
-                  <span className="focus-incoming-dot" title="Incoming callers">
+                  <span className="focus-incoming-dot" title="Incoming injections">
                     ● {incomingEdgeIds.size} in
                   </span>
-                  <span className="focus-outgoing-dot" title="Outgoing dependencies">
+                  <span className="focus-outgoing-dot" title="Outgoing injection into parent">
                     ● {outgoingEdgeIds.size} out
                   </span>
                 </span>
@@ -562,11 +593,13 @@ export const AppContent: React.FC = () => {
           onNodeDragStop={onNodeDragStop}
           onConnect={onConnect}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           connectionMode={ConnectionMode.Loose}
-          connectionLineType={ConnectionLineType.Step}
+          connectionRadius={40}
+          connectionLineType={ConnectionLineType.SmoothStep}
           connectionLineStyle={{ stroke: '#969696', strokeWidth: 2, strokeDasharray: '5,5' }}
           defaultEdgeOptions={{
-            type: 'step',
+            type: 'floating',
             markerEnd: defaultMarker,
             style: {
               strokeDasharray: '5,5',

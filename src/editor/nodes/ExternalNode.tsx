@@ -58,7 +58,13 @@ export const ExternalNode: React.FC<NodeProps> = ({ data, id, selected }) => {
 
   return (
     <div className={`lld-node external ${selected ? 'selected' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
-      <Handle type="target" position={Position.Left} />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="bottom"
+        className="card-bottom-handle nodrag"
+        title="Drag to connect"
+      />
       <div className="node-header">
         <div className="node-header-left">
           <span className="node-grip-handle" title="Drag card">

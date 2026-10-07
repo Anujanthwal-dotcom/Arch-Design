@@ -6,4 +6,10 @@ build.js
 tsconfig.json
 **/*.map
 .gitignore
+.eslintrc.json
 node_modules/**
+docs/**
+examples/**
+.agents/**
+AGENTS.md
+media/icon_option*.png

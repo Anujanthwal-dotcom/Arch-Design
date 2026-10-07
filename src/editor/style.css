@@ -567,10 +567,59 @@ html, body {
 }
 
 .react-flow__handle {
-  background: var(--node-selected);
-  border: 2px solid var(--node-bg);
-  width: 8px;
-  height: 8px;
+  border: none;
+}
+
+/* Bottom Oval Bar Handle for Free-Form Connecting */
+.card-bottom-handle {
+  position: absolute !important;
+  bottom: -4px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 48px !important;
+  height: 8px !important;
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  cursor: crosshair !important;
+  opacity: 0.5 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  z-index: 15 !important;
+}
+
+/* Illuminates when the user hovers over the card */
+.lld-node:hover .card-bottom-handle {
+  opacity: 0.85 !important;
+  background: var(--node-selected) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 8px rgba(0, 122, 204, 0.4) !important;
+}
+
+/* Expands and glows when hovering directly on the oval bar */
+.card-bottom-handle:hover,
+.card-bottom-handle.connecting {
+  opacity: 1 !important;
+  width: 60px !important;
+  height: 10px !important;
+  bottom: -5px !important;
+  background: var(--node-selected) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 12px var(--node-selected) !important;
+}
+
+/* Invisible receiver handle at top to allow seamless snapping when dragging near the card top */
+.card-receiver-handle {
+  position: absolute !important;
+  top: -2px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 60px !important;
+  height: 6px !important;
+  opacity: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  pointer-events: all !important;
+  z-index: 5 !important;
 }
 
 .react-flow__minimap {

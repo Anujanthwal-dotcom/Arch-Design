@@ -47,7 +47,7 @@ try {
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
   g.setGraph({
-    rankdir: 'LR',
+    rankdir: 'RL',
     nodesep: 60,
     ranksep: 100,
     marginx: 60,

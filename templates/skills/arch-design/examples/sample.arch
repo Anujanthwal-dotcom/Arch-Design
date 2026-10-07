@@ -8,9 +8,9 @@
       "label": "Auth",
       "pos": {
         "x": 60,
-        "y": 543
+        "y": 330
       },
-      "description": "Authentication and authorization domainjkhkh\n",
+      "description": "Authentication and authorization domain",
       "properties": [
         {
           "id": "p1",
@@ -32,8 +32,8 @@
       "type": "service",
       "label": "AuthService",
       "pos": {
-        "x": 480,
-        "y": 587
+        "x": 460,
+        "y": 330
       },
       "description": "Core authentication business logic",
       "properties": [
@@ -53,8 +53,8 @@
       "type": "function",
       "label": "validateToken",
       "pos": {
-        "x": 900,
-        "y": 1158
+        "x": 860,
+        "y": 650
       },
       "description": "Validates JWT token and returns decoded claims",
       "properties": [
@@ -96,8 +96,8 @@
       "type": "function",
       "label": "generateToken",
       "pos": {
-        "x": 900,
-        "y": 666
+        "x": 860,
+        "y": 430
       },
       "description": "Generates access and refresh tokens for authenticated user",
       "properties": [],
@@ -133,8 +133,8 @@
       "type": "external",
       "label": "users-db",
       "pos": {
-        "x": 900,
-        "y": 363
+        "x": 860,
+        "y": 230
       },
       "description": "User identity and credentials store",
       "properties": [
@@ -154,8 +154,8 @@
       "type": "external",
       "label": "token-cache",
       "pos": {
-        "x": 900,
-        "y": 60
+        "x": 860,
+        "y": 50
       },
       "description": "Stores token blacklist and session data",
       "properties": [
@@ -174,33 +174,33 @@
   "edges": [
     {
       "id": "edge1",
-      "from": "a8f12b3c-4d56-4e78-9f01-1234567890ab",
-      "to": "b9f23c4d-5e67-5f89-af12-2345678901bc",
-      "type": "contains"
+      "from": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "to": "a8f12b3c-4d56-4e78-9f01-1234567890ab",
+      "type": "injects"
     },
     {
       "id": "edge2",
-      "from": "b9f23c4d-5e67-5f89-af12-2345678901bc",
-      "to": "c0f34d5e-6f78-6f90-bg23-3456789012cd",
-      "type": "contains"
+      "from": "c0f34d5e-6f78-6f90-bg23-3456789012cd",
+      "to": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "type": "implements"
     },
     {
       "id": "edge3",
-      "from": "b9f23c4d-5e67-5f89-af12-2345678901bc",
-      "to": "d1f45e6f-7g89-7g01-ch34-4567890123de",
-      "type": "contains"
+      "from": "d1f45e6f-7g89-7g01-ch34-4567890123de",
+      "to": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "type": "implements"
     },
     {
       "id": "edge4",
-      "from": "b9f23c4d-5e67-5f89-af12-2345678901bc",
-      "to": "e2f56f7g-8h90-8h12-di45-5678901234ef",
-      "type": "contains"
+      "from": "e2f56f7g-8h90-8h12-di45-5678901234ef",
+      "to": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "type": "injects"
     },
     {
       "id": "edge5",
-      "from": "b9f23c4d-5e67-5f89-af12-2345678901bc",
-      "to": "f3f67g8h-9i01-9i23-ej56-6789012345fg",
-      "type": "contains"
+      "from": "f3f67g8h-9i01-9i23-ej56-6789012345fg",
+      "to": "b9f23c4d-5e67-5f89-af12-2345678901bc",
+      "type": "injects"
     }
   ]
 }

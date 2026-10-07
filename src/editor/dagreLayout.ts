@@ -48,8 +48,12 @@ export const applyDagreLayout = (
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
   const isHorizontal = direction === 'LR';
+  // With Child -> Parent edges, RL places root parents on the left and injected children on the right.
+  // BT places root parents on the top and injected children on the bottom.
+  const rankdir = isHorizontal ? 'RL' : 'BT';
+
   dagreGraph.setGraph({
-    rankdir: direction,
+    rankdir,
     nodesep: 60, // Minimum separation between adjacent nodes in the same rank
     ranksep: 100, // Minimum separation between ranks
     marginx: 60,
@@ -73,8 +77,8 @@ export const applyDagreLayout = (
 
     return {
       ...node,
-      targetPosition: isHorizontal ? Position.Left : Position.Top,
-      sourcePosition: isHorizontal ? Position.Right : Position.Bottom,
+      targetPosition: isHorizontal ? Position.Right : Position.Bottom,
+      sourcePosition: isHorizontal ? Position.Left : Position.Top,
       position: {
         x: Math.round(dagreNode.x - width / 2),
         y: Math.round(dagreNode.y - height / 2),

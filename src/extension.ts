@@ -63,16 +63,13 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      const {
-        SKILL_MD_CONTENT,
-        SCHEMA_MD_CONTENT,
-        RULES_MD_CONTENT,
-        VALIDATE_JS_CONTENT,
-        LAYOUT_JS_CONTENT,
-        AGENTS_MD_CONTENT
-      } = await import('./skillTemplates');
+      const templateSkillBaseUri = vscode.Uri.joinPath(context.extensionUri, 'templates', 'skills', 'arch-design');
+      const templateAgentsUri = vscode.Uri.joinPath(context.extensionUri, 'templates', 'AGENTS.md');
 
       try {
+        const templateAgentsRaw = await vscode.workspace.fs.readFile(templateAgentsUri);
+        const AGENTS_MD_CONTENT = Buffer.from(templateAgentsRaw).toString('utf8');
+
         let baseUri: vscode.Uri;
         if (scopeChoice.target === 'workspace') {
           if (!workspaceFolder) {
@@ -81,28 +78,56 @@ export function activate(context: vscode.ExtensionContext) {
           }
           baseUri = vscode.Uri.joinPath(workspaceFolder.uri, '.agents', 'skills', 'arch-design');
 
-          // Also write AGENTS.md in workspace root if not present
-          const agentsMdUri = vscode.Uri.joinPath(workspaceFolder.uri, 'AGENTS.md');
-          try {
-            await vscode.workspace.fs.stat(agentsMdUri);
-          } catch {
-            await vscode.workspace.fs.writeFile(agentsMdUri, Buffer.from(AGENTS_MD_CONTENT, 'utf8'));
+          // Check for existing agent guidelines file (AGENTS.md, agents.md, AGENT.md, agent.md)
+          const candidateFiles = ['AGENTS.md', 'agents.md', 'AGENT.md', 'agent.md'];
+          let targetUri: vscode.Uri | null = null;
+          let existingContent: string | null = null;
+
+          for (const candidate of candidateFiles) {
+            const candidateUri = vscode.Uri.joinPath(workspaceFolder.uri, candidate);
+            try {
+              const raw = await vscode.workspace.fs.readFile(candidateUri);
+              targetUri = candidateUri;
+              existingContent = Buffer.from(raw).toString('utf8');
+              break;
+            } catch {
+              // File does not exist, check next candidate
+            }
+          }
+
+          if (targetUri && existingContent !== null) {
+            const alreadyConfigured =
+              existingContent.includes('.agents/skills/arch-design') ||
+              existingContent.includes('Arch Design');
+
+            if (!alreadyConfigured) {
+              const separator = existingContent.trim().length > 0 ? '\n\n' : '';
+              const updatedContent = `${existingContent.trimEnd()}${separator}${AGENTS_MD_CONTENT}`;
+              await vscode.workspace.fs.writeFile(targetUri, Buffer.from(updatedContent, 'utf8'));
+            }
+          } else {
+            const defaultUri = vscode.Uri.joinPath(workspaceFolder.uri, 'AGENTS.md');
+            await vscode.workspace.fs.writeFile(defaultUri, Buffer.from(AGENTS_MD_CONTENT, 'utf8'));
           }
         } else {
           const os = await import('os');
           baseUri = vscode.Uri.file(require('path').join(os.homedir(), '.gemini', 'config', 'skills', 'arch-design'));
         }
 
-        const filesToWrite = [
-          { uri: vscode.Uri.joinPath(baseUri, 'SKILL.md'), content: SKILL_MD_CONTENT },
-          { uri: vscode.Uri.joinPath(baseUri, 'references', 'schema.md'), content: SCHEMA_MD_CONTENT },
-          { uri: vscode.Uri.joinPath(baseUri, 'references', 'rules.md'), content: RULES_MD_CONTENT },
-          { uri: vscode.Uri.joinPath(baseUri, 'scripts', 'validate.js'), content: VALIDATE_JS_CONTENT },
-          { uri: vscode.Uri.joinPath(baseUri, 'scripts', 'layout.js'), content: LAYOUT_JS_CONTENT }
+        const skillFiles = [
+          ['SKILL.md'],
+          ['references', 'schema.md'],
+          ['references', 'rules.md'],
+          ['scripts', 'validate.js'],
+          ['scripts', 'layout.js'],
+          ['examples', 'sample.arch']
         ];
 
-        for (const f of filesToWrite) {
-          await vscode.workspace.fs.writeFile(f.uri, Buffer.from(f.content, 'utf8'));
+        for (const segments of skillFiles) {
+          const srcUri = vscode.Uri.joinPath(templateSkillBaseUri, ...segments);
+          const destUri = vscode.Uri.joinPath(baseUri, ...segments);
+          const content = await vscode.workspace.fs.readFile(srcUri);
+          await vscode.workspace.fs.writeFile(destUri, content);
         }
 
         vscode.window.showInformationMessage(

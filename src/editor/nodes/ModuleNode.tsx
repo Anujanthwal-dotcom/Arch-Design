@@ -54,7 +54,12 @@ export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
 
   return (
     <div className={`lld-node module ${selected ? 'selected' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
-      <Handle type="target" position={Position.Left} />
+      <Handle
+        type="target"
+        position={Position.Top}
+        id="top"
+        className="card-receiver-handle"
+      />
       <div className="node-header">
         <div className="node-header-left">
           <span className="node-grip-handle" title="Drag card">
@@ -155,7 +160,6 @@ export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
           </div>
         </div>
       )}
-      <Handle type="source" position={Position.Right} />
     </div>
   );
 };
