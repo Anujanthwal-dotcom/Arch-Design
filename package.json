@@ -2,7 +2,7 @@
   "name": "arch-for-LLD-design",
   "publisher": "AnujAnthwal",
   "displayName": "Arch Design",
-  "description": "Visual architecture canvas for mapping modules, services, functions and external dependencies",
+  "description": "Visual architecture canvas for mapping Backend, Frontend, Mobile (Android/iOS), and Systems (Rust) architectures",
   "icon": "media/icon.png",
   "version": "1.0.0",
   "engines": {
@@ -23,6 +23,11 @@
     "architecture",
     "system-design",
     "low-level-design",
+    "frontend",
+    "mobile",
+    "android",
+    "ios",
+    "rust",
     "diagram",
     "canvas",
     "software-design"
@@ -80,12 +85,12 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "node build.js",
-    "package": "npx @vscode/vsce package --allow-missing-repository",
-    "watch": "node build.js --watch",
-    "test": "node test/verify.js",
-    "lint": "eslint src --ext ts"
+    "vscode:prepublish": "bun run compile",
+    "compile": "bun build.js",
+    "package": "bunx @vscode/vsce package --no-dependencies --allow-missing-repository",
+    "watch": "bun build.js --watch",
+    "test": "bun test/verify.js",
+    "lint": "bunx eslint src --ext ts"
   },
   "devDependencies": {
     "@types/node": "16.x",

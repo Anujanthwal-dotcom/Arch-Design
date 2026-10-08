@@ -1,6 +1,6 @@
 # Architecture & Agent Guidelines
 
-This project uses **Arch Design** (`.arch`) files to visually map modules, services, functions, and external infrastructure dependencies.
+This project uses **Arch Design** (`.arch`) files to visually map software architectures across Backend, Frontend, Mobile (Android/iOS), and Systems Programming (Rust) domains.
 
 ## Working with Architecture Diagrams (.arch files)
 

@@ -1,0 +1,163 @@
+{
+  "version": 2,
+  "domain": "frontend",
+  "name": "ecommerce-web",
+  "nodes": [
+    {
+      "id": "c1",
+      "type": "component",
+      "label": "ProductPage",
+      "pos": {
+        "x": 60,
+        "y": 120
+      },
+      "subType": "page",
+      "description": "Main product catalog and detail presentation page",
+      "properties": [
+        {
+          "id": "p1",
+          "title": "Route",
+          "description": "/products/:id"
+        }
+      ]
+    },
+    {
+      "id": "c2",
+      "type": "component",
+      "label": "ProductCard",
+      "pos": {
+        "x": 450,
+        "y": 80
+      },
+      "subType": "component",
+      "description": "Displays individual product image, rating, price, and add-to-cart button",
+      "properties": [
+        {
+          "id": "p2",
+          "title": "Props",
+          "description": "{ product: ProductDTO, onAddToCart: (id: string) => void }"
+        }
+      ]
+    },
+    {
+      "id": "s1",
+      "type": "service",
+      "label": "CartStore",
+      "pos": {
+        "x": 450,
+        "y": 360
+      },
+      "subType": "store",
+      "description": "Zustand reactive store managing cart items and checkout state",
+      "properties": [
+        {
+          "id": "p3",
+          "title": "State",
+          "description": "items: CartItem[], totalAmount: number"
+        }
+      ]
+    },
+    {
+      "id": "f1",
+      "type": "function",
+      "label": "formatCurrency",
+      "pos": {
+        "x": 840,
+        "y": 80
+      },
+      "description": "Formats raw numeric price into localized currency string",
+      "parameters": [
+        {
+          "id": "param1",
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "description": "Raw price in cents or dollars"
+        },
+        {
+          "id": "param2",
+          "name": "currency",
+          "type": "string",
+          "required": false,
+          "description": "ISO currency code, defaults to USD"
+        }
+      ],
+      "returns": [
+        {
+          "id": "ret1",
+          "name": "formatted",
+          "type": "string",
+          "required": true,
+          "description": "Localized currency string e.g. $19.99"
+        }
+      ]
+    },
+    {
+      "id": "e1",
+      "type": "external",
+      "label": "StoreAPI",
+      "pos": {
+        "x": 840,
+        "y": 320
+      },
+      "tech": "rest",
+      "description": "Backend REST endpoints for products and cart checkout"
+    },
+    {
+      "id": "t1",
+      "type": "type",
+      "label": "ProductDTO",
+      "pos": {
+        "x": 840,
+        "y": 500
+      },
+      "subType": "interface",
+      "description": "Typed data contract representing a store product item",
+      "properties": [
+        {
+          "id": "p4",
+          "title": "Fields",
+          "description": "id: string, name: string, price: number, inStock: boolean"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-c2-c1",
+      "from": "c2",
+      "to": "c1",
+      "type": "renders"
+    },
+    {
+      "id": "edge-s1-c1",
+      "from": "s1",
+      "to": "c1",
+      "type": "observes"
+    },
+    {
+      "id": "edge-c1-s1",
+      "from": "c1",
+      "to": "s1",
+      "type": "uses"
+    },
+    {
+      "id": "edge-f1-c2",
+      "from": "f1",
+      "to": "c2",
+      "type": "helper"
+    },
+    {
+      "id": "edge-e1-s1",
+      "from": "e1",
+      "to": "s1",
+      "type": "injects"
+    },
+    {
+      "id": "edge-t1-s1",
+      "from": "t1",
+      "to": "s1",
+      "type": "defines"
+    }
+  ]
+}

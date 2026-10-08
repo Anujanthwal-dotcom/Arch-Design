@@ -1,0 +1,133 @@
+{
+  "version": 2,
+  "domain": "mobile",
+  "name": "notes-mobile-app",
+  "nodes": [
+    {
+      "id": "m1",
+      "type": "module",
+      "label": "NotesFeature",
+      "pos": {
+        "x": 60,
+        "y": 150
+      },
+      "description": "Android / iOS notes creation and synchronization feature module",
+      "properties": [
+        {
+          "id": "p1",
+          "title": "Architecture",
+          "description": "Clean Architecture + MVVM (Jetpack Compose / SwiftUI)"
+        }
+      ]
+    },
+    {
+      "id": "c1",
+      "type": "component",
+      "label": "NotesListScreen",
+      "pos": {
+        "x": 420,
+        "y": 100
+      },
+      "subType": "screen",
+      "description": "Renders searchable list of notes and floating action button to create notes",
+      "properties": [
+        {
+          "id": "p2",
+          "title": "State",
+          "description": "Observes StateFlow<NotesUiState> from NotesViewModel"
+        }
+      ]
+    },
+    {
+      "id": "s1",
+      "type": "service",
+      "label": "NotesViewModel",
+      "pos": {
+        "x": 780,
+        "y": 100
+      },
+      "subType": "viewmodel",
+      "description": "Manages UI state, handles user intents, dispatches repository queries",
+      "typeRef": "viewmodel/NotesViewModel"
+    },
+    {
+      "id": "s2",
+      "type": "service",
+      "label": "NotesRepository",
+      "pos": {
+        "x": 780,
+        "y": 350
+      },
+      "subType": "repository",
+      "description": "Offline-first data repository coordinating local Room DB with remote sync",
+      "typeRef": "data/NotesRepository"
+    },
+    {
+      "id": "t1",
+      "type": "type",
+      "label": "NoteEntity",
+      "pos": {
+        "x": 1140,
+        "y": 100
+      },
+      "subType": "model",
+      "description": "Persistent domain entity representing a user note",
+      "properties": [
+        {
+          "id": "p3",
+          "title": "Schema",
+          "description": "id: UUID, title: String, content: String, updatedAt: Long"
+        }
+      ]
+    },
+    {
+      "id": "e1",
+      "type": "external",
+      "label": "RoomDatabase",
+      "pos": {
+        "x": 1140,
+        "y": 350
+      },
+      "tech": "room",
+      "description": "Local SQLite / Room database caching user notes offline"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-c1-m1",
+      "from": "c1",
+      "to": "m1",
+      "type": "belongsTo"
+    },
+    {
+      "id": "edge-s1-c1",
+      "from": "s1",
+      "to": "c1",
+      "type": "observes"
+    },
+    {
+      "id": "edge-c1-s1",
+      "from": "c1",
+      "to": "s1",
+      "type": "uses"
+    },
+    {
+      "id": "edge-s2-s1",
+      "from": "s2",
+      "to": "s1",
+      "type": "injects"
+    },
+    {
+      "id": "edge-t1-s2",
+      "from": "t1",
+      "to": "s2",
+      "type": "defines"
+    },
+    {
+      "id": "edge-e1-s2",
+      "from": "e1",
+      "to": "s2",
+      "type": "injects"
+    }
+  ]
+}

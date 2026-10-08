@@ -19,18 +19,22 @@ import {
 
 import { ModuleNode } from './nodes/ModuleNode';
 import { ServiceNode } from './nodes/ServiceNode';
+import { ComponentNode } from './nodes/ComponentNode';
+import { TypeNode } from './nodes/TypeNode';
 import { FunctionNode } from './nodes/FunctionNode';
 import { ExternalNode } from './nodes/ExternalNode';
 import { FloatingEdge } from './edges/FloatingEdge';
-import { checkValidConnection, generateId } from './utils';
+import { checkValidConnection, generateId, resolveEdgeType } from './utils';
 import { applyDagreLayout, resolveCollisionOnDrag } from './dagreLayout';
-import { LLDDocument, LLDNode, Edge as LLDFileEdge } from '../types';
+import { LLDDocument, LLDNode, Edge as LLDFileEdge, DomainType } from '../types';
 import { vscode } from './vscodeApi';
 import { CanvasContext } from './context';
 
 const nodeTypes = {
   module: ModuleNode,
   service: ServiceNode,
+  component: ComponentNode,
+  type: TypeNode,
   function: FunctionNode,
   external: ExternalNode,
 };
@@ -52,6 +56,7 @@ export const AppContent: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [fileName, setFileName] = useState('architecture');
+  const [domain, setDomain] = useState<DomainType | string>('universal');
   const [isLoading, setIsLoading] = useState(true);
   const [focusModeEnabled, setFocusModeEnabled] = useState(true);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
@@ -272,10 +277,9 @@ export const AppContent: React.FC = () => {
       }
       const sNode = nodes.find((n) => n.id === params.source);
       const tNode = nodes.find((n) => n.id === params.target);
-      const sType = sNode?.data?.nodeType || sNode?.type;
-      const tType = tNode?.data?.nodeType || tNode?.type;
-      const edgeType =
-        sType === 'function' && tType === 'service' ? 'implements' : 'injects';
+      const sType = String(sNode?.data?.nodeType || sNode?.type || '');
+      const tType = String(tNode?.data?.nodeType || tNode?.type || '');
+      const edgeType = resolveEdgeType(sType, tType);
 
       const newEdge: Edge = {
         id: generateId(),
@@ -306,6 +310,9 @@ export const AppContent: React.FC = () => {
       if (nodeData.description) {
         lldNode.description = String(nodeData.description);
       }
+      if (nodeData.subType) {
+        lldNode.subType = String(nodeData.subType);
+      }
       if (nodeData.properties && Array.isArray(nodeData.properties)) {
         lldNode.properties = nodeData.properties as any;
       }
@@ -335,10 +342,9 @@ export const AppContent: React.FC = () => {
     const lldEdges: LLDFileEdge[] = edges.map((edge) => {
       let edgeType = (edge.data as any)?.edgeType || edge.label?.toString();
       if (!edgeType) {
-        const sType = nodeTypeMap.get(edge.source);
-        const tType = nodeTypeMap.get(edge.target);
-        edgeType =
-          sType === 'function' && tType === 'service' ? 'implements' : 'injects';
+        const sType = nodeTypeMap.get(edge.source) || '';
+        const tType = nodeTypeMap.get(edge.target) || '';
+        edgeType = resolveEdgeType(sType, tType);
       }
       return {
         id: edge.id,
@@ -350,16 +356,20 @@ export const AppContent: React.FC = () => {
 
     const doc: LLDDocument = {
       version: 2,
+      domain: domain || 'universal',
       name: fileName,
       nodes: lldNodes,
       edges: lldEdges,
     };
 
     return JSON.stringify(doc, null, 2);
-  }, [nodes, edges, fileName]);
+  }, [nodes, edges, fileName, domain]);
 
   const addNode = useCallback(
-    (type: 'module' | 'service' | 'function' | 'external') => {
+    (
+      type: 'module' | 'service' | 'component' | 'type' | 'function' | 'external',
+      defaultSubType?: string
+    ) => {
       const id = generateId();
       let position = {
         x: 100 + Math.floor(Math.random() * 200),
@@ -370,7 +380,9 @@ export const AppContent: React.FC = () => {
         // Place in structured column to avoid overlapping existing cards
         const typeColumns: Record<string, number> = {
           module: 100,
+          component: 100,
           service: 480,
+          type: 480,
           function: 860,
           external: 860,
         };
@@ -393,9 +405,11 @@ export const AppContent: React.FC = () => {
           label: `New ${type.charAt(0).toUpperCase() + type.slice(1)}`,
           description: '',
           properties: [],
-          ...(type === 'service' && { typeRef: '' }),
+          ...(type === 'component' && { subType: defaultSubType || 'screen' }),
+          ...(type === 'type' && { subType: defaultSubType || 'struct' }),
+          ...(type === 'service' && { typeRef: '', ...(defaultSubType && { subType: defaultSubType }) }),
           ...(type === 'function' && { parameters: [], returns: [] }),
-          ...(type === 'external' && { tech: 'postgres' }),
+          ...(type === 'external' && { tech: defaultSubType || 'postgres' }),
         },
       };
       setNodes((nds) => [...nds, newNode]);
@@ -436,6 +450,7 @@ export const AppContent: React.FC = () => {
                 label: node.label || '',
                 description: node.description || '',
                 properties: node.properties || [],
+                subType: node.subType,
                 typeRef: node.typeRef,
                 parameters: node.parameters || [],
                 returns: node.returns || [],
@@ -460,6 +475,9 @@ export const AppContent: React.FC = () => {
             setNodes(reactNodes);
             setEdges(reactEdges);
             setFileName(doc.name || 'architecture');
+            if (doc.domain) {
+              setDomain(doc.domain);
+            }
             const wasInitial = !isInitialized.current;
             isInitialized.current = true;
             setIsLoading(false);
@@ -515,18 +533,113 @@ export const AppContent: React.FC = () => {
     <CanvasContext.Provider value={{ updateNodeData, deleteNode }}>
       <div style={{ width: '100%', height: '100%', position: 'relative' }}>
         <div className="toolbar">
-          <button className="toolbar-btn" onClick={() => addNode('module')}>
-            + Module
-          </button>
-          <button className="toolbar-btn" onClick={() => addNode('service')}>
-            + Service
-          </button>
-          <button className="toolbar-btn" onClick={() => addNode('function')}>
-            + Function
-          </button>
-          <button className="toolbar-btn" onClick={() => addNode('external')}>
-            + External
-          </button>
+          <select
+            className="toolbar-select"
+            value={domain}
+            onChange={(e) => setDomain(e.target.value)}
+            title="Architectural Domain Preset"
+          >
+            <option value="universal">Universal</option>
+            <option value="backend">Backend</option>
+            <option value="frontend">Frontend</option>
+            <option value="mobile">Mobile (Android/iOS)</option>
+            <option value="systems">Systems (Rust/C++)</option>
+          </select>
+          <div className="toolbar-separator" />
+          {domain === 'frontend' ? (
+            <>
+              <button className="toolbar-btn" onClick={() => addNode('component', 'component')}>
+                + Component
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('service', 'store')}>
+                + Store / Hook
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('function')}>
+                + Function
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('external', 'api')}>
+                + API / Storage
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('module')}>
+                + Module
+              </button>
+            </>
+          ) : domain === 'mobile' ? (
+            <>
+              <button className="toolbar-btn" onClick={() => addNode('component', 'screen')}>
+                + Screen
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('service', 'viewmodel')}>
+                + ViewModel
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('service', 'repository')}>
+                + Repository
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('type', 'model')}>
+                + Model
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('external', 'room')}>
+                + DB / Source
+              </button>
+            </>
+          ) : domain === 'systems' ? (
+            <>
+              <button className="toolbar-btn" onClick={() => addNode('module', 'crate')}>
+                + Crate / Mod
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('type', 'struct')}>
+                + Struct
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('type', 'trait')}>
+                + Trait
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('function')}>
+                + Function
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('external', 'os')}>
+                + OS / FFI / Driver
+              </button>
+            </>
+          ) : domain === 'backend' ? (
+            <>
+              <button className="toolbar-btn" onClick={() => addNode('module')}>
+                + Module
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('service')}>
+                + Service
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('function')}>
+                + Function
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('external')}>
+                + External
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('type', 'model')}>
+                + Type
+              </button>
+            </>
+          ) : (
+            <>
+              <button className="toolbar-btn" onClick={() => addNode('module')}>
+                + Module
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('component')}>
+                + Component
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('service')}>
+                + Service
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('type')}>
+                + Type
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('function')}>
+                + Function
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('external')}>
+                + External
+              </button>
+            </>
+          )}
           <div className="toolbar-separator" />
           <button
             className="toolbar-btn"
@@ -577,10 +690,9 @@ export const AppContent: React.FC = () => {
 
         {!isLoading && nodes.length === 0 && (
           <div className="empty-canvas-hint">
-            <strong>Blank Architecture Canvas</strong>
+            <strong>Blank Architecture Canvas ({domain})</strong>
             <p style={{ margin: '6px 0 0 0', fontSize: '12px' }}>
-              Click <strong>+ Module</strong>, <strong>+ Service</strong>,{' '}
-              <strong>+ Function</strong>, or <strong>+ External</strong> to start designing.
+              Select a domain preset above or click cards to start designing your architecture.
             </p>
           </div>
         )}
@@ -626,6 +738,10 @@ export const AppContent: React.FC = () => {
                   return '#4ec9b0';
                 case 'service':
                   return '#569cd6';
+                case 'component':
+                  return '#f59e0b';
+                case 'type':
+                  return '#a855f7';
                 case 'function':
                   return '#dcdcaa';
                 case 'external':

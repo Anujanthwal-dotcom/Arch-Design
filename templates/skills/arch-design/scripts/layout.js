@@ -57,6 +57,8 @@ try {
   doc.nodes.forEach(node => {
     let height = 140;
     if (node.type === 'service') height = 180;
+    if (node.type === 'component') height = 180;
+    if (node.type === 'type') height = 170;
     if (node.type === 'function') height = 160;
     if (node.type === 'external') height = 120;
     g.setNode(node.id, { width: 300, height });
@@ -94,12 +96,12 @@ if (!layoutSucceeded) {
     inDegree.set(e.to, (inDegree.get(e.to) || 0) + 1);
   });
 
-  // Modules: rank 0, Services: rank 1, Functions & Externals: rank 2
+  // Modules & Components: rank 0, Services & Types: rank 1, Functions & Externals: rank 2
   const ranks = [[], [], []];
 
   doc.nodes.forEach(node => {
-    if (node.type === 'module') ranks[0].push(node);
-    else if (node.type === 'service') ranks[1].push(node);
+    if (node.type === 'module' || node.type === 'component') ranks[0].push(node);
+    else if (node.type === 'service' || node.type === 'type') ranks[1].push(node);
     else ranks[2].push(node);
   });
 

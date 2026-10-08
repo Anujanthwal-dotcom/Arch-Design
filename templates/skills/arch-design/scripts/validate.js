@@ -54,7 +54,7 @@ if (errors.length > 0) {
 }
 
 // 2. Nodes validation
-const validNodeTypes = new Set(['module', 'service', 'function', 'external']);
+const validNodeTypes = new Set(['module', 'service', 'component', 'type', 'function', 'external']);
 const nodeMap = new Map();
 
 doc.nodes.forEach((node, idx) => {
@@ -68,7 +68,7 @@ doc.nodes.forEach((node, idx) => {
   }
 
   if (!node.type || !validNodeTypes.has(node.type)) {
-    errors.push(`Node '${id}' has invalid type: '${node.type}'. Must be one of: module, service, function, external.`);
+    errors.push(`Node '${id}' has invalid type: '${node.type}'. Must be one of: module, service, component, type, function, external.`);
   }
 
   if (!node.label) {
@@ -123,13 +123,25 @@ doc.edges.forEach((edge, idx) => {
     const sType = sourceNode.type;
     const tType = targetNode.type;
 
-    // Check allowed LLD relationships (Child -> Parent injection)
+    // Check allowed LLD relationships across domains
     const isAllowed =
       (sType === 'service' && tType === 'module') ||
       (sType === 'function' && tType === 'service') ||
       (sType === 'external' && tType === 'service') ||
       (sType === 'external' && tType === 'module') ||
-      (sType === 'service' && tType === 'service');
+      (sType === 'service' && tType === 'service') ||
+      (sType === 'module' && tType === 'module') ||
+      (sType === 'component' && tType === 'component') ||
+      (sType === 'service' && tType === 'component') ||
+      (sType === 'component' && tType === 'service') ||
+      (sType === 'component' && tType === 'module') ||
+      (sType === 'function' && tType === 'component') ||
+      (sType === 'type' && tType === 'type') ||
+      (sType === 'type' && tType === 'service') ||
+      (sType === 'type' && tType === 'component') ||
+      (sType === 'type' && tType === 'function') ||
+      (sType === 'type' && tType === 'module') ||
+      (sType === 'function' && tType === 'type');
 
     if (!isAllowed) {
       errors.push(

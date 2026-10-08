@@ -1,0 +1,140 @@
+{
+  "version": 2,
+  "domain": "systems",
+  "name": "async-network-engine",
+  "nodes": [
+    {
+      "id": "m1",
+      "type": "module",
+      "label": "crate::network",
+      "pos": {
+        "x": 60,
+        "y": 474
+      },
+      "description": "High-performance asynchronous packet processing and protocol engine",
+      "properties": [
+        {
+          "id": "p1",
+          "title": "Language",
+          "description": "Rust (Edition 2021)"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "t1",
+      "type": "type",
+      "label": "PacketStream",
+      "pos": {
+        "x": 480,
+        "y": 306
+      },
+      "description": "Zero-copy streaming buffer for framed network packets",
+      "subType": "struct",
+      "properties": [
+        {
+          "id": "p2",
+          "title": "Fields",
+          "description": "buffer: BytesMut, socket: TcpStream, cursor: usize"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "t2",
+      "type": "type",
+      "label": "AsyncPacketReader",
+      "pos": {
+        "x": 900,
+        "y": 488
+      },
+      "description": "Abstract trait contract for asynchronous packet deserialization",
+      "subType": "trait",
+      "properties": [
+        {
+          "id": "p3",
+          "title": "Contract",
+          "description": "fn poll_packet(&mut self, cx: &mut Context) -> Poll<Result<Packet>>"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "f1",
+      "type": "function",
+      "label": "read_framed_packet",
+      "pos": {
+        "x": 900,
+        "y": 60
+      },
+      "description": "Parses framed length header and returns decoded packet slice",
+      "properties": [],
+      "parameters": [
+        {
+          "id": "param1",
+          "name": "stream",
+          "type": "&mut PacketStream",
+          "required": true,
+          "description": "Mutable reference to packet buffer"
+        }
+      ],
+      "returns": [
+        {
+          "id": "ret1",
+          "name": "result",
+          "type": "Result<Packet, FrameError>",
+          "required": true,
+          "description": "Decoded packet or frame parsing error"
+        }
+      ],
+      "isCollapsed": false
+    },
+    {
+      "id": "e1",
+      "type": "external",
+      "label": "tokio::net::TcpStream",
+      "pos": {
+        "x": 480,
+        "y": 623
+      },
+      "description": "Tokio asynchronous I/O runtime and OS epoll/kqueue polling",
+      "properties": [],
+      "parameters": [],
+      "returns": [],
+      "tech": "tokio",
+      "isCollapsed": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-t1-m1",
+      "from": "t1",
+      "to": "m1",
+      "type": "declares"
+    },
+    {
+      "id": "edge-t2-t1",
+      "from": "t2",
+      "to": "t1",
+      "type": "implements"
+    },
+    {
+      "id": "edge-f1-t1",
+      "from": "f1",
+      "to": "t1",
+      "type": "implements"
+    },
+    {
+      "id": "edge-e1-m1",
+      "from": "e1",
+      "to": "m1",
+      "type": "injects"
+    }
+  ]
+}

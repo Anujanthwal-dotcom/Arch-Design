@@ -1,6 +1,6 @@
-# Arch Design (.arch) JSON Schema Specification (v2)
+# Arch Design (.arch) JSON Schema Specification (v2.1)
 
-Arch Design files (`.arch` or `.lld`) are stored in structured JSON (version 2). This document serves as the formal specification for AI coding agents reading or authoring architecture canvas files.
+Arch Design files (`.arch` or `.lld`) are stored in structured JSON (version 2). This document serves as the formal specification for AI coding agents and developers authoring or reading architecture canvas files across multiple domains (**Backend**, **Frontend**, **Mobile**, and **Systems Programming**).
 
 ---
 
@@ -9,6 +9,7 @@ Arch Design files (`.arch` or `.lld`) are stored in structured JSON (version 2).
 ```json
 {
   "version": 2,
+  "domain": "universal",
   "name": "system-name",
   "nodes": [ /* array of Node objects */ ],
   "edges": [ /* array of Edge objects */ ]
@@ -18,7 +19,8 @@ Arch Design files (`.arch` or `.lld`) are stored in structured JSON (version 2).
 | Field | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
 | `version` | `number` | **Yes** | Schema version. Must be strictly `2`. |
-| `name` | `string` | No | Identifier for the architecture canvas (e.g. `"payment-service"`). |
+| `domain` | `string` | No | Architectural profile preset: `"universal"`, `"backend"`, `"frontend"`, `"mobile"`, or `"systems"`. |
+| `name` | `string` | No | Identifier for the architecture canvas (e.g. `"ecommerce-web"`, `"notes-mobile"`). |
 | `nodes` | `Array<Node>` | **Yes** | List of architectural card nodes. |
 | `edges` | `Array<Edge>` | **Yes** | List of directional connection edges between nodes. |
 
@@ -31,11 +33,12 @@ Every node in `nodes` shares common fields and includes type-specific extensions
 ### Common Node Fields
 ```typescript
 {
-  id: string;              // Unique identifier (e.g., "m1", "s1", "f1", "e1")
-  type: "module" | "service" | "function" | "external";
+  id: string;              // Unique identifier (e.g., "m1", "c1", "s1", "t1", "f1", "e1")
+  type: "module" | "service" | "component" | "type" | "function" | "external";
   label: string;           // Display title of the card
   pos: { x: number; y: number }; // Canvas pixel position
   description?: string;    // Brief summary of responsibility
+  subType?: string;        // Domain-specific subtype or role
   properties?: Array<{
     id: string;
     title: string;
@@ -50,7 +53,7 @@ Every node in `nodes` shares common fields and includes type-specific extensions
 ### Node Types
 
 #### 1. Module (`type: "module"`)
-Represents a high-level domain boundary, package, or microservice scope.
+Represents a high-level domain boundary, package, crate, or microservice scope.
 ```json
 {
   "id": "m1",
@@ -64,14 +67,32 @@ Represents a high-level domain boundary, package, or microservice scope.
 }
 ```
 
-#### 2. Service (`type: "service"`)
-Represents a business logic service, class controller, or handler within a module.
+#### 2. Component (`type: "component"`)
+Represents a UI View, Screen, Widget, or Page in Frontend and Mobile applications.
+```json
+{
+  "id": "c1",
+  "type": "component",
+  "label": "ProductListScreen",
+  "pos": { "x": 40, "y": 60 },
+  "subType": "screen",
+  "description": "Renders catalog items and handles search filtering",
+  "properties": [
+    { "id": "p1", "title": "Props", "description": "{ categoryId: string, initialSort?: string }" }
+  ]
+}
+```
+* Common `subType` values: `"screen"`, `"view"`, `"page"`, `"component"`, `"widget"`, `"modal"`.
+
+#### 3. Service (`type: "service"`)
+Represents a business logic service, class controller, ViewModel, Store, or Repository.
 ```json
 {
   "id": "s1",
   "type": "service",
   "label": "AuthService",
   "pos": { "x": 370, "y": 60 },
+  "subType": "service",
   "description": "Core authentication logic and password hashing",
   "typeRef": "services/AuthService",
   "properties": [
@@ -80,9 +101,27 @@ Represents a business logic service, class controller, or handler within a modul
 }
 ```
 * Note: `typeRef` denotes the source code file path or interface name.
+* Common `subType` values: `"service"`, `"viewmodel"`, `"store"`, `"repository"`, `"usecase"`, `"controller"`.
 
-#### 3. Function (`type: "function"`)
-Represents an individual method, routine, or endpoint with typed parameters and return values.
+#### 4. Type (`type: "type"`)
+Represents a Struct, Trait, Data Model, DTO, Entity, Enum, or Schema interface (key in Rust, Swift, Kotlin, TypeScript).
+```json
+{
+  "id": "t1",
+  "type": "type",
+  "label": "PacketStream",
+  "pos": { "x": 370, "y": 60 },
+  "subType": "struct",
+  "description": "Zero-copy streaming buffer for framed network packets",
+  "properties": [
+    { "id": "p1", "title": "Fields", "description": "buffer: BytesMut, socket: TcpStream" }
+  ]
+}
+```
+* Common `subType` values: `"struct"`, `"trait"`, `"model"`, `"interface"`, `"enum"`, `"entity"`.
+
+#### 5. Function (`type: "function"`)
+Represents an individual method, routine, helper, or endpoint with typed parameters and return values.
 ```json
 {
   "id": "f1",
@@ -111,8 +150,8 @@ Represents an individual method, routine, or endpoint with typed parameters and 
 }
 ```
 
-#### 4. External (`type: "external"`)
-Represents third-party infrastructure, databases, caches, message brokers, or external APIs.
+#### 6. External (`type: "external"`)
+Represents third-party infrastructure, databases, local stores, hardware, async runtimes, or external network APIs.
 ```json
 {
   "id": "e1",
@@ -125,19 +164,16 @@ Represents third-party infrastructure, databases, caches, message brokers, or ex
 ```
 
 ##### Supported `tech` Badge Values:
-- `"postgres"` or `"postgresql"` (Relational DB)
-- `"mysql"` (Relational DB)
-- `"redis"` (In-memory Cache / Key-Value)
-- `"mongodb"` (Document Store)
-- `"kafka"` (Event Streaming)
-- `"rabbitmq"` (Message Queue)
-- `"s3"` or `"minio"` (Object Storage)
+- **Backend Databases & Queues**: `"postgres"`, `"postgresql"`, `"mysql"`, `"redis"`, `"mongodb"`, `"kafka"`, `"rabbitmq"`, `"s3"`, `"minio"`
+- **Mobile & Local Storage**: `"sqlite"`, `"room"`, `"coredata"`, `"swiftdata"`, `"realm"`, `"keychain"`
+- **Frontend & Web APIs**: `"rest"`, `"api"`, `"graphql"`, `"websocket"`, `"localstorage"`, `"indexeddb"`
+- **Systems & Rust Runtimes**: `"tokio"`, `"libc"`, `"ffi"`, `"wasm"`, `"vulkan"`, `"hardware"`
 
 ---
 
 ## 3. Edge Schema
 
-Edges represent directional dependency injection relationships between cards, pointing from child / dependency to parent / consumer.
+Edges represent directional relationships between cards.
 
 ```json
 {
@@ -151,6 +187,6 @@ Edges represent directional dependency injection relationships between cards, po
 | Field | Type | Description |
 | :--- | :--- | :--- |
 | `id` | `string` | Unique edge ID (e.g. `"edge-s1-m1"`). |
-| `from` | `string` | Source node `id` (Child / Dependency). |
-| `to` | `string` | Target node `id` (Parent / Consumer). |
-| `type` | `string` | Relationship type: `"injects"` (service/external dependency injection) or `"implements"` (function implementation). |
+| `from` | `string` | Source node `id`. |
+| `to` | `string` | Target node `id`. |
+| `type` | `string` | Relationship type: `"injects"`, `"implements"`, `"renders"`, `"observes"`, `"uses"`, `"defines"`, `"submodule"`, `"belongsTo"`, `"declares"`, `"helper"`. |

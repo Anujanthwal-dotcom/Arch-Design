@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
-import { ModuleNodeData, Property } from '../../types';
+import { TypeNodeData, Property } from '../../types';
 import { generateId } from '../utils';
 import { useCanvas } from '../context';
 import { GripIcon, ChevronIcon } from '../icons';
 import { AutoResizeTextarea } from '../components/AutoResizeTextarea';
 
-export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
-  const nodeData = data as ModuleNodeData;
+export const TypeNode: React.FC<NodeProps> = ({ data, id, selected }) => {
+  const nodeData = data as TypeNodeData;
   const { updateNodeData, deleteNode } = useCanvas();
   const [properties, setProperties] = useState<Property[]>(nodeData.properties || []);
   const [isPropertiesExpanded, setIsPropertiesExpanded] = useState(true);
@@ -27,6 +27,10 @@ export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
 
   const updateDescription = (description: string) => {
     updateNodeData(id, { description });
+  };
+
+  const updateSubType = (subType: string) => {
+    updateNodeData(id, { subType });
   };
 
   const addProperty = () => {
@@ -53,7 +57,7 @@ export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
   };
 
   return (
-    <div className={`lld-node module ${selected ? 'selected' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
+    <div className={`lld-node type ${selected ? 'selected' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
       <Handle
         type="target"
         position={Position.Top}
@@ -72,14 +76,14 @@ export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
           <span className="node-grip-handle" title="Drag card">
             <GripIcon size={12} />
           </span>
-          <span className="node-type-badge module">Module</span>
+          <span className="node-type-badge type">Type</span>
           <span className="node-label">
             <input
               className="node-label-input nodrag"
               defaultValue={nodeData.label}
               key={nodeData.label}
               onBlur={(e) => updateLabel(e.target.value)}
-              placeholder="Module name"
+              placeholder="Struct / Trait / Model name"
             />
           </span>
         </div>
@@ -109,20 +113,31 @@ export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
               defaultValue={nodeData.description || ''}
               key={nodeData.description}
               onBlur={(e) => updateDescription(e.target.value)}
-              placeholder="Description..."
+              placeholder="Type description or contract..."
             />
           </div>
-          
+
+          <div className="field-group">
+            <span className="field-label">Kind / Subtype:</span>
+            <input
+              className="field-input nodrag"
+              defaultValue={nodeData.subType || ''}
+              key={nodeData.subType}
+              onBlur={(e) => updateSubType(e.target.value)}
+              placeholder="struct, trait, enum, interface, model..."
+            />
+          </div>
+
           <div className="section">
             <div className="section-header">
               <button
                 className="section-title-btn nodrag"
                 onClick={() => setIsPropertiesExpanded(!isPropertiesExpanded)}
                 type="button"
-                title={isPropertiesExpanded ? 'Collapse Properties' : 'Expand Properties'}
+                title={isPropertiesExpanded ? 'Collapse Fields' : 'Expand Fields'}
               >
                 <span className="section-chevron">{isPropertiesExpanded ? '▾' : '▸'}</span>
-                <span className="section-title">Properties</span>
+                <span className="section-title">Fields & Signatures</span>
                 {properties.length > 0 && (
                   <span className="section-count">{properties.length}</span>
                 )}
@@ -130,7 +145,7 @@ export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
               <button
                 className="add-btn nodrag"
                 onClick={addProperty}
-                title="Add Property"
+                title="Add Field / Method"
                 type="button"
               >
                 + Add
@@ -152,13 +167,13 @@ export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
                       className="prop-title-input"
                       defaultValue={prop.title}
                       onBlur={(e) => updateProperty(prop.id, 'title', e.target.value)}
-                      placeholder="Property title"
+                      placeholder="Field or method signature"
                     />
                     <AutoResizeTextarea
                       className="prop-desc-input"
                       defaultValue={prop.description}
                       onBlur={(e) => updateProperty(prop.id, 'description', e.target.value)}
-                      placeholder="Property description"
+                      placeholder="Type, visibility, or explanation"
                     />
                   </div>
                 ))}

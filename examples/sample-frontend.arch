@@ -1,0 +1,181 @@
+{
+  "version": 2,
+  "domain": "frontend",
+  "name": "ecommerce-web",
+  "nodes": [
+    {
+      "id": "c1",
+      "type": "component",
+      "label": "ProductPage",
+      "pos": {
+        "x": 480,
+        "y": 155
+      },
+      "description": "Main product catalog and detail presentation page",
+      "subType": "page",
+      "properties": [
+        {
+          "id": "p1",
+          "title": "Route",
+          "description": "/products/:id"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "c2",
+      "type": "component",
+      "label": "ProductCard",
+      "pos": {
+        "x": 900,
+        "y": 140
+      },
+      "description": "Displays individual product image, rating, price, and add-to-cart button",
+      "subType": "component",
+      "properties": [
+        {
+          "id": "p2",
+          "title": "Props",
+          "description": "{ product: ProductDTO, onAddToCart: (id: string) => void }"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "s1",
+      "type": "service",
+      "label": "CartStore",
+      "pos": {
+        "x": 60,
+        "y": 418
+      },
+      "description": "Zustand reactive store managing cart items and checkout state",
+      "subType": "store",
+      "properties": [
+        {
+          "id": "p3",
+          "title": "State",
+          "description": "items: CartItem[], totalAmount: number"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "f1",
+      "type": "function",
+      "label": "formatCurrency",
+      "pos": {
+        "x": 1320,
+        "y": 60
+      },
+      "description": "Formats raw numeric price into localized currency string",
+      "properties": [],
+      "parameters": [
+        {
+          "id": "param1",
+          "name": "amount",
+          "type": "number",
+          "required": true,
+          "description": "Raw price in cents or dollars"
+        },
+        {
+          "id": "param2",
+          "name": "currency",
+          "type": "string",
+          "required": false,
+          "description": "ISO currency code, defaults to USD"
+        }
+      ],
+      "returns": [
+        {
+          "id": "ret1",
+          "name": "formatted",
+          "type": "string",
+          "required": true,
+          "description": "Localized currency string e.g. $19.99"
+        }
+      ],
+      "isCollapsed": false
+    },
+    {
+      "id": "e1",
+      "type": "external",
+      "label": "StoreAPI",
+      "pos": {
+        "x": 480,
+        "y": 458
+      },
+      "description": "Backend REST endpoints for products and cart checkout",
+      "properties": [],
+      "parameters": [],
+      "returns": [],
+      "tech": "rest",
+      "isCollapsed": false
+    },
+    {
+      "id": "t1",
+      "type": "type",
+      "label": "ProductDTO",
+      "pos": {
+        "x": 480,
+        "y": 716
+      },
+      "description": "Typed data contract representing a store product item",
+      "subType": "interface",
+      "properties": [
+        {
+          "id": "p4",
+          "title": "Fields",
+          "description": "id: string, name: string, price: number, inStock: boolean"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-c2-c1",
+      "from": "c2",
+      "to": "c1",
+      "type": "renders"
+    },
+    {
+      "id": "edge-s1-c1",
+      "from": "s1",
+      "to": "c1",
+      "type": "observes"
+    },
+    {
+      "id": "edge-c1-s1",
+      "from": "c1",
+      "to": "s1",
+      "type": "uses"
+    },
+    {
+      "id": "edge-f1-c2",
+      "from": "f1",
+      "to": "c2",
+      "type": "helper"
+    },
+    {
+      "id": "edge-e1-s1",
+      "from": "e1",
+      "to": "s1",
+      "type": "injects"
+    },
+    {
+      "id": "edge-t1-s1",
+      "from": "t1",
+      "to": "s1",
+      "type": "defines"
+    }
+  ]
+}

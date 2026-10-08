@@ -18,6 +18,9 @@ export const getNodeDimensions = (node: Node): { width: number; height: number }
   if (data.description) {
     estimatedHeight += 30;
   }
+  if (data.subType) {
+    estimatedHeight += 35;
+  }
   if (Array.isArray(data.properties) && data.properties.length > 0) {
     estimatedHeight += data.properties.length * 60 + 35;
   }

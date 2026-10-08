@@ -14,16 +14,24 @@ The `.arch` file format is saved as structured JSON, making it intuitive for hum
 ## Features
 
 - **Interactive Canvas**: Pan, zoom, drag cards, view a minimap, and auto-arrange nodes with Dagre layout.
-- **Card-Based Architectural Hierarchy**:
-  - **Module**: High-level logical domain or boundary.
-  - **Service**: Service class, component, or controller within a module.
+- **Multi-Domain Architectural Presets**: Seamlessly switch or mix presets in the toolbar:
+  - **Backend**: Modular monoliths, microservices, domain services, databases, and message queues.
+  - **Frontend (React, Vue, Next.js)**: Screens, components, reactive stores (Zustand/Redux), hooks, and APIs.
+  - **Mobile (Android & iOS)**: Jetpack Compose / SwiftUI screens, ViewModels, Repositories, Room / CoreData.
+  - **Systems Programming (Rust, C++, Go)**: Crates, structs, traits, async runtimes (Tokio), and hardware/OS drivers.
+  - **Universal**: Full palette access to all architectural building blocks.
+- **Card-Based Architectural Primitives**:
+  - **Module**: High-level logical domain, package, crate, or feature boundary.
+  - **Component**: UI views, screens, widgets, modals, or pages.
+  - **Service**: Business logic services, ViewModels, reactive stores, repositories, and controllers.
+  - **Type**: Structs, traits, data contracts, DTOs, interfaces, and schemas.
   - **Function**: Methods and routines specifying input parameters, return values, and data types.
-  - **External**: Third-party services, databases, queues, and caches.
+  - **External**: Third-party services, databases, local stores, async runtimes, and external APIs.
 - **Focus Mode**: Select any card to highlight its upstream and downstream connections with animated directional flow lines while dimming unrelated cards.
 - **Architecture Validation Rules**: Built-in connection rules prevent invalid relationships and keep system designs clean and hierarchical.
 - **Adaptive Card Fields**: Multi-line descriptions, properties, parameters, and return fields expand dynamically to fit their text without awkward internal scrollbars.
-- **Visual Tech Badges**: Built-in support and logos for popular external technologies like PostgreSQL, Redis, MongoDB, MySQL, Kafka, S3, RabbitMQ, and more.
-- **AI Agent Readable**: Standardized JSON schema that coding agents can parse directly to generate boilerplate, scaffolding, and full implementations.
+- **Visual Tech Badges**: Built-in logos and badges for PostgreSQL, Redis, MongoDB, MySQL, Kafka, S3, RabbitMQ, SQLite, Room, CoreData, SwiftData, GraphQL, REST, WebSockets, Tokio, and Hardware/Drivers.
+- **AI Agent Readable**: Standardized JSON schema (v2.1) that coding agents can parse directly to generate boilerplate, scaffolding, and full implementations.
 
 ---
 
@@ -37,7 +45,8 @@ The `.arch` file format is saved as structured JSON, making it intuitive for hum
 Alternatively, create any file ending with `.arch` in your workspace and click to open it.
 
 ### 2. Navigating the Canvas
-- **Add Nodes**: Use the top toolbar to insert Modules, Services, Functions, or External services.
+- **Domain Preset**: Select **Universal**, **Backend**, **Frontend**, **Mobile**, or **Systems (Rust)** in the toolbar to adapt available cards.
+- **Add Nodes**: Use the top toolbar to insert Cards tailored to your domain.
 - **Connect Nodes**: Click and drag from any card's connection handle to another card.
 - **Focus Mode**: Click on any card to isolate and trace its complete dependency tree.
 - **Auto Layout**: Click the Layout button in the toolbar to automatically organize and align nodes.
@@ -72,34 +81,36 @@ node .agents/skills/arch-design/scripts/validate.js architecture.arch
 node .agents/skills/arch-design/scripts/layout.js architecture.arch
 ```
 
-#### Prompt Recipes for Coding Agents
-
-- **Generate Code from a Diagram:**
-  > *"Inspect our architecture in `architecture.arch`. Implement the service and functions specified in the canvas, strictly respecting parameter types, return signatures, and external database connections."*
-
-- **Create a Diagram for a New Feature:**
-  > *"Use the Arch Design skill to create a visual architecture diagram `user-auth.arch` for our user authentication service. Include a UserModule, AuthService, verifyToken function, and PostgreSQL external store. Run layout.js and validate.js when finished."*
-
-- **Audit Codebase for Architecture Compliance:**
-  > *"Compare our implementation in `src/` against `architecture.arch`. Identify any services calling unauthorized databases or functions bypassing domain boundaries according to our Low-Level Design rules."*
-
-For complete guides and interactive examples, check out the [Documentation & CLI Reference](https://anujanthwal-dotcom.github.io/Arch-Design/#docs).
+#### Bundled Multi-Domain Reference Architectures
+- `sample.arch`: Backend Modular Monolith
+- `sample-frontend.arch`: React / Zustand E-Commerce Frontend
+- `sample-mobile.arch`: Android / iOS Clean Architecture + MVVM
+- `sample-rust.arch`: Systems Programming Tokio Packet Engine
 
 ---
 
 ## Architectural Rules
 
-Arch enforces clean separation of concerns:
+Arch enforces clean separation of concerns across all software domains:
 
 | Source | Target | Relationship |
 | :--- | :--- | :--- |
-| **Service** | **Module** | Service is injected into module (`injects`) |
+| **Service** | **Module** | Service injected into module (`injects`) |
 | **Function** | **Service** | Function implements / provides method to service (`implements`) |
-| **External** | **Service** | External dependency is injected into service (`injects`) |
-| **External** | **Module** | External dependency is injected into module (`injects`) |
-| **Service** | **Service** | Dependency service is injected into consumer service (`injects`) |
+| **External** | **Service / Module** | External dependency injected into service or module (`injects`) |
+| **Service** | **Service** | Dependency service injected into consumer service (`injects`) |
+| **Module** | **Module** | Submodule is part of / injected into parent module (`submodule`) |
+| **Component** | **Component** | Parent UI component renders child component (`renders`) |
+| **Service** | **Component** | ViewModel / Store provides state to component (`observes`) |
+| **Component** | **Service** | Component delegates user actions to ViewModel/Store (`uses`) |
+| **Component** | **Module** | Component belongs to feature module (`belongsTo`) |
+| **Function** | **Component** | Helper function used in component (`helper`) |
+| **Type** | **Type** | Struct implements Trait / interface inheritance (`implements`) |
+| **Type** | **Service / Component / Function** | Data contract / DTO definition (`defines`) |
+| **Type** | **Module** | Type declared in crate/module (`declares`) |
+| **Function** | **Type** | Method implemented directly on struct/trait (`implements`) |
 
-Direct invalid connections (such as functions directly calling modules or parent modules driving children) are blocked to maintain architectural Low-Level Design integrity.
+Direct invalid connections (such as components bypassing state to connect directly to databases, or parent modules driving child implementations) are blocked to maintain architectural Low-Level Design integrity.
 
 ---
 
@@ -169,14 +180,14 @@ Arch files are stored in human-readable and agent-parsable JSON (v2).
 
 ```bash
 # Install dependencies
-npm install
+bun install
 
 # Build extension and webview bundle
-npm run compile
+bun run compile
 
 # Run automated schema and layout tests
-npm test
+bun run test
 
 # Package VSIX for installation or marketplace publishing
-npm run package
+bun run package
 ```

@@ -120,7 +120,10 @@ export function activate(context: vscode.ExtensionContext) {
           ['references', 'rules.md'],
           ['scripts', 'validate.js'],
           ['scripts', 'layout.js'],
-          ['examples', 'sample.arch']
+          ['examples', 'sample.arch'],
+          ['examples', 'sample-frontend.arch'],
+          ['examples', 'sample-mobile.arch'],
+          ['examples', 'sample-rust.arch']
         ];
 
         for (const segments of skillFiles) {

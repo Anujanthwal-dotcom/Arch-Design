@@ -63,6 +63,69 @@ const getTechIcon = (tech: string): React.ReactNode => {
       </svg>
     );
   }
+
+  // Mobile / Embedded storage (SQLite, Room, CoreData, SwiftData, Realm, Keychain)
+  if (t.includes('sqlite') || t.includes('room') || t.includes('coredata') || t.includes('swiftdata') || t.includes('realm')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M4 6V4h16v2H4zm0 4V8h16v2H4zm0 4v-2h16v2H4zm0 4v-2h16v2H4zm0 4v-2h16v2H4z"/>
+      </svg>
+    );
+  }
+
+  // GraphQL
+  if (t.includes('graphql')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2l8.66 5v10L12 22l-8.66-5V7L12 2zm0 2.31L4.84 8.44v7.12L12 19.69l7.16-4.13V8.44L12 4.31zM12 7a2 2 0 110 4 2 2 0 010-4zm-4 7a2 2 0 110 4 2 2 0 010-4zm8 0a2 2 0 110 4 2 2 0 010-4z"/>
+      </svg>
+    );
+  }
+
+  // REST API / HTTP / Network
+  if (t.includes('rest') || t.includes('http') || t.includes('api') || t.includes('network')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+      </svg>
+    );
+  }
+
+  // WebSockets / Event Streams
+  if (t.includes('ws') || t.includes('websocket') || t.includes('socket')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+      </svg>
+    );
+  }
+
+  // LocalStorage / IndexedDB / Browser Storage / Keychain
+  if (t.includes('localstorage') || t.includes('indexeddb') || t.includes('keychain') || t.includes('cache')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+      </svg>
+    );
+  }
+
+  // Tokio / Async Runtime / OS Threading
+  if (t.includes('tokio') || t.includes('async') || t.includes('thread')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M13 2.05v3.03c3.39.49 6 3.39 6 6.92 0 .9-.18 1.75-.48 2.54l2.6 1.53c.56-1.24.88-2.62.88-4.07 0-5.18-3.95-9.45-9-9.95zM12 19c-3.87 0-7-3.13-7-7 0-3.53 2.61-6.43 6-6.92V2.05c-5.05.5-9 4.76-9 9.95 0 5.52 4.47 10 9.99 10 3.31 0 6.24-1.61 8.01-4.09l-2.49-1.46C16.27 18.06 14.28 19 12 19z"/>
+      </svg>
+    );
+  }
+
+  // Systems / FFI / Libc / WASM / Driver / Hardware
+  if (t.includes('ffi') || t.includes('libc') || t.includes('wasm') || t.includes('hardware') || t.includes('vulkan') || t.includes('driver')) {
+    return (
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+      </svg>
+    );
+  }
   
   // Generic external icon
   return (

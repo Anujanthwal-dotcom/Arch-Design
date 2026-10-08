@@ -13,3 +13,4 @@ examples/**
 .agents/**
 AGENTS.md
 media/icon_option*.png
+bun.lock*

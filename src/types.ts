@@ -25,12 +25,13 @@ export type Return = {
   description: string;
 };
 
-export type NodeType = 'module' | 'service' | 'function' | 'external';
+export type NodeType = 'module' | 'service' | 'component' | 'type' | 'function' | 'external';
 
 export type NodeDataBase = {
   label: string;
   description?: string;
   properties: Property[];
+  subType?: string;
   [key: string]: any;
 };
 
@@ -38,6 +39,14 @@ export type ModuleNodeData = NodeDataBase;
 
 export type ServiceNodeData = NodeDataBase & {
   typeRef?: string;
+};
+
+export type ComponentNodeData = NodeDataBase & {
+  subType?: string; // screen | view | component | widget | page
+};
+
+export type TypeNodeData = NodeDataBase & {
+  subType?: string; // struct | trait | enum | interface | model | schema
 };
 
 export type FunctionNodeData = NodeDataBase & {
@@ -49,7 +58,13 @@ export type ExternalNodeData = NodeDataBase & {
   tech?: string;
 };
 
-export type NodeData = ModuleNodeData | ServiceNodeData | FunctionNodeData | ExternalNodeData;
+export type NodeData =
+  | ModuleNodeData
+  | ServiceNodeData
+  | ComponentNodeData
+  | TypeNodeData
+  | FunctionNodeData
+  | ExternalNodeData;
 
 export type LLDNode = {
   id: string;
@@ -58,6 +73,7 @@ export type LLDNode = {
   pos: Position;
   description?: string;
   properties?: Property[];
+  subType?: string;
   typeRef?: string;
   parameters?: Parameter[];
   returns?: Return[];
@@ -86,8 +102,11 @@ export type LLDEdge = {
   type: string;
 };
 
+export type DomainType = 'universal' | 'backend' | 'frontend' | 'mobile' | 'systems';
+
 export type LLDDocument = {
   version: number;
+  domain?: DomainType | string;
   name?: string;
   nodes: LLDNode[];
   edges: Edge[];
@@ -95,6 +114,7 @@ export type LLDDocument = {
 
 export type LLDFile = {
   version: number;
+  domain?: DomainType | string;
   name?: string;
   nodes: LLDNode[];
   edges: Edge[];
