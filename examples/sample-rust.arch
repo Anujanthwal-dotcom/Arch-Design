@@ -6,6 +6,7 @@
     {
       "id": "m1",
       "type": "module",
+      "tier": "container",
       "label": "crate::network",
       "pos": {
         "x": 60,
@@ -26,6 +27,7 @@
     {
       "id": "t1",
       "type": "type",
+      "tier": "contract",
       "label": "PacketStream",
       "pos": {
         "x": 480,
@@ -47,6 +49,7 @@
     {
       "id": "t2",
       "type": "type",
+      "tier": "contract",
       "label": "AsyncPacketReader",
       "pos": {
         "x": 900,
@@ -68,6 +71,7 @@
     {
       "id": "f1",
       "type": "function",
+      "tier": "execution",
       "label": "read_framed_packet",
       "pos": {
         "x": 900,
@@ -98,6 +102,7 @@
     {
       "id": "e1",
       "type": "external",
+      "tier": "infrastructure",
       "label": "tokio::net::TcpStream",
       "pos": {
         "x": 480,

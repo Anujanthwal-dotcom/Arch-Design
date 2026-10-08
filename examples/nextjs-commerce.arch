@@ -1,0 +1,211 @@
+{
+  "version": 2,
+  "domain": "frontend",
+  "name": "nextjs-commerce",
+  "nodes": [
+    {
+      "id": "page-product",
+      "type": "page",
+      "tier": "presentation",
+      "label": "ProductPage",
+      "pos": {
+        "x": 60,
+        "y": 1287
+      },
+      "description": "React Server Component (RSC) fetching initial product metadata and streaming recommendations",
+      "subType": "rsc",
+      "properties": [
+        {
+          "id": "p1",
+          "title": "params",
+          "description": "{ slug: string }"
+        },
+        {
+          "id": "p2",
+          "title": "searchParams",
+          "description": "{ [key: string]: string | string[] }"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "comp-cart-btn",
+      "type": "component",
+      "tier": "presentation",
+      "label": "AddToCartButton",
+      "pos": {
+        "x": 480,
+        "y": 1277
+      },
+      "description": "Interactive client component managing optimistic add-to-cart animations and triggers",
+      "subType": "client",
+      "properties": [
+        {
+          "id": "p3",
+          "title": "variantId",
+          "description": "string"
+        },
+        {
+          "id": "p4",
+          "title": "availableForSale",
+          "description": "boolean"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "store-cart",
+      "type": "store",
+      "tier": "logic",
+      "label": "CartStore",
+      "pos": {
+        "x": 60,
+        "y": 654
+      },
+      "description": "Zustand client state manager holding active cart line items and optimistic UI state",
+      "subType": "zustand",
+      "properties": [
+        {
+          "id": "p5",
+          "title": "cart",
+          "description": "Cart | null"
+        },
+        {
+          "id": "p6",
+          "title": "addItem",
+          "description": "(variantId: string) => Promise<void>"
+        },
+        {
+          "id": "p7",
+          "title": "isOpen",
+          "description": "boolean"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "action-cart",
+      "type": "action",
+      "tier": "execution",
+      "label": "addToCartAction",
+      "pos": {
+        "x": 480,
+        "y": 886
+      },
+      "description": "Next.js 'use server' Server Action performing authenticated cart mutations on Shopify API",
+      "subType": "server-action",
+      "properties": [
+        {
+          "id": "p8",
+          "title": "payload",
+          "description": "{ cartId?: string, lines: CartItem[] }"
+        },
+        {
+          "id": "p9",
+          "title": "returns",
+          "description": "Promise<ActionResult<Cart>>"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "schema-cart",
+      "type": "schema",
+      "tier": "contract",
+      "label": "CartItemSchema",
+      "pos": {
+        "x": 480,
+        "y": 451
+      },
+      "description": "Zod schema ensuring runtime type safety and serialization contracts across RSC/client boundaries",
+      "subType": "zod",
+      "properties": [
+        {
+          "id": "p10",
+          "title": "id",
+          "description": "z.string().uuid()"
+        },
+        {
+          "id": "p11",
+          "title": "quantity",
+          "description": "z.number().int().positive()"
+        },
+        {
+          "id": "p12",
+          "title": "cost",
+          "description": "MoneySchema"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "api-shopify",
+      "type": "external",
+      "tier": "infrastructure",
+      "label": "ShopifyStorefrontApi",
+      "pos": {
+        "x": 480,
+        "y": 60
+      },
+      "description": "Shopify Storefront GraphQL endpoint handling inventory and checkout persistence",
+      "properties": [
+        {
+          "id": "p13",
+          "title": "endpoint",
+          "description": "https://{shop}.myshopify.com/api/2024-01/graphql.json"
+        },
+        {
+          "id": "p14",
+          "title": "headers",
+          "description": "X-Shopify-Storefront-Access-Token"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "tech": "graphql",
+      "isCollapsed": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-btn-page",
+      "from": "comp-cart-btn",
+      "to": "page-product",
+      "type": "belongsTo"
+    },
+    {
+      "id": "edge-btn-store",
+      "from": "comp-cart-btn",
+      "to": "store-cart",
+      "type": "uses"
+    },
+    {
+      "id": "edge-action-store",
+      "from": "action-cart",
+      "to": "store-cart",
+      "type": "implements"
+    },
+    {
+      "id": "edge-schema-store",
+      "from": "schema-cart",
+      "to": "store-cart",
+      "type": "defines"
+    },
+    {
+      "id": "edge-api-store",
+      "from": "api-shopify",
+      "to": "store-cart",
+      "type": "injects"
+    }
+  ]
+}

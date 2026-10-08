@@ -54,7 +54,20 @@ if (errors.length > 0) {
 }
 
 // 2. Nodes validation
-const validNodeTypes = new Set(['module', 'service', 'component', 'type', 'function', 'external']);
+const validTiers = new Set(['container', 'presentation', 'logic', 'contract', 'execution', 'infrastructure']);
+
+function resolveNodeTier(type, explicitTier) {
+  if (explicitTier && validTiers.has(explicitTier)) return explicitTier;
+  const t = (type || '').toLowerCase();
+  if (['module', 'crate', 'package', 'feature'].includes(t)) return 'container';
+  if (['component', 'screen', 'view', 'page', 'composable', 'widget', 'modal', 'layout'].includes(t)) return 'presentation';
+  if (['service', 'viewmodel', 'store', 'hook', 'usecase', 'coordinator', 'controller', 'interactor', 'bloc', 'manager'].includes(t)) return 'logic';
+  if (['type', 'struct', 'trait', 'model', 'entity', 'dao', 'schema', 'interface', 'enum', 'dto'].includes(t)) return 'contract';
+  if (['function', 'method', 'endpoint', 'action', 'routine', 'rpc'].includes(t)) return 'execution';
+  if (['external', 'database', 'api', 'driver', 'hardware', 'runtime', 'channel', 'storage'].includes(t)) return 'infrastructure';
+  return 'logic';
+}
+
 const nodeMap = new Map();
 
 doc.nodes.forEach((node, idx) => {
@@ -67,8 +80,12 @@ doc.nodes.forEach((node, idx) => {
     nodeMap.set(node.id, node);
   }
 
-  if (!node.type || !validNodeTypes.has(node.type)) {
-    errors.push(`Node '${id}' has invalid type: '${node.type}'. Must be one of: module, service, component, type, function, external.`);
+  if (!node.type || typeof node.type !== 'string') {
+    errors.push(`Node '${id}' is missing a valid 'type' string.`);
+  }
+
+  if (node.tier && !validTiers.has(node.tier)) {
+    errors.push(`Node '${id}' has invalid tier: '${node.tier}'. Must be one of: container, presentation, logic, contract, execution, infrastructure.`);
   }
 
   if (!node.label) {
@@ -122,30 +139,46 @@ doc.edges.forEach((edge, idx) => {
   if (sourceNode && targetNode) {
     const sType = sourceNode.type;
     const tType = targetNode.type;
+    const sTier = resolveNodeTier(sourceNode.type, sourceNode.tier);
+    const tTier = resolveNodeTier(targetNode.type, targetNode.tier);
 
-    // Check allowed LLD relationships across domains
+    // Architectural violations
+    if (sTier === 'infrastructure' && tTier === 'presentation') {
+      errors.push(`Architectural violation in edge '${id}': Direct infrastructure '${sourceNode.label}' cannot connect directly to presentation '${targetNode.label}'. Route through logic/repository.`);
+      return;
+    }
+    if (sTier === 'presentation' && tTier === 'infrastructure') {
+      errors.push(`Architectural violation in edge '${id}': Presentation '${sourceNode.label}' cannot connect directly to infrastructure '${targetNode.label}'. Route through logic/repository.`);
+      return;
+    }
+    if (sTier === 'infrastructure' && tTier === 'infrastructure') {
+      errors.push(`Architectural violation in edge '${id}': Infrastructure '${sourceNode.label}' cannot inject directly into another infrastructure '${targetNode.label}'.`);
+      return;
+    }
+    if (sTier === 'container' && tTier !== 'container') {
+      errors.push(`Architectural violation in edge '${id}': Container '${sourceNode.label}' cannot depend downwards into child card '${targetNode.label}'. Reverse direction.`);
+      return;
+    }
+
+    // Check allowed tier-to-tier connections
     const isAllowed =
-      (sType === 'service' && tType === 'module') ||
-      (sType === 'function' && tType === 'service') ||
-      (sType === 'external' && tType === 'service') ||
-      (sType === 'external' && tType === 'module') ||
-      (sType === 'service' && tType === 'service') ||
-      (sType === 'module' && tType === 'module') ||
-      (sType === 'component' && tType === 'component') ||
-      (sType === 'service' && tType === 'component') ||
-      (sType === 'component' && tType === 'service') ||
-      (sType === 'component' && tType === 'module') ||
-      (sType === 'function' && tType === 'component') ||
-      (sType === 'type' && tType === 'type') ||
-      (sType === 'type' && tType === 'service') ||
-      (sType === 'type' && tType === 'component') ||
-      (sType === 'type' && tType === 'function') ||
-      (sType === 'type' && tType === 'module') ||
-      (sType === 'function' && tType === 'type');
+      (sTier === 'container' && tTier === 'container') ||
+      (sTier === 'presentation' && tTier === 'presentation') ||
+      (sTier === 'logic' && tTier === 'presentation') ||
+      (sTier === 'presentation' && tTier === 'logic') ||
+      (sTier === 'logic' && tTier === 'logic') ||
+      (sTier === 'execution' && tTier === 'logic') ||
+      (sTier === 'execution' && tTier === 'presentation') ||
+      (sTier === 'execution' && tTier === 'contract') ||
+      (sTier === 'contract' && tTier === 'contract') ||
+      (sTier === 'contract' && (tTier === 'logic' || tTier === 'presentation' || tTier === 'execution')) ||
+      (sTier === 'infrastructure' && tTier === 'logic') ||
+      (sTier === 'infrastructure' && tTier === 'container') ||
+      (tTier === 'container');
 
     if (!isAllowed) {
       errors.push(
-        `Architectural violation in edge '${id}': Connection from '${sType}' ('${sourceNode.label}') to '${tType}' ('${targetNode.label}') is disallowed.`
+        `Architectural violation in edge '${id}': Connection from '${sType}' [${sTier}] ('${sourceNode.label}') to '${tType}' [${tTier}] ('${targetNode.label}') is disallowed.`
       );
     }
   }

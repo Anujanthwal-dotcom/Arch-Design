@@ -28,17 +28,19 @@ Arch Design files (`.arch` or `.lld`) are stored in structured JSON (version 2).
 
 ## 2. Node Schema
 
-Every node in `nodes` shares common fields and includes type-specific extensions.
+Every node in `nodes` shares common fields and belongs to one of 6 universal **Architecture Tiers** (`container`, `presentation`, `logic`, `contract`, `execution`, `infrastructure`). Arch Design supports both the standard card types as well as domain archetypes (`screen`, `viewmodel`, `usecase`, `repository`, `dao`, `trait`, `struct`, `store`, `hook`, `action`, etc.) and arbitrary custom cards.
 
 ### Common Node Fields
 ```typescript
 {
   id: string;              // Unique identifier (e.g., "m1", "c1", "s1", "t1", "f1", "e1")
-  type: "module" | "service" | "component" | "type" | "function" | "external";
+  type: string;            // Standard type or domain archetype (e.g. "module", "service", "screen", "viewmodel", "struct", "trait")
+  tier?: "container" | "presentation" | "logic" | "contract" | "execution" | "infrastructure"; // Architectural tier (inferred if omitted)
   label: string;           // Display title of the card
   pos: { x: number; y: number }; // Canvas pixel position
   description?: string;    // Brief summary of responsibility
-  subType?: string;        // Domain-specific subtype or role
+  subType?: string;        // Domain-specific subtype or role (e.g. "composable", "stateflow", "zustand")
+  tech?: string;           // Technology icon badge for infrastructure (e.g. "room", "swiftdata", "tokio")
   properties?: Array<{
     id: string;
     title: string;
@@ -47,6 +49,16 @@ Every node in `nodes` shares common fields and includes type-specific extensions
   isCollapsed?: boolean;   // Optional fold state
 }
 ```
+
+### Architecture Tiers Mapping
+| Tier | Description | Common Types / Archetypes |
+| :--- | :--- | :--- |
+| **`container`** | Structural packaging & boundaries | `module`, `crate`, `package`, `feature` |
+| **`presentation`** | UI views, layouts, and screens | `screen`, `view`, `component`, `page`, `composable`, `widget` |
+| **`logic`** | State holders, business orchestrators | `service`, `viewmodel`, `store`, `hook`, `usecase`, `coordinator`, `controller`, `interactor`, `bloc` |
+| **`contract`** | Schemas, data models, interfaces | `type`, `struct`, `trait`, `model`, `entity`, `dao`, `schema`, `interface`, `enum` |
+| **`execution`** | Methods, endpoints, async actions | `function`, `method`, `endpoint`, `action`, `routine` |
+| **`infrastructure`** | Databases, runtimes, hardware, external APIs | `external`, `database`, `api`, `driver`, `hardware`, `runtime` |
 
 ---
 

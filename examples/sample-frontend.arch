@@ -6,6 +6,7 @@
     {
       "id": "c1",
       "type": "component",
+      "tier": "presentation",
       "label": "ProductPage",
       "pos": {
         "x": 480,
@@ -27,6 +28,7 @@
     {
       "id": "c2",
       "type": "component",
+      "tier": "presentation",
       "label": "ProductCard",
       "pos": {
         "x": 900,
@@ -48,6 +50,7 @@
     {
       "id": "s1",
       "type": "service",
+      "tier": "logic",
       "label": "CartStore",
       "pos": {
         "x": 60,
@@ -69,6 +72,7 @@
     {
       "id": "f1",
       "type": "function",
+      "tier": "execution",
       "label": "formatCurrency",
       "pos": {
         "x": 1320,
@@ -106,6 +110,7 @@
     {
       "id": "e1",
       "type": "external",
+      "tier": "infrastructure",
       "label": "StoreAPI",
       "pos": {
         "x": 480,
@@ -121,6 +126,7 @@
     {
       "id": "t1",
       "type": "type",
+      "tier": "contract",
       "label": "ProductDTO",
       "pos": {
         "x": 480,

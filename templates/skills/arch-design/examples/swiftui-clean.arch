@@ -1,0 +1,189 @@
+{
+  "version": 2,
+  "domain": "ios",
+  "name": "swiftui-clean",
+  "description": "Production iOS SwiftUI Clean Architecture (SwiftUI Views, Observable ViewModels, Navigation Coordinators, SwiftData)",
+  "nodes": [
+    {
+      "id": "view-order-list",
+      "type": "view",
+      "tier": "presentation",
+      "label": "OrderListView",
+      "description": "Declarative SwiftUI View rendering reactive lists with pull-to-refresh and navigation links",
+      "subType": "swiftui",
+      "pos": {
+        "x": 860,
+        "y": 90
+      },
+      "properties": [
+        {
+          "id": "p1",
+          "title": "@State",
+          "description": "private var viewModel: OrderListViewModel"
+        },
+        {
+          "id": "p2",
+          "title": "body",
+          "description": "some View"
+        }
+      ]
+    },
+    {
+      "id": "vm-order-list",
+      "type": "viewmodel",
+      "tier": "logic",
+      "label": "OrderListViewModel",
+      "description": "Swift Observation @Observable class driving view states, task concurrency, and filter criteria",
+      "subType": "observable",
+      "pos": {
+        "x": 460,
+        "y": 90
+      },
+      "properties": [
+        {
+          "id": "p3",
+          "title": "orders",
+          "description": "var orders: [OrderEntity] = []"
+        },
+        {
+          "id": "p4",
+          "title": "fetchOrders",
+          "description": "@MainActor func loadOrders() async"
+        }
+      ]
+    },
+    {
+      "id": "coord-order",
+      "type": "coordinator",
+      "tier": "logic",
+      "label": "OrderFlowCoordinator",
+      "description": "Decoupled navigation coordinator handling deep linking, sheets, and NavigationPath stacks",
+      "subType": "coordinator",
+      "pos": {
+        "x": 60,
+        "y": 85
+      },
+      "properties": [
+        {
+          "id": "p5",
+          "title": "path",
+          "description": "NavigationPath"
+        },
+        {
+          "id": "p6",
+          "title": "showDetail",
+          "description": "func showOrderDetail(id: UUID)"
+        }
+      ]
+    },
+    {
+      "id": "repo-orders",
+      "type": "repository",
+      "tier": "logic",
+      "label": "OrderRepository",
+      "description": "Repository protocol implementation abstracting SwiftData ModelContext and network sync",
+      "subType": "repository",
+      "pos": {
+        "x": 60,
+        "y": 335
+      },
+      "properties": [
+        {
+          "id": "p7",
+          "title": "fetchActive",
+          "description": "func fetchActiveOrders() throws -> [OrderEntity]"
+        },
+        {
+          "id": "p8",
+          "title": "save",
+          "description": "func saveOrder(_ order: OrderEntity) throws"
+        }
+      ]
+    },
+    {
+      "id": "model-order",
+      "type": "model",
+      "tier": "contract",
+      "label": "OrderEntity",
+      "description": "@Model persistent schema class with relationships and uniqueness constraints",
+      "subType": "swiftdata",
+      "pos": {
+        "x": 460,
+        "y": 335
+      },
+      "properties": [
+        {
+          "id": "p9",
+          "title": "id",
+          "description": "@Attribute(.unique) var id: UUID"
+        },
+        {
+          "id": "p10",
+          "title": "total",
+          "description": "var totalAmount: Decimal"
+        },
+        {
+          "id": "p11",
+          "title": "status",
+          "description": "var status: OrderStatus"
+        }
+      ]
+    },
+    {
+      "id": "db-swiftdata",
+      "type": "external",
+      "tier": "infrastructure",
+      "label": "AppModelContainer",
+      "description": "SwiftData ModelContainer managing disk persistence store and CloudKit sync context",
+      "tech": "swiftdata",
+      "pos": {
+        "x": 460,
+        "y": 545
+      },
+      "properties": [
+        {
+          "id": "p12",
+          "title": "configuration",
+          "description": "ModelConfiguration(isStoredInMemoryOnly: false)"
+        },
+        {
+          "id": "p13",
+          "title": "context",
+          "description": "ModelContext(container)"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-view-vm",
+      "from": "view-order-list",
+      "to": "vm-order-list",
+      "type": "uses"
+    },
+    {
+      "id": "edge-vm-coord",
+      "from": "vm-order-list",
+      "to": "coord-order",
+      "type": "uses"
+    },
+    {
+      "id": "edge-vm-repo",
+      "from": "vm-order-list",
+      "to": "repo-orders",
+      "type": "uses"
+    },
+    {
+      "id": "edge-model-repo",
+      "from": "model-order",
+      "to": "repo-orders",
+      "type": "defines"
+    },
+    {
+      "id": "edge-db-repo",
+      "from": "db-swiftdata",
+      "to": "repo-orders",
+      "type": "injects"
+    }
+  ]
+}

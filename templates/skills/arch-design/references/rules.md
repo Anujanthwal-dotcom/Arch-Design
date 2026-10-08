@@ -4,29 +4,28 @@ Arch Design enforces clean separation of concerns and architectural integrity ac
 
 ---
 
-## 1. Connection Matrix
+## 1. Universal Tier Connection Matrix
 
-| Source Node | Target Node | Edge Type | Status | Domain Rationale |
+Arch Design abstracts architectures into 6 universal tiers (`container`, `presentation`, `logic`, `contract`, `execution`, `infrastructure`). Connection validity is evaluated based on tiers:
+
+| Source Tier | Target Tier | Edge Type | Status | Real-World Domain Rationale |
 | :--- | :--- | :--- | :---: | :--- |
-| **Service** | **Module** | `injects` | ✅ **Allowed** | Service is injected into domain/feature module boundary |
-| **Function** | **Service** | `implements` | ✅ **Allowed** | Function implements / provides method to parent service |
-| **External** | **Service** | `injects` | ✅ **Allowed** | External database, cache, or API injected into service |
-| **External** | **Module** | `injects` | ✅ **Allowed** | External infrastructure / driver dependency injected into module |
-| **Service** | **Service** | `injects` | ✅ **Allowed** | Dependency service/repository injected into consumer service |
-| **Module** | **Module** | `submodule` | ✅ **Allowed** | Submodule is part of / nested into parent module |
-| **Component** | **Component** | `renders` | ✅ **Allowed** | UI component composition: parent renders child |
-| **Service** | **Component** | `observes` | ✅ **Allowed** | ViewModel / Store / Hook provides reactive state to Component |
-| **Component** | **Service** | `uses` | ✅ **Allowed** | Component dispatches user intents / calls ViewModel or Service |
-| **Component** | **Module** | `belongsTo` | ✅ **Allowed** | Screen / View belongs to feature module |
-| **Function** | **Component** | `helper` | ✅ **Allowed** | Pure UI helper function or handler used in component |
-| **Type** | **Type** | `implements` | ✅ **Allowed** | Struct implements Trait, or Interface inheritance |
-| **Type** | **Service** | `defines` | ✅ **Allowed** | Data model / DTO contract used in service |
-| **Type** | **Component** | `defines` | ✅ **Allowed** | Props / UI contract used in component |
-| **Type** | **Function** | `defines` | ✅ **Allowed** | Model used as function input parameter or return value |
-| **Type** | **Module** | `declares` | ✅ **Allowed** | Type declared in module / crate |
-| **Function** | **Type** | `implements` | ✅ **Allowed** | Method implemented directly on struct or trait |
-| **External** | **Component** | - | ❌ **Blocked** | UI components must not bypass ViewModel/State to directly query DBs |
-| **External** | **External** | - | ❌ **Blocked** | External resources do not directly inject into each other |
+| **`presentation`** | **`presentation`** | `renders` | ✅ **Allowed** | UI nesting, layout composition, screen navigation |
+| **`logic`** | **`presentation`** | `observes` | ✅ **Allowed** | ViewModel / Store / Hook emits state observed by Screen/Component |
+| **`presentation`** | **`logic`** | `uses` | ✅ **Allowed** | UI dispatches user actions/events to ViewModel, Store, or UseCase |
+| **`logic`** | **`logic`** | `uses` / `injects` | ✅ **Allowed** | Clean layered delegation: ViewModel $\rightarrow$ UseCase $\rightarrow$ Repository |
+| **`execution`** | **`logic`** | `implements` | ✅ **Allowed** | Server action or method implements business logic |
+| **`execution`** | **`presentation`** | `helper` | ✅ **Allowed** | UI formatting helper or event callback |
+| **`execution`** | **`contract`** | `implements` | ✅ **Allowed** | Method implemented directly on Struct or Trait (Rust `impl Trait for Struct`) |
+| **`contract`** | **`contract`** | `implements` | ✅ **Allowed** | Struct implements Trait, Interface inheritance |
+| **`contract`** | **`logic` / `presentation` / `execution`** | `defines` | ✅ **Allowed** | DTO, entity schema, or props contract definition |
+| **`infrastructure`** | **`logic`** | `injects` | ✅ **Allowed** | Database, API, Storage, or OS runtime injected into Repository/Service |
+| **`infrastructure`** | **`container`** | `injects` | ✅ **Allowed** | Driver, OS kernel, or Cloud boundary injected into crate/module |
+| **Any Tier** | **`container`** | `belongsTo` / `declares` / `submodule` | ✅ **Allowed** | Structural containment into Feature Module, Crate, or Package |
+| **`infrastructure`** | **`presentation`** | - | ❌ **Blocked** | UI components must not bypass ViewModel/State to directly query DBs |
+| **`presentation`** | **`infrastructure`** | - | ❌ **Blocked** | Direct coupling from UI to infrastructure is an architectural anti-pattern |
+| **`infrastructure`** | **`infrastructure`** | - | ❌ **Blocked** | External resources do not directly inject into each other |
+| **`container`** | **Non-Container** | - | ❌ **Blocked** | Containers do not point downwards into children; children belong to containers |
 | **Any** | **Same Node** | - | ❌ **Blocked** | Self-loops are strictly prohibited |
 | **Duplicate** | **Duplicate** | - | ❌ **Blocked** | Only one edge allowed per source-target pair |
 

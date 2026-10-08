@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Node, Edge, Connection } from '@xyflow/react';
+import { ArchitectureTier, resolveNodeTier } from '../types';
 
 export const generateId = () => uuidv4();
 
@@ -27,114 +28,96 @@ export const checkValidConnection = (
   const sourceNode = nodes.find((n) => n.id === connection.source);
   const targetNode = nodes.find((n) => n.id === connection.target);
 
-  const sourceType = sourceNode?.data?.nodeType || sourceNode?.type;
-  const targetType = targetNode?.data?.nodeType || targetNode?.type;
+  const sourceType = String(sourceNode?.data?.nodeType || sourceNode?.type || '');
+  const targetType = String(targetNode?.data?.nodeType || targetNode?.type || '');
 
   if (!sourceType || !targetType) {
     return false;
   }
 
-  // service -> module (service injected into module)
-  if (sourceType === 'service' && targetType === 'module') {
-    return true;
+  const sTier = resolveNodeTier(sourceType, sourceNode?.data?.tier);
+  const tTier = resolveNodeTier(targetType, targetNode?.data?.tier);
+
+  // Prohibited: direct external/infrastructure access from presentation UI
+  if (sTier === 'infrastructure' && tTier === 'presentation') {
+    return false;
+  }
+  if (sTier === 'presentation' && tTier === 'infrastructure') {
+    return false;
   }
 
-  // function -> service (function implements / registered into service)
-  if (sourceType === 'function' && targetType === 'service') {
-    return true;
+  // Prohibited: infrastructure injecting directly into infrastructure
+  if (sTier === 'infrastructure' && tTier === 'infrastructure') {
+    return false;
   }
 
-  // external -> service (external infrastructure injected into service)
-  if (sourceType === 'external' && targetType === 'service') {
-    return true;
+  // Prohibited: container driving children (child points to parent container)
+  if (sTier === 'container' && tTier !== 'container') {
+    return false;
   }
 
-  // external -> module (external infrastructure injected into module)
-  if (sourceType === 'external' && targetType === 'module') {
-    return true;
-  }
+  // 1. Presentation -> Presentation (UI component composition, nesting, screen transitions)
+  if (sTier === 'presentation' && tTier === 'presentation') return true;
 
-  // service -> service (dependency service injected into consumer service)
-  if (sourceType === 'service' && targetType === 'service') {
-    return true;
-  }
+  // 2. Logic -> Presentation (ViewModel / Store / Hook provides reactive state to UI)
+  if (sTier === 'logic' && tTier === 'presentation') return true;
 
-  // module -> module (submodule is part of / injected into parent module)
-  if (sourceType === 'module' && targetType === 'module') {
-    return true;
-  }
+  // 3. Presentation -> Logic (UI uses / dispatches events to ViewModel, Controller, or Store)
+  if (sTier === 'presentation' && tTier === 'logic') return true;
 
-  // Frontend & Mobile:
-  // component -> component (UI composition: parent renders child)
-  if (sourceType === 'component' && targetType === 'component') {
-    return true;
-  }
+  // 4. Logic -> Logic (ViewModel -> UseCase, UseCase -> Repository, Service -> Service)
+  if (sTier === 'logic' && tTier === 'logic') return true;
 
-  // service -> component (ViewModel / Store / Hook provides state to component)
-  if (sourceType === 'service' && targetType === 'component') {
-    return true;
-  }
+  // 5. Execution -> Logic (Method / function implements business logic or service method)
+  if (sTier === 'execution' && tTier === 'logic') return true;
 
-  // component -> service (Component dispatches actions / uses service or ViewModel)
-  if (sourceType === 'component' && targetType === 'service') {
-    return true;
-  }
+  // 6. Execution -> Presentation (UI helper function or event handler)
+  if (sTier === 'execution' && tTier === 'presentation') return true;
 
-  // component -> module (Component belongs to a feature module or screen group)
-  if (sourceType === 'component' && targetType === 'module') {
-    return true;
-  }
+  // 7. Execution -> Contract (Method implemented on Struct / Trait)
+  if (sTier === 'execution' && tTier === 'contract') return true;
 
-  // function -> component (Helper function or event handler used by component)
-  if (sourceType === 'function' && targetType === 'component') {
-    return true;
-  }
+  // 8. Contract -> Contract (Struct implements Trait, Interface inheritance)
+  if (sTier === 'contract' && tTier === 'contract') return true;
 
-  // Systems & Data Types (Rust, TypeScript, Swift, Kotlin):
-  // type -> type (Struct implements Trait, or Interface inheritance)
-  if (sourceType === 'type' && targetType === 'type') {
-    return true;
-  }
+  // 9. Contract -> Logic / Presentation / Execution (Data contract, DTO, or entity definition)
+  if (sTier === 'contract' && (tTier === 'logic' || tTier === 'presentation' || tTier === 'execution')) return true;
 
-  // type -> service (Model / DTO / Entity used by service)
-  if (sourceType === 'type' && targetType === 'service') {
-    return true;
-  }
+  // 10. Infrastructure -> Logic (DB, API, Storage, Runtime injected into Repository or Service)
+  if (sTier === 'infrastructure' && tTier === 'logic') return true;
 
-  // type -> component (Model / Props contract used by component)
-  if (sourceType === 'type' && targetType === 'component') {
-    return true;
-  }
+  // 11. Infrastructure -> Container (Driver, OS, Cloud boundary injected into module/crate)
+  if (sTier === 'infrastructure' && tTier === 'container') return true;
 
-  // type -> function (Model used as parameter/return contract)
-  if (sourceType === 'type' && targetType === 'function') {
-    return true;
-  }
-
-  // type -> module (Type declared within module / crate)
-  if (sourceType === 'type' && targetType === 'module') {
-    return true;
-  }
-
-  // function -> type (Method implemented on struct / trait)
-  if (sourceType === 'function' && targetType === 'type') {
+  // 12. Structural containment into Container (Feature module, Crate, Package)
+  if (tTier === 'container') {
     return true;
   }
 
   return false;
 };
 
-export const resolveEdgeType = (sourceType: string, targetType: string): string => {
-  if (sourceType === 'function' && targetType === 'service') return 'implements';
-  if (sourceType === 'function' && targetType === 'type') return 'implements';
-  if (sourceType === 'function' && targetType === 'component') return 'helper';
-  if (sourceType === 'type' && targetType === 'type') return 'implements';
-  if (sourceType === 'type' && (targetType === 'service' || targetType === 'component' || targetType === 'function')) return 'defines';
-  if (sourceType === 'type' && targetType === 'module') return 'declares';
-  if (sourceType === 'module' && targetType === 'module') return 'submodule';
-  if (sourceType === 'component' && targetType === 'component') return 'renders';
-  if (sourceType === 'service' && targetType === 'component') return 'observes';
-  if (sourceType === 'component' && targetType === 'service') return 'uses';
-  if (sourceType === 'component' && targetType === 'module') return 'belongsTo';
+export const resolveEdgeType = (
+  sourceType: string,
+  targetType: string,
+  sourceTierExplicit?: ArchitectureTier,
+  targetTierExplicit?: ArchitectureTier
+): string => {
+  const sTier = resolveNodeTier(sourceType, sourceTierExplicit);
+  const tTier = resolveNodeTier(targetType, targetTierExplicit);
+
+  if (sTier === 'presentation' && tTier === 'presentation') return 'renders';
+  if (sTier === 'logic' && tTier === 'presentation') return 'observes';
+  if (sTier === 'presentation' && tTier === 'logic') return 'uses';
+  if (sTier === 'execution' && tTier === 'presentation') return 'helper';
+  if (sTier === 'execution' && (tTier === 'logic' || tTier === 'contract')) return 'implements';
+  if (sTier === 'contract' && tTier === 'contract') return 'implements';
+  if (sTier === 'contract' && (tTier === 'logic' || tTier === 'presentation' || tTier === 'execution')) return 'defines';
+  if (tTier === 'container') {
+    if (sTier === 'container') return 'submodule';
+    if (sTier === 'presentation') return 'belongsTo';
+    if (sTier === 'contract') return 'declares';
+    return 'injects';
+  }
   return 'injects';
 };

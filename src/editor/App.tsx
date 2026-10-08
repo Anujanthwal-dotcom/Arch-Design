@@ -4,7 +4,6 @@ import {
   ReactFlowProvider,
   Background,
   Controls,
-  MiniMap,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -23,21 +22,33 @@ import { ComponentNode } from './nodes/ComponentNode';
 import { TypeNode } from './nodes/TypeNode';
 import { FunctionNode } from './nodes/FunctionNode';
 import { ExternalNode } from './nodes/ExternalNode';
+import { ArchetypeNode } from './nodes/ArchetypeNode';
+import { DomainSelector } from './components/DomainSelector';
 import { FloatingEdge } from './edges/FloatingEdge';
 import { checkValidConnection, generateId, resolveEdgeType } from './utils';
 import { applyDagreLayout, resolveCollisionOnDrag } from './dagreLayout';
-import { LLDDocument, LLDNode, Edge as LLDFileEdge, DomainType } from '../types';
+import { LLDDocument, LLDNode, Edge as LLDFileEdge, DomainType, ArchitectureTier, resolveNodeTier } from '../types';
 import { vscode } from './vscodeApi';
 import { CanvasContext } from './context';
 
-const nodeTypes = {
+const baseNodeTypes: Record<string, React.ComponentType<any>> = {
   module: ModuleNode,
   service: ServiceNode,
   component: ComponentNode,
   type: TypeNode,
   function: FunctionNode,
   external: ExternalNode,
+  archetype: ArchetypeNode,
 };
+
+const nodeTypes = new Proxy(baseNodeTypes, {
+  get(target, prop: string) {
+    if (prop in target) {
+      return target[prop];
+    }
+    return ArchetypeNode;
+  },
+});
 
 const edgeTypes = {
   floating: FloatingEdge,
@@ -57,6 +68,9 @@ export const AppContent: React.FC = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [fileName, setFileName] = useState('architecture');
   const [domain, setDomain] = useState<DomainType | string>('universal');
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const [customName, setCustomName] = useState('');
+  const [customTier, setCustomTier] = useState<ArchitectureTier>('logic');
   const [isLoading, setIsLoading] = useState(true);
   const [focusModeEnabled, setFocusModeEnabled] = useState(true);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
@@ -279,7 +293,7 @@ export const AppContent: React.FC = () => {
       const tNode = nodes.find((n) => n.id === params.target);
       const sType = String(sNode?.data?.nodeType || sNode?.type || '');
       const tType = String(tNode?.data?.nodeType || tNode?.type || '');
-      const edgeType = resolveEdgeType(sType, tType);
+      const edgeType = resolveEdgeType(sType, tType, sNode?.data?.tier, tNode?.data?.tier);
 
       const newEdge: Edge = {
         id: generateId(),
@@ -300,9 +314,12 @@ export const AppContent: React.FC = () => {
   const serializeDocument = useCallback((): string => {
     const lldNodes: LLDNode[] = nodes.map((node) => {
       const nodeData = node.data || {};
+      const rawType = String(nodeData.nodeType || node.type || 'card');
+      const tier = resolveNodeTier(rawType, nodeData.tier);
       const lldNode: LLDNode = {
         id: node.id,
-        type: (node.data?.nodeType || node.type) as any,
+        type: rawType,
+        tier,
         label: String(nodeData.label || ''),
         pos: node.position,
       };
@@ -367,26 +384,28 @@ export const AppContent: React.FC = () => {
 
   const addNode = useCallback(
     (
-      type: 'module' | 'service' | 'component' | 'type' | 'function' | 'external',
-      defaultSubType?: string
+      type: string,
+      defaultSubType?: string,
+      explicitTier?: ArchitectureTier,
+      customLabel?: string
     ) => {
       const id = generateId();
+      const tier = resolveNodeTier(type, explicitTier);
       let position = {
         x: 100 + Math.floor(Math.random() * 200),
         y: 100 + Math.floor(Math.random() * 200),
       };
 
       if (nodes.length > 0) {
-        // Place in structured column to avoid overlapping existing cards
-        const typeColumns: Record<string, number> = {
-          module: 100,
-          component: 100,
-          service: 480,
-          type: 480,
-          function: 860,
-          external: 860,
+        const tierColumns: Record<ArchitectureTier, number> = {
+          container: 100,
+          presentation: 100,
+          logic: 480,
+          contract: 480,
+          execution: 860,
+          infrastructure: 860,
         };
-        const colX = typeColumns[type] || 100;
+        const colX = tierColumns[tier] || 100;
         const nodesInCol = nodes.filter((n) => Math.abs(n.position.x - colX) < 180);
         if (nodesInCol.length > 0) {
           const maxY = Math.max(...nodesInCol.map((n) => n.position.y));
@@ -396,20 +415,20 @@ export const AppContent: React.FC = () => {
         }
       }
 
+      const defaultLabel = customLabel || `New ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+
       const newNode: Node = {
         id,
         type,
         position,
         data: {
           nodeType: type,
-          label: `New ${type.charAt(0).toUpperCase() + type.slice(1)}`,
+          tier,
+          label: defaultLabel,
           description: '',
           properties: [],
-          ...(type === 'component' && { subType: defaultSubType || 'screen' }),
-          ...(type === 'type' && { subType: defaultSubType || 'struct' }),
-          ...(type === 'service' && { typeRef: '', ...(defaultSubType && { subType: defaultSubType }) }),
-          ...(type === 'function' && { parameters: [], returns: [] }),
-          ...(type === 'external' && { tech: defaultSubType || 'postgres' }),
+          ...(defaultSubType && { subType: defaultSubType }),
+          ...(tier === 'infrastructure' && { tech: defaultSubType || 'postgres' }),
         },
       };
       setNodes((nds) => [...nds, newNode]);
@@ -529,75 +548,101 @@ export const AppContent: React.FC = () => {
     };
   }, [nodes, edges, serializeDocument]);
 
+  const handleAddCustomCard = () => {
+    if (!customName.trim()) return;
+    addNode(customName.trim().toLowerCase(), undefined, customTier, customName.trim());
+    setCustomName('');
+    setIsCustomModalOpen(false);
+  };
+
   return (
     <CanvasContext.Provider value={{ updateNodeData, deleteNode }}>
       <div style={{ width: '100%', height: '100%', position: 'relative' }}>
         <div className="toolbar">
-          <select
-            className="toolbar-select"
-            value={domain}
-            onChange={(e) => setDomain(e.target.value)}
-            title="Architectural Domain Preset"
-          >
-            <option value="universal">Universal</option>
-            <option value="backend">Backend</option>
-            <option value="frontend">Frontend</option>
-            <option value="mobile">Mobile (Android/iOS)</option>
-            <option value="systems">Systems (Rust/C++)</option>
-          </select>
+          <DomainSelector value={domain} onChange={setDomain} />
           <div className="toolbar-separator" />
           {domain === 'frontend' ? (
             <>
-              <button className="toolbar-btn" onClick={() => addNode('component', 'component')}>
+              <button className="toolbar-btn" onClick={() => addNode('page', 'nextjs', 'presentation', 'New Page')}>
+                + Page
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('component', 'react', 'presentation', 'New Component')}>
                 + Component
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('service', 'store')}>
+              <button className="toolbar-btn" onClick={() => addNode('store', 'zustand', 'logic', 'New Store')}>
                 + Store / Hook
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('function')}>
-                + Function
+              <button className="toolbar-btn" onClick={() => addNode('action', 'server-action', 'execution', 'New Action')}>
+                + Action
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('external', 'api')}>
-                + API / Storage
+              <button className="toolbar-btn" onClick={() => addNode('schema', 'zod', 'contract', 'New Schema')}>
+                + Schema / DTO
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('module')}>
-                + Module
+              <button className="toolbar-btn" onClick={() => addNode('external', 'rest', 'infrastructure', 'API Service')}>
+                + API / Service
               </button>
             </>
-          ) : domain === 'mobile' ? (
+          ) : domain === 'android' || domain === 'mobile' ? (
             <>
-              <button className="toolbar-btn" onClick={() => addNode('component', 'screen')}>
+              <button className="toolbar-btn" onClick={() => addNode('screen', 'composable', 'presentation', 'New Screen')}>
                 + Screen
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('service', 'viewmodel')}>
+              <button className="toolbar-btn" onClick={() => addNode('viewmodel', 'stateflow', 'logic', 'New ViewModel')}>
                 + ViewModel
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('service', 'repository')}>
+              <button className="toolbar-btn" onClick={() => addNode('usecase', 'domain', 'logic', 'New UseCase')}>
+                + UseCase
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('repository', 'repo', 'logic', 'New Repository')}>
                 + Repository
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('type', 'model')}>
+              <button className="toolbar-btn" onClick={() => addNode('dao', 'room', 'contract', 'New DAO')}>
+                + DAO / Entity
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('external', 'room', 'infrastructure', 'Room DB')}>
+                + Room DB
+              </button>
+            </>
+          ) : domain === 'ios' ? (
+            <>
+              <button className="toolbar-btn" onClick={() => addNode('view', 'swiftui', 'presentation', 'New View')}>
+                + View
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('viewmodel', 'observable', 'logic', 'New ViewModel')}>
+                + ViewModel
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('coordinator', 'navigation', 'logic', 'New Coordinator')}>
+                + Coordinator
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('repository', 'repo', 'logic', 'New Repository')}>
+                + Repository
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('model', 'swiftdata', 'contract', 'New Model')}>
                 + Model
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('external', 'room')}>
-                + DB / Source
+              <button className="toolbar-btn" onClick={() => addNode('external', 'swiftdata', 'infrastructure', 'SwiftData')}>
+                + SwiftData
               </button>
             </>
           ) : domain === 'systems' ? (
             <>
-              <button className="toolbar-btn" onClick={() => addNode('module', 'crate')}>
+              <button className="toolbar-btn" onClick={() => addNode('crate', 'crate', 'container', 'New Crate')}>
                 + Crate / Mod
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('type', 'struct')}>
+              <button className="toolbar-btn" onClick={() => addNode('struct', 'struct', 'contract', 'New Struct')}>
                 + Struct
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('type', 'trait')}>
+              <button className="toolbar-btn" onClick={() => addNode('trait', 'trait', 'contract', 'New Trait')}>
                 + Trait
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('function')}>
+              <button className="toolbar-btn" onClick={() => addNode('enum', 'enum', 'contract', 'New Enum')}>
+                + Enum
+              </button>
+              <button className="toolbar-btn" onClick={() => addNode('function', 'fn', 'execution', 'New Function')}>
                 + Function
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('external', 'os')}>
-                + OS / FFI / Driver
+              <button className="toolbar-btn" onClick={() => addNode('external', 'ffi', 'infrastructure', 'Hardware / FFI')}>
+                + Driver / FFI
               </button>
             </>
           ) : domain === 'backend' ? (
@@ -608,14 +653,17 @@ export const AppContent: React.FC = () => {
               <button className="toolbar-btn" onClick={() => addNode('service')}>
                 + Service
               </button>
+              <button className="toolbar-btn" onClick={() => addNode('controller', 'controller', 'logic', 'New Controller')}>
+                + Controller
+              </button>
               <button className="toolbar-btn" onClick={() => addNode('function')}>
                 + Function
               </button>
-              <button className="toolbar-btn" onClick={() => addNode('external')}>
-                + External
+              <button className="toolbar-btn" onClick={() => addNode('external', 'postgres', 'infrastructure', 'Database')}>
+                + Database
               </button>
               <button className="toolbar-btn" onClick={() => addNode('type', 'model')}>
-                + Type
+                + Model
               </button>
             </>
           ) : (
@@ -643,6 +691,14 @@ export const AppContent: React.FC = () => {
           <div className="toolbar-separator" />
           <button
             className="toolbar-btn"
+            onClick={() => setIsCustomModalOpen(true)}
+            title="Create a custom card archetype for any domain"
+          >
+            + Custom Card...
+          </button>
+          <div className="toolbar-separator" />
+          <button
+            className="toolbar-btn"
             onClick={() => handleAutoLayout('LR')}
             title="Auto-arrange cards and resolve collisions using Dagre"
           >
@@ -660,25 +716,6 @@ export const AppContent: React.FC = () => {
           >
             Focus Mode: {focusModeEnabled ? 'ON' : 'OFF'}
           </button>
-          {isFocusActive && (
-            <div className="focus-badge" title="Active Focus Context">
-              <span className="focus-badge-title">
-                {activeNodeId
-                  ? String(nodes.find((n) => n.id === activeNodeId)?.data?.label || 'Card')
-                  : 'Connection'}
-              </span>
-              {activeNodeId && (
-                <span className="focus-badge-counts">
-                  <span className="focus-incoming-dot" title="Incoming injections">
-                    ● {incomingEdgeIds.size} in
-                  </span>
-                  <span className="focus-outgoing-dot" title="Outgoing injection into parent">
-                    ● {outgoingEdgeIds.size} out
-                  </span>
-                </span>
-              )}
-            </div>
-          )}
         </div>
 
         {isLoading && (
@@ -728,30 +765,89 @@ export const AppContent: React.FC = () => {
           fitView
           minZoom={0.1}
           maxZoom={1.5}
+          proOptions={{ hideAttribution: true }}
         >
           <Background color="#2a2a30" gap={16} />
           <Controls />
-          <MiniMap
-            nodeColor={(node) => {
-              switch (node.type) {
-                case 'module':
-                  return '#4ec9b0';
-                case 'service':
-                  return '#569cd6';
-                case 'component':
-                  return '#f59e0b';
-                case 'type':
-                  return '#a855f7';
-                case 'function':
-                  return '#dcdcaa';
-                case 'external':
-                  return '#c586c0';
-                default:
-                  return '#28282d';
-              }
-            }}
-          />
         </ReactFlow>
+
+        <div className="canvas-bottom-right-panel">
+          {isFocusActive ? (
+            <div className="focus-badge active" title="Active Focus Context">
+              <span className="focus-badge-title">
+                {activeNodeId
+                  ? String(nodes.find((n) => n.id === activeNodeId)?.data?.label || 'Card')
+                  : 'Connection'}
+              </span>
+              {activeNodeId && (
+                <span className="focus-badge-counts">
+                  <span className="focus-incoming-dot" title="Incoming injections">
+                    ● {incomingEdgeIds.size} in
+                  </span>
+                  <span className="focus-outgoing-dot" title="Outgoing injections">
+                    ● {outgoingEdgeIds.size} out
+                  </span>
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className="focus-badge idle" title="Canvas Summary">
+              <span className="focus-badge-title" style={{ color: 'var(--text-secondary)' }}>
+                {nodes.length} cards • {edges.length} connections
+              </span>
+            </div>
+          )}
+        </div>
+
+        {isCustomModalOpen && (
+          <div className="custom-card-backdrop" onClick={() => setIsCustomModalOpen(false)}>
+            <div className="custom-card-modal" onClick={(e) => e.stopPropagation()}>
+              <h3 className="custom-card-title">Add Custom Card Archetype</h3>
+              <input
+                className="custom-card-input"
+                type="text"
+                placeholder="Card Name (e.g. BLoC, Actor, Flow)"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleAddCustomCard();
+                  if (e.key === 'Escape') setIsCustomModalOpen(false);
+                }}
+                autoFocus
+              />
+              <div>
+                <label style={{ fontSize: '11px', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px' }}>
+                  Architectural Tier
+                </label>
+                <select
+                  className="toolbar-select"
+                  style={{ width: '100%' }}
+                  value={customTier}
+                  onChange={(e) => setCustomTier(e.target.value as ArchitectureTier)}
+                >
+                  <option value="container">Container (Module, Crate, Package)</option>
+                  <option value="presentation">Presentation (UI, Screen, View)</option>
+                  <option value="logic">Logic (Service, ViewModel, Store, UseCase)</option>
+                  <option value="contract">Contract (Type, Struct, Trait, Schema, Entity)</option>
+                  <option value="execution">Execution (Function, Action, Routine)</option>
+                  <option value="infrastructure">Infrastructure (Database, External, Driver)</option>
+                </select>
+              </div>
+              <div className="custom-card-actions">
+                <button className="toolbar-btn" onClick={() => setIsCustomModalOpen(false)}>
+                  Cancel
+                </button>
+                <button
+                  className="toolbar-btn active"
+                  onClick={handleAddCustomCard}
+                  disabled={!customName.trim()}
+                >
+                  Create Card
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </CanvasContext.Provider>
   );

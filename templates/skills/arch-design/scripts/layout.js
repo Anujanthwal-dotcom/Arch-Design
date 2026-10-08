@@ -39,6 +39,18 @@ if (!Array.isArray(doc.nodes) || !Array.isArray(doc.edges)) {
   process.exit(1);
 }
 
+function resolveNodeTier(type, explicitTier) {
+  if (explicitTier) return explicitTier;
+  const t = (type || '').toLowerCase();
+  if (['module', 'crate', 'package', 'feature'].includes(t)) return 'container';
+  if (['component', 'screen', 'view', 'page', 'composable', 'widget', 'modal', 'layout'].includes(t)) return 'presentation';
+  if (['service', 'viewmodel', 'store', 'hook', 'usecase', 'coordinator', 'controller', 'interactor', 'bloc', 'manager'].includes(t)) return 'logic';
+  if (['type', 'struct', 'trait', 'model', 'entity', 'dao', 'schema', 'interface', 'enum', 'dto'].includes(t)) return 'contract';
+  if (['function', 'method', 'endpoint', 'action', 'routine', 'rpc'].includes(t)) return 'execution';
+  if (['external', 'database', 'api', 'driver', 'hardware', 'runtime', 'channel', 'storage'].includes(t)) return 'infrastructure';
+  return 'logic';
+}
+
 // Try using Dagre if available, otherwise use topological ranker
 let layoutSucceeded = false;
 
@@ -55,12 +67,12 @@ try {
   });
 
   doc.nodes.forEach(node => {
-    let height = 140;
-    if (node.type === 'service') height = 180;
-    if (node.type === 'component') height = 180;
-    if (node.type === 'type') height = 170;
-    if (node.type === 'function') height = 160;
-    if (node.type === 'external') height = 120;
+    const tier = resolveNodeTier(node.type, node.tier);
+    let height = 150;
+    if (tier === 'presentation' || tier === 'logic') height = 190;
+    else if (tier === 'contract') height = 170;
+    else if (tier === 'execution') height = 160;
+    else if (tier === 'infrastructure') height = 130;
     g.setNode(node.id, { width: 300, height });
   });
 
@@ -88,7 +100,6 @@ try {
 
 if (!layoutSucceeded) {
   // Fallback: Group by architectural hierarchy
-  const rankMap = new Map();
   const inDegree = new Map();
 
   doc.nodes.forEach(n => inDegree.set(n.id, 0));
@@ -96,12 +107,13 @@ if (!layoutSucceeded) {
     inDegree.set(e.to, (inDegree.get(e.to) || 0) + 1);
   });
 
-  // Modules & Components: rank 0, Services & Types: rank 1, Functions & Externals: rank 2
+  // Presentation & Containers: rank 0, Logic & Contracts: rank 1, Execution & Infrastructure: rank 2
   const ranks = [[], [], []];
 
   doc.nodes.forEach(node => {
-    if (node.type === 'module' || node.type === 'component') ranks[0].push(node);
-    else if (node.type === 'service' || node.type === 'type') ranks[1].push(node);
+    const tier = resolveNodeTier(node.type, node.tier);
+    if (tier === 'container' || tier === 'presentation') ranks[0].push(node);
+    else if (tier === 'logic' || tier === 'contract') ranks[1].push(node);
     else ranks[2].push(node);
   });
 

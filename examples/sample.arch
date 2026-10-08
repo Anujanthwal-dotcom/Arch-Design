@@ -1,14 +1,16 @@
 {
   "version": 2,
+  "domain": "universal",
   "name": "auth-system",
   "nodes": [
     {
       "id": "a8f12b3c-4d56-4e78-9f01-1234567890ab",
       "type": "module",
+      "tier": "container",
       "label": "Auth",
       "pos": {
         "x": 60,
-        "y": 330
+        "y": 550
       },
       "description": "Authentication and authorization domain",
       "properties": [
@@ -30,10 +32,11 @@
     {
       "id": "b9f23c4d-5e67-5f89-af12-2345678901bc",
       "type": "service",
+      "tier": "logic",
       "label": "AuthService",
       "pos": {
-        "x": 460,
-        "y": 330
+        "x": 480,
+        "y": 562
       },
       "description": "Core authentication business logic",
       "properties": [
@@ -51,10 +54,11 @@
     {
       "id": "c0f34d5e-6f78-6f90-bg23-3456789012cd",
       "type": "function",
+      "tier": "execution",
       "label": "validateToken",
       "pos": {
-        "x": 860,
-        "y": 650
+        "x": 900,
+        "y": 1158
       },
       "description": "Validates JWT token and returns decoded claims",
       "properties": [
@@ -94,10 +98,11 @@
     {
       "id": "d1f45e6f-7g89-7g01-ch34-4567890123de",
       "type": "function",
+      "tier": "execution",
       "label": "generateToken",
       "pos": {
-        "x": 860,
-        "y": 430
+        "x": 900,
+        "y": 666
       },
       "description": "Generates access and refresh tokens for authenticated user",
       "properties": [],
@@ -131,10 +136,11 @@
     {
       "id": "e2f56f7g-8h90-8h12-di45-5678901234ef",
       "type": "external",
+      "tier": "infrastructure",
       "label": "users-db",
       "pos": {
-        "x": 860,
-        "y": 230
+        "x": 900,
+        "y": 363
       },
       "description": "User identity and credentials store",
       "properties": [
@@ -152,10 +158,11 @@
     {
       "id": "f3f67g8h-9i01-9i23-ej56-6789012345fg",
       "type": "external",
+      "tier": "infrastructure",
       "label": "token-cache",
       "pos": {
-        "x": 860,
-        "y": 50
+        "x": 900,
+        "y": 60
       },
       "description": "Stores token blacklist and session data",
       "properties": [

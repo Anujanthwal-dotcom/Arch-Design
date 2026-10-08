@@ -123,7 +123,11 @@ export function activate(context: vscode.ExtensionContext) {
           ['examples', 'sample.arch'],
           ['examples', 'sample-frontend.arch'],
           ['examples', 'sample-mobile.arch'],
-          ['examples', 'sample-rust.arch']
+          ['examples', 'sample-rust.arch'],
+          ['examples', 'nowinandroid.arch'],
+          ['examples', 'nextjs-commerce.arch'],
+          ['examples', 'tokio-hyper.arch'],
+          ['examples', 'swiftui-clean.arch']
         ];
 
         for (const segments of skillFiles) {

@@ -9,6 +9,10 @@ const sampleArchPath = path.join(__dirname, '..', 'examples', 'sample.arch');
 const sampleFrontendPath = path.join(__dirname, '..', 'examples', 'sample-frontend.arch');
 const sampleMobilePath = path.join(__dirname, '..', 'examples', 'sample-mobile.arch');
 const sampleRustPath = path.join(__dirname, '..', 'examples', 'sample-rust.arch');
+const sampleNiaPath = path.join(__dirname, '..', 'examples', 'nowinandroid.arch');
+const sampleNextPath = path.join(__dirname, '..', 'examples', 'nextjs-commerce.arch');
+const sampleTokioPath = path.join(__dirname, '..', 'examples', 'tokio-hyper.arch');
+const sampleSwiftPath = path.join(__dirname, '..', 'examples', 'swiftui-clean.arch');
 
 const sampleDoc = JSON.parse(fs.readFileSync(sampleArchPath, 'utf8'));
 assert.strictEqual(sampleDoc.version, 2, 'Version must be 2');
@@ -30,17 +34,48 @@ assert.strictEqual(rustDoc.domain, 'systems', 'Rust sample domain must be system
 assert.ok(rustDoc.nodes.some(n => n.type === 'type' && n.subType === 'struct'), 'Rust sample must contain struct');
 assert.ok(rustDoc.nodes.some(n => n.type === 'type' && n.subType === 'trait'), 'Rust sample must contain trait');
 
-// Verify CLI validate script passes on all domain samples
+const niaDoc = JSON.parse(fs.readFileSync(sampleNiaPath, 'utf8'));
+assert.strictEqual(niaDoc.domain, 'android', 'Now in Android domain must be android');
+assert.ok(niaDoc.nodes.some(n => n.type === 'screen' && n.tier === 'presentation'), 'Now in Android must contain screen');
+assert.ok(niaDoc.nodes.some(n => n.type === 'viewmodel' && n.tier === 'logic'), 'Now in Android must contain viewmodel');
+assert.ok(niaDoc.nodes.some(n => n.type === 'usecase' && n.tier === 'logic'), 'Now in Android must contain usecase');
+
+const nextDoc = JSON.parse(fs.readFileSync(sampleNextPath, 'utf8'));
+assert.strictEqual(nextDoc.domain, 'frontend', 'Next.js commerce domain must be frontend');
+assert.ok(nextDoc.nodes.some(n => n.type === 'page' && n.tier === 'presentation'), 'Next.js commerce must contain page');
+assert.ok(nextDoc.nodes.some(n => n.type === 'store' && n.tier === 'logic'), 'Next.js commerce must contain store');
+assert.ok(nextDoc.nodes.some(n => n.type === 'action' && n.tier === 'execution'), 'Next.js commerce must contain server action');
+
+const tokioDoc = JSON.parse(fs.readFileSync(sampleTokioPath, 'utf8'));
+assert.strictEqual(tokioDoc.domain, 'systems', 'Tokio Hyper domain must be systems');
+assert.ok(tokioDoc.nodes.some(n => n.type === 'crate' && n.tier === 'container'), 'Tokio Hyper must contain crate');
+assert.ok(tokioDoc.nodes.some(n => n.type === 'trait' && n.tier === 'contract'), 'Tokio Hyper must contain trait');
+
+const swiftDoc = JSON.parse(fs.readFileSync(sampleSwiftPath, 'utf8'));
+assert.strictEqual(swiftDoc.domain, 'ios', 'SwiftUI clean domain must be ios');
+assert.ok(swiftDoc.nodes.some(n => n.type === 'view' && n.tier === 'presentation'), 'SwiftUI clean must contain view');
+assert.ok(swiftDoc.nodes.some(n => n.type === 'coordinator' && n.tier === 'logic'), 'SwiftUI clean must contain coordinator');
+
+// Verify CLI validate script passes on all 8 domain samples
 const validateScript = path.join(__dirname, '..', 'templates', 'skills', 'arch-design', 'scripts', 'validate.js');
 
-[sampleArchPath, sampleFrontendPath, sampleMobilePath, sampleRustPath].forEach(filePath => {
+[
+  sampleArchPath,
+  sampleFrontendPath,
+  sampleMobilePath,
+  sampleRustPath,
+  sampleNiaPath,
+  sampleNextPath,
+  sampleTokioPath,
+  sampleSwiftPath
+].forEach(filePath => {
   const valOutput = execSync(`node "${validateScript}" "${filePath}"`, { encoding: 'utf8' });
   assert.ok(valOutput.includes('Validation Passed'), `validate.js must pass on ${path.basename(filePath)}`);
 });
 
-console.log('✓ All domain sample .arch files schema-verified and passed CLI validation.');
+console.log('✓ All 8 domain reference .arch files schema-verified and passed CLI validation.');
 
-// Test 2: Verify Connection Rules Logic Across Domains
+// Test 2: Verify Connection Rules Logic Across Domains & Tiers
 console.log('--- Test 2: Testing Multi-Domain Connection Validation Rules ---');
 const mockNodes = [
   { id: 'm1', type: 'module' },
@@ -53,7 +88,30 @@ const mockNodes = [
   { id: 't2', type: 'type' },
   { id: 'f1', type: 'function' },
   { id: 'e1', type: 'external' },
+  { id: 'scr1', type: 'screen', tier: 'presentation' },
+  { id: 'vm1', type: 'viewmodel', tier: 'logic' },
+  { id: 'uc1', type: 'usecase', tier: 'logic' },
+  { id: 'repo1', type: 'repository', tier: 'logic' },
+  { id: 'dao1', type: 'dao', tier: 'contract' },
+  { id: 'store1', type: 'store', tier: 'logic' },
+  { id: 'act1', type: 'action', tier: 'execution' },
+  { id: 'sch1', type: 'schema', tier: 'contract' },
+  { id: 'crate1', type: 'crate', tier: 'container' },
+  { id: 'str1', type: 'struct', tier: 'contract' },
+  { id: 'trt1', type: 'trait', tier: 'contract' },
 ];
+
+function resolveMockTier(node) {
+  if (node?.tier) return node.tier;
+  const t = (node?.type || '').toLowerCase();
+  if (['module', 'crate', 'package', 'feature'].includes(t)) return 'container';
+  if (['component', 'screen', 'view', 'page', 'composable', 'widget'].includes(t)) return 'presentation';
+  if (['service', 'viewmodel', 'store', 'hook', 'usecase', 'coordinator', 'controller', 'repository'].includes(t)) return 'logic';
+  if (['type', 'struct', 'trait', 'model', 'entity', 'dao', 'schema'].includes(t)) return 'contract';
+  if (['function', 'method', 'endpoint', 'action'].includes(t)) return 'execution';
+  if (['external', 'database', 'api', 'driver', 'runtime'].includes(t)) return 'infrastructure';
+  return 'logic';
+}
 
 function checkValid(source, target, edges = []) {
   if (!source || !target) return false;
@@ -62,31 +120,29 @@ function checkValid(source, target, edges = []) {
 
   const sNode = mockNodes.find(n => n.id === source);
   const tNode = mockNodes.find(n => n.id === target);
-  const sType = sNode?.type;
-  const tType = tNode?.type;
+  if (!sNode || !tNode) return false;
 
-  // Backend / Monolith
-  if (sType === 'service' && tType === 'module') return true;
-  if (sType === 'function' && tType === 'service') return true;
-  if (sType === 'external' && tType === 'service') return true;
-  if (sType === 'external' && tType === 'module') return true;
-  if (sType === 'service' && tType === 'service') return true;
-  if (sType === 'module' && tType === 'module') return true;
+  const sTier = resolveMockTier(sNode);
+  const tTier = resolveMockTier(tNode);
 
-  // Frontend & Mobile
-  if (sType === 'component' && tType === 'component') return true;
-  if (sType === 'service' && tType === 'component') return true;
-  if (sType === 'component' && tType === 'service') return true;
-  if (sType === 'component' && tType === 'module') return true;
-  if (sType === 'function' && tType === 'component') return true;
+  if (sTier === 'infrastructure' && tTier === 'presentation') return false;
+  if (sTier === 'presentation' && tTier === 'infrastructure') return false;
+  if (sTier === 'infrastructure' && tTier === 'infrastructure') return false;
+  if (sTier === 'container' && tTier !== 'container') return false;
 
-  // Systems / Types
-  if (sType === 'type' && tType === 'type') return true;
-  if (sType === 'type' && tType === 'service') return true;
-  if (sType === 'type' && tType === 'component') return true;
-  if (sType === 'type' && tType === 'function') return true;
-  if (sType === 'type' && tType === 'module') return true;
-  if (sType === 'function' && tType === 'type') return true;
+  if (sTier === 'container' && tTier === 'container') return true;
+  if (sTier === 'presentation' && tTier === 'presentation') return true;
+  if (sTier === 'logic' && tTier === 'presentation') return true;
+  if (sTier === 'presentation' && tTier === 'logic') return true;
+  if (sTier === 'logic' && tTier === 'logic') return true;
+  if (sTier === 'execution' && tTier === 'logic') return true;
+  if (sTier === 'execution' && tTier === 'presentation') return true;
+  if (sTier === 'execution' && tTier === 'contract') return true;
+  if (sTier === 'contract' && tTier === 'contract') return true;
+  if (sTier === 'contract' && (tTier === 'logic' || tTier === 'presentation' || tTier === 'execution')) return true;
+  if (sTier === 'infrastructure' && tTier === 'logic') return true;
+  if (sTier === 'infrastructure' && tTier === 'container') return true;
+  if (tTier === 'container') return true;
 
   return false;
 }
@@ -106,20 +162,28 @@ assert.strictEqual(checkValid('c1', 's1'), true, 'component -> service (uses) is
 assert.strictEqual(checkValid('c1', 'm1'), true, 'component -> module (belongsTo) is allowed');
 assert.strictEqual(checkValid('f1', 'c1'), true, 'function -> component (helper) is allowed');
 
+// Allowed Archetype Clean Architecture connections
+assert.strictEqual(checkValid('scr1', 'vm1'), true, 'screen -> viewmodel is allowed');
+assert.strictEqual(checkValid('vm1', 'uc1'), true, 'viewmodel -> usecase is allowed');
+assert.strictEqual(checkValid('uc1', 'repo1'), true, 'usecase -> repository is allowed');
+assert.strictEqual(checkValid('dao1', 'repo1'), true, 'dao -> repository is allowed');
+assert.strictEqual(checkValid('e1', 'repo1'), true, 'room/database -> repository is allowed');
+assert.strictEqual(checkValid('act1', 'store1'), true, 'server action -> store is allowed');
+assert.strictEqual(checkValid('sch1', 'store1'), true, 'schema -> store is allowed');
+
 // Allowed Systems (Rust) connections
 assert.strictEqual(checkValid('t1', 't2'), true, 'type -> type (implements) is allowed');
-assert.strictEqual(checkValid('t1', 's1'), true, 'type -> service (defines) is allowed');
-assert.strictEqual(checkValid('t1', 'c1'), true, 'type -> component (defines) is allowed');
-assert.strictEqual(checkValid('t1', 'f1'), true, 'type -> function (defines) is allowed');
-assert.strictEqual(checkValid('t1', 'm1'), true, 'type -> module (declares) is allowed');
-assert.strictEqual(checkValid('f1', 't1'), true, 'function -> type (implements) is allowed');
+assert.strictEqual(checkValid('trt1', 'str1'), true, 'trait -> struct (implements) is allowed');
+assert.strictEqual(checkValid('str1', 'crate1'), true, 'struct -> crate (declares) is allowed');
+assert.strictEqual(checkValid('f1', 'str1'), true, 'function -> struct (implements) is allowed');
+assert.strictEqual(checkValid('e1', 'crate1'), true, 'tokio driver -> crate (injects) is allowed');
 
 // Disallowed connections
 assert.strictEqual(checkValid('m1', 's1'), false, 'module -> service is blocked');
-assert.strictEqual(checkValid('s1', 'f1'), false, 'service -> function is blocked');
-assert.strictEqual(checkValid('s1', 'e1'), false, 'service -> external is blocked');
 assert.strictEqual(checkValid('e1', 'c1'), false, 'external -> component is blocked');
-assert.strictEqual(checkValid('c1', 'e1'), false, 'component -> external is blocked');
+assert.strictEqual(checkValid('e1', 'scr1'), false, 'external -> screen is blocked');
+assert.strictEqual(checkValid('scr1', 'e1'), false, 'screen -> external is blocked');
+assert.strictEqual(checkValid('e1', 'e1'), false, 'external -> external is blocked');
 assert.strictEqual(checkValid('m1', 'm1'), false, 'self-loop is blocked');
 assert.strictEqual(checkValid('s1', 'm1', [{ source: 's1', target: 'm1' }]), false, 'duplicate edge is blocked');
 
@@ -136,8 +200,15 @@ assert.ok(extBundle.includes('lldCanvas.newFile'), 'Extension bundle contains ne
 assert.ok(webviewBundle.length > 500000, 'Webview bundle is properly sized');
 assert.ok(webviewBundle.includes('ComponentNode'), 'Webview bundle contains ComponentNode');
 assert.ok(webviewBundle.includes('TypeNode'), 'Webview bundle contains TypeNode');
+assert.ok(webviewBundle.includes('ArchetypeNode'), 'Webview bundle contains ArchetypeNode');
+assert.ok(webviewBundle.includes('DomainSelector'), 'Webview bundle contains DomainSelector');
 assert.ok(cssBundle.includes('.node-type-badge.component'), 'CSS bundle contains component badge styling');
-assert.ok(cssBundle.includes('.node-type-badge.type'), 'CSS bundle contains type badge styling');
+assert.ok(cssBundle.includes('.node-type-badge.tier-presentation'), 'CSS bundle contains tier-presentation badge styling');
+assert.ok(cssBundle.includes('.node-type-badge.tier-logic'), 'CSS bundle contains tier-logic badge styling');
+assert.ok(cssBundle.includes('.custom-card-modal'), 'CSS bundle contains custom card modal styling');
+assert.ok(cssBundle.includes('.domain-selector'), 'CSS bundle contains domain-selector styling');
+assert.ok(cssBundle.includes('.domain-dropdown-menu'), 'CSS bundle contains domain-dropdown-menu styling');
+assert.ok(cssBundle.includes('.canvas-bottom-right-panel'), 'CSS bundle contains canvas-bottom-right-panel styling');
 
 console.log('✓ Build artifacts verified successfully.');
 
@@ -193,6 +264,10 @@ const sampleArchTemplatePath = path.join(templatesDir, 'skills', 'arch-design', 
 const sampleFrontendTemplatePath = path.join(templatesDir, 'skills', 'arch-design', 'examples', 'sample-frontend.arch');
 const sampleMobileTemplatePath = path.join(templatesDir, 'skills', 'arch-design', 'examples', 'sample-mobile.arch');
 const sampleRustTemplatePath = path.join(templatesDir, 'skills', 'arch-design', 'examples', 'sample-rust.arch');
+const niaTemplatePath = path.join(templatesDir, 'skills', 'arch-design', 'examples', 'nowinandroid.arch');
+const nextTemplatePath = path.join(templatesDir, 'skills', 'arch-design', 'examples', 'nextjs-commerce.arch');
+const tokioTemplatePath = path.join(templatesDir, 'skills', 'arch-design', 'examples', 'tokio-hyper.arch');
+const swiftTemplatePath = path.join(templatesDir, 'skills', 'arch-design', 'examples', 'swiftui-clean.arch');
 
 assert.ok(fs.existsSync(agentsMdPath), 'templates/AGENTS.md must exist');
 assert.ok(fs.existsSync(skillMdPath), 'templates/skills/arch-design/SKILL.md must exist');
@@ -204,14 +279,18 @@ assert.ok(fs.existsSync(sampleArchTemplatePath), 'templates/skills/arch-design/e
 assert.ok(fs.existsSync(sampleFrontendTemplatePath), 'templates/skills/arch-design/examples/sample-frontend.arch must exist');
 assert.ok(fs.existsSync(sampleMobileTemplatePath), 'templates/skills/arch-design/examples/sample-mobile.arch must exist');
 assert.ok(fs.existsSync(sampleRustTemplatePath), 'templates/skills/arch-design/examples/sample-rust.arch must exist');
+assert.ok(fs.existsSync(niaTemplatePath), 'nowinandroid.arch template must exist');
+assert.ok(fs.existsSync(nextTemplatePath), 'nextjs-commerce.arch template must exist');
+assert.ok(fs.existsSync(tokioTemplatePath), 'tokio-hyper.arch template must exist');
+assert.ok(fs.existsSync(swiftTemplatePath), 'swiftui-clean.arch template must exist');
 
 const schemaMdContent = fs.readFileSync(schemaMdPath, 'utf8');
 const rulesMdContent = fs.readFileSync(rulesMdPath, 'utf8');
 
-assert.ok(schemaMdContent.includes('Component'), 'Schema template documents Component');
-assert.ok(schemaMdContent.includes('Type'), 'Schema template documents Type');
-assert.ok(rulesMdContent.includes('**Component** | **Component**'), 'Rules template documents Component rendering');
-assert.ok(rulesMdContent.includes('**Type** | **Type**'), 'Rules template documents Type implementing');
+assert.ok(schemaMdContent.includes('Architecture Tiers Mapping'), 'Schema template documents Architecture Tiers');
+assert.ok(schemaMdContent.includes('presentation'), 'Schema template documents presentation tier');
+assert.ok(rulesMdContent.includes('Universal Tier Connection Matrix'), 'Rules template documents Universal Tier Connection Matrix');
+assert.ok(rulesMdContent.includes('presentation'), 'Rules template documents presentation rules');
 
 console.log('✓ Multi-domain Agent Skill templates verified successfully.');
 

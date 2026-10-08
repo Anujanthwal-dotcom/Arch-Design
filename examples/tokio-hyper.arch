@@ -1,0 +1,206 @@
+{
+  "version": 2,
+  "domain": "systems",
+  "name": "tokio-hyper",
+  "nodes": [
+    {
+      "id": "crate-server",
+      "type": "crate",
+      "tier": "container",
+      "label": "hyper_server",
+      "pos": {
+        "x": 60,
+        "y": 495
+      },
+      "description": "Core crate providing high-throughput non-blocking asynchronous HTTP service engine",
+      "subType": "crate",
+      "properties": [
+        {
+          "id": "p1",
+          "title": "edition",
+          "description": "2021"
+        },
+        {
+          "id": "p2",
+          "title": "features",
+          "description": "[\"full\", \"tokio-runtime\", \"http2\"]"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "struct-config",
+      "type": "struct",
+      "tier": "contract",
+      "label": "ServerConfig",
+      "pos": {
+        "x": 480,
+        "y": 60
+      },
+      "description": "Immutable server configuration containing socket binding parameters and connection pool limits",
+      "subType": "struct",
+      "properties": [
+        {
+          "id": "p3",
+          "title": "bind_addr",
+          "description": "std::net::SocketAddr"
+        },
+        {
+          "id": "p4",
+          "title": "max_concurrency",
+          "description": "usize"
+        },
+        {
+          "id": "p5",
+          "title": "keep_alive",
+          "description": "std::time::Duration"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "struct-conn-mgr",
+      "type": "struct",
+      "tier": "contract",
+      "label": "ConnectionManager",
+      "pos": {
+        "x": 480,
+        "y": 495
+      },
+      "description": "Actor-like struct coordinating incoming TCP connection dispatching across Tokio worker threads",
+      "subType": "struct",
+      "properties": [
+        {
+          "id": "p6",
+          "title": "listener",
+          "description": "tokio::net::TcpListener"
+        },
+        {
+          "id": "p7",
+          "title": "active_streams",
+          "description": "Arc<AtomicUsize>"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "trait-service",
+      "type": "trait",
+      "tier": "contract",
+      "label": "HttpService",
+      "pos": {
+        "x": 900,
+        "y": 660
+      },
+      "description": "Tower / Hyper asynchronous Service trait contract parameterized over Request and Response",
+      "subType": "trait",
+      "properties": [
+        {
+          "id": "p8",
+          "title": "Response",
+          "description": "type Response = http::Response<Body>"
+        },
+        {
+          "id": "p9",
+          "title": "call",
+          "description": "fn call(&self, req: Request) -> Future<Output = Result<Response>>"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "fn-process-stream",
+      "type": "function",
+      "tier": "execution",
+      "label": "process_socket_stream",
+      "pos": {
+        "x": 900,
+        "y": 361
+      },
+      "description": "Tokio green-thread task spawned per incoming TCP connection with cancellation token",
+      "subType": "tokio",
+      "properties": [
+        {
+          "id": "p10",
+          "title": "stream",
+          "description": "mut tokio::net::TcpStream"
+        },
+        {
+          "id": "p11",
+          "title": "returns",
+          "description": "tokio::task::JoinHandle<Result<(), Error>>"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "driver-tokio-io",
+      "type": "external",
+      "tier": "infrastructure",
+      "label": "TokioEpollRuntime",
+      "pos": {
+        "x": 480,
+        "y": 871
+      },
+      "description": "OS kernel non-blocking I/O multiplexer (epoll on Linux, kqueue on macOS, IOCP on Windows)",
+      "properties": [
+        {
+          "id": "p12",
+          "title": "engine",
+          "description": "mio::Poll event registry"
+        },
+        {
+          "id": "p13",
+          "title": "workers",
+          "description": "tokio::runtime::Builder::new_multi_thread"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "tech": "tokio",
+      "isCollapsed": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-config-crate",
+      "from": "struct-config",
+      "to": "crate-server",
+      "type": "declares"
+    },
+    {
+      "id": "edge-mgr-crate",
+      "from": "struct-conn-mgr",
+      "to": "crate-server",
+      "type": "declares"
+    },
+    {
+      "id": "edge-trait-mgr",
+      "from": "trait-service",
+      "to": "struct-conn-mgr",
+      "type": "implements"
+    },
+    {
+      "id": "edge-fn-mgr",
+      "from": "fn-process-stream",
+      "to": "struct-conn-mgr",
+      "type": "implements"
+    },
+    {
+      "id": "edge-driver-crate",
+      "from": "driver-tokio-io",
+      "to": "crate-server",
+      "type": "injects"
+    }
+  ]
+}

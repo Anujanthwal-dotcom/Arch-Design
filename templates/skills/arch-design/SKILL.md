@@ -99,11 +99,14 @@ Arch Design enforces Low-Level Design separation of concerns across all domains:
 
 ## 4. Helper Tools & Domain Examples
 
-- [Validator Script](./scripts/validate.js): Validates JSON schema and connection rules.
-- [Layout Script](./scripts/layout.js): Computes Dagre coordinates automatically.
-- [Full Schema Reference](./references/schema.md): Complete JSON v2.1 type specification.
-- [Rules Reference](./references/rules.md): Architectural matrix and principles.
-- [Backend Example](./examples/sample.arch): Backend authentication system.
-- [Frontend Example](./examples/sample-frontend.arch): React / Zustand e-commerce architecture.
-- [Mobile Example](./examples/sample-mobile.arch): Android / iOS Clean MVVM notes app.
-- [Rust Systems Example](./examples/sample-rust.arch): Async Tokio network packet engine.
+- [Validator Script](./scripts/validate.js): Validates JSON schema and tier connection rules.
+- [Layout Script](./scripts/layout.js): Computes Dagre coordinates automatically based on tier ranking.
+- [Full Schema Reference](./references/schema.md): Complete JSON v2 tier and archetype specification.
+- [Rules Reference](./references/rules.md): Architectural matrix and tier principles.
+
+### Canonical Real-World Reference Architectures:
+- [Android Clean Architecture](./examples/nowinandroid.arch): Google *Now in Android* (Compose screens, StateFlow ViewModels, UseCases, Repositories, Room DAOs).
+- [Next.js Commerce](./examples/nextjs-commerce.arch): Next.js App Router (RSC pages, Client components, Zustand store, Server Actions, Zod schemas, Shopify API).
+- [Rust Systems Engine](./examples/tokio-hyper.arch): Async Tokio & Hyper engine (Crates, Structs, Traits, green-thread tasks, kernel epoll I/O).
+- [iOS SwiftUI Clean](./examples/swiftui-clean.arch): Apple SwiftUI + SwiftData (SwiftUI views, Observable ViewModels, Coordinators, SwiftData ModelContainer).
+- [Backend Auth Monolith](./examples/sample.arch): Backend authentication and JWT modular monolith.

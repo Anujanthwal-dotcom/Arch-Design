@@ -1,0 +1,196 @@
+{
+  "version": 2,
+  "domain": "android",
+  "name": "nowinandroid",
+  "nodes": [
+    {
+      "id": "screen-foryou",
+      "type": "screen",
+      "tier": "presentation",
+      "label": "ForYouScreen",
+      "pos": {
+        "x": 1320,
+        "y": 60
+      },
+      "description": "Jetpack Compose screen displaying user personalized topic feed and follow recommendations",
+      "subType": "composable",
+      "properties": [
+        {
+          "id": "p1",
+          "title": "feedState",
+          "description": "StateFlow<NewsFeedUiState>"
+        },
+        {
+          "id": "p2",
+          "title": "onTopicClick",
+          "description": "(topicId: String) -> Unit"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "vm-foryou",
+      "type": "viewmodel",
+      "tier": "logic",
+      "label": "ForYouViewModel",
+      "pos": {
+        "x": 900,
+        "y": 60
+      },
+      "description": "State holder exposing immutable UI state and handling user follow interactions",
+      "subType": "stateflow",
+      "properties": [
+        {
+          "id": "p3",
+          "title": "uiState",
+          "description": "StateFlow<ForYouFeedUiState>"
+        },
+        {
+          "id": "p4",
+          "title": "updateTopicFollowed",
+          "description": "(id: String, followed: Boolean) -> Unit"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "usecase-topics",
+      "type": "usecase",
+      "tier": "logic",
+      "label": "GetFollowableTopicsUseCase",
+      "pos": {
+        "x": 480,
+        "y": 90
+      },
+      "description": "Domain use case encapsulating sorting and filtering logic for followable topics",
+      "subType": "domain",
+      "properties": [
+        {
+          "id": "p5",
+          "title": "invoke",
+          "description": "operator fun invoke(): Flow<List<FollowableTopic>>"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "repo-topics",
+      "type": "repository",
+      "tier": "logic",
+      "label": "OfflineFirstTopicsRepository",
+      "pos": {
+        "x": 60,
+        "y": 407
+      },
+      "description": "Repository managing local disk cache synchronization with remote network topic feed",
+      "subType": "repository",
+      "properties": [
+        {
+          "id": "p6",
+          "title": "getTopics",
+          "description": "(): Flow<List<Topic>>"
+        },
+        {
+          "id": "p7",
+          "title": "setFollowed",
+          "description": "suspend fun setTopicFollowed(id: String, follow: Boolean)"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "dao-topics",
+      "type": "dao",
+      "tier": "contract",
+      "label": "TopicDao",
+      "pos": {
+        "x": 480,
+        "y": 407
+      },
+      "description": "Room Database Access Object contract providing reactive queries via SQL",
+      "subType": "room",
+      "properties": [
+        {
+          "id": "p8",
+          "title": "getTopicEntities",
+          "description": "@Query SELECT * FROM topics: Flow<List<TopicEntity>>"
+        },
+        {
+          "id": "p9",
+          "title": "upsertTopics",
+          "description": "@Upsert suspend fun upsert(topics: List<TopicEntity>)"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
+    },
+    {
+      "id": "db-nia",
+      "type": "external",
+      "tier": "infrastructure",
+      "label": "NiaDatabase",
+      "pos": {
+        "x": 480,
+        "y": 798
+      },
+      "description": "Local SQLite Room database storing offline cache entities and sync metadata",
+      "properties": [
+        {
+          "id": "p10",
+          "title": "driver",
+          "description": "Android SQLite / Room KSP"
+        },
+        {
+          "id": "p11",
+          "title": "version",
+          "description": "Schema v2 with auto-migration"
+        }
+      ],
+      "parameters": [],
+      "returns": [],
+      "tech": "room",
+      "isCollapsed": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-screen-vm",
+      "from": "screen-foryou",
+      "to": "vm-foryou",
+      "type": "uses"
+    },
+    {
+      "id": "edge-vm-usecase",
+      "from": "vm-foryou",
+      "to": "usecase-topics",
+      "type": "uses"
+    },
+    {
+      "id": "edge-usecase-repo",
+      "from": "usecase-topics",
+      "to": "repo-topics",
+      "type": "uses"
+    },
+    {
+      "id": "edge-dao-repo",
+      "from": "dao-topics",
+      "to": "repo-topics",
+      "type": "defines"
+    },
+    {
+      "id": "edge-db-repo",
+      "from": "db-nia",
+      "to": "repo-topics",
+      "type": "injects"
+    }
+  ]
+}
