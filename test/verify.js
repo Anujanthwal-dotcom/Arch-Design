@@ -202,12 +202,17 @@ assert.ok(webviewBundle.includes('ComponentNode'), 'Webview bundle contains Comp
 assert.ok(webviewBundle.includes('TypeNode'), 'Webview bundle contains TypeNode');
 assert.ok(webviewBundle.includes('ArchetypeNode'), 'Webview bundle contains ArchetypeNode');
 assert.ok(webviewBundle.includes('DomainSelector'), 'Webview bundle contains DomainSelector');
+assert.ok(webviewBundle.includes('FrameworkSelector'), 'Webview bundle contains FrameworkSelector');
+assert.ok(webviewBundle.includes('FRAMEWORK_PRESETS'), 'Webview bundle contains FRAMEWORK_PRESETS');
 assert.ok(cssBundle.includes('.node-type-badge.component'), 'CSS bundle contains component badge styling');
 assert.ok(cssBundle.includes('.node-type-badge.tier-presentation'), 'CSS bundle contains tier-presentation badge styling');
 assert.ok(cssBundle.includes('.node-type-badge.tier-logic'), 'CSS bundle contains tier-logic badge styling');
 assert.ok(cssBundle.includes('.custom-card-modal'), 'CSS bundle contains custom card modal styling');
 assert.ok(cssBundle.includes('.domain-selector'), 'CSS bundle contains domain-selector styling');
 assert.ok(cssBundle.includes('.domain-dropdown-menu'), 'CSS bundle contains domain-dropdown-menu styling');
+assert.ok(cssBundle.includes('.domain-category-filter-bar'), 'CSS bundle contains category filter styling');
+assert.ok(cssBundle.includes('.domain-search-wrapper'), 'CSS bundle contains search styling');
+assert.ok(cssBundle.includes('.domain-trigger-category-pill'), 'CSS bundle contains category pill styling');
 assert.ok(cssBundle.includes('.canvas-bottom-right-panel'), 'CSS bundle contains canvas-bottom-right-panel styling');
 
 console.log('✓ Build artifacts verified successfully.');
@@ -318,5 +323,54 @@ scanDirForDeprecatedUrl(path.join(__dirname, '..', 'src'));
 scanDirForDeprecatedUrl(path.join(__dirname, '..', 'templates'));
 scanDirForDeprecatedUrl(__dirname);
 console.log('✓ Zero url.parse() calls found across project source code.');
+
+// Test 7: Verify Framework Presets Registry & Backward Compatibility
+console.log('--- Test 7: Testing Framework Preset Registry & Compatibility ---');
+const testDocWithFramework = {
+  version: 2,
+  domain: 'frontend',
+  framework: 'nextjs',
+  name: 'test-framework-arch',
+  nodes: [
+    {
+      id: 'p1',
+      type: 'page',
+      tier: 'presentation',
+      label: 'Home Page',
+      pos: { x: 100, y: 100 },
+      subType: 'nextjs'
+    },
+    {
+      id: 'a1',
+      type: 'action',
+      tier: 'execution',
+      label: 'Submit Order',
+      pos: { x: 400, y: 100 },
+      subType: 'server-action'
+    }
+  ],
+  edges: [
+    {
+      id: 'e1',
+      from: 'a1',
+      to: 'p1',
+      type: 'invokes'
+    }
+  ]
+};
+
+const tmpTestPath = path.join(__dirname, 'temp-framework-test.arch');
+fs.writeFileSync(tmpTestPath, JSON.stringify(testDocWithFramework, null, 2));
+
+try {
+  const valOutput = execSync(`node "${validateScript}" "${tmpTestPath}"`, { encoding: 'utf8' });
+  assert.ok(valOutput.includes('Validation Passed'), 'validate.js must pass on framework-enhanced .arch files');
+} finally {
+  if (fs.existsSync(tmpTestPath)) {
+    fs.unlinkSync(tmpTestPath);
+  }
+}
+
+console.log('✓ Framework preset schema compatibility and validation verified successfully.');
 
 console.log('\nAll automated tests passed successfully!');

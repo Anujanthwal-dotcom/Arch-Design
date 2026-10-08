@@ -46,7 +46,7 @@ When asked to create a new architecture or update an existing `.arch` file:
 
 ### Step 1: Draft Nodes & Edges
 Refer to the schema reference: [references/schema.md](./references/schema.md).
-- Specify `domain`: `"backend"`, `"frontend"`, `"mobile"`, `"systems"`, or `"universal"`.
+- Specify `domain` (`"backend"`, `"frontend"`, `"mobile"`, `"systems"`, or `"universal"`) and optional `framework` preset (`"nextjs"`, `"react"`, `"vue-nuxt"`, `"nestjs"`, `"springboot"`, `"fastapi"`, `"android"`, `"ios"`, `"flutter"`, `"systems"`, `"go-clean"`, `"clean-arch"`, `"universal"`).
 - Create unique IDs prefixed by type: `m1` (Module), `c1` (Component), `s1` (Service), `t1` (Type), `f1` (Function), `e1` (External).
 - Assign types, labels, descriptions, parameters, returns, subTypes, and tech badges.
 - Connect nodes according to the allowed connection rules: [references/rules.md](./references/rules.md).

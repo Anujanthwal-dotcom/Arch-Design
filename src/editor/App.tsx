@@ -23,7 +23,8 @@ import { TypeNode } from './nodes/TypeNode';
 import { FunctionNode } from './nodes/FunctionNode';
 import { ExternalNode } from './nodes/ExternalNode';
 import { ArchetypeNode } from './nodes/ArchetypeNode';
-import { DomainSelector } from './components/DomainSelector';
+import { DomainSelector, FrameworkSelector } from './components/DomainSelector';
+import { resolvePreset } from './presets';
 import { FloatingEdge } from './edges/FloatingEdge';
 import { checkValidConnection, generateId, resolveEdgeType } from './utils';
 import { applyDagreLayout, resolveCollisionOnDrag } from './dagreLayout';
@@ -67,7 +68,8 @@ export const AppContent: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [fileName, setFileName] = useState('architecture');
-  const [domain, setDomain] = useState<DomainType | string>('universal');
+  const [framework, setFramework] = useState<string>('universal');
+  const activePreset = useMemo(() => resolvePreset(framework), [framework]);
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
   const [customName, setCustomName] = useState('');
   const [customTier, setCustomTier] = useState<ArchitectureTier>('logic');
@@ -79,6 +81,43 @@ export const AppContent: React.FC = () => {
   const isInitialized = useRef(false);
   const documentText = useRef('');
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const stripRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollState = useCallback(() => {
+    const el = stripRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 2);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 2);
+  }, []);
+
+  useEffect(() => {
+    const el = stripRef.current;
+    if (!el) return;
+    updateScrollState();
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(() => updateScrollState());
+      ro.observe(el);
+    }
+    window.addEventListener('resize', updateScrollState);
+    return () => {
+      el.removeEventListener('scroll', updateScrollState);
+      if (ro) ro.disconnect();
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [updateScrollState, activePreset]);
+
+  const scrollStrip = (direction: 'left' | 'right') => {
+    if (stripRef.current) {
+      const amount = direction === 'left' ? -150 : 150;
+      stripRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+  };
 
   const { fitView } = useReactFlow();
 
@@ -373,21 +412,23 @@ export const AppContent: React.FC = () => {
 
     const doc: LLDDocument = {
       version: 2,
-      domain: domain || 'universal',
+      domain: (activePreset.category === 'universal' ? 'universal' : activePreset.category) as DomainType,
+      framework: activePreset.id,
       name: fileName,
       nodes: lldNodes,
       edges: lldEdges,
     };
 
     return JSON.stringify(doc, null, 2);
-  }, [nodes, edges, fileName, domain]);
+  }, [nodes, edges, fileName, activePreset]);
 
   const addNode = useCallback(
     (
       type: string,
       defaultSubType?: string,
       explicitTier?: ArchitectureTier,
-      customLabel?: string
+      customLabel?: string,
+      defaultTech?: string
     ) => {
       const id = generateId();
       const tier = resolveNodeTier(type, explicitTier);
@@ -428,7 +469,7 @@ export const AppContent: React.FC = () => {
           description: '',
           properties: [],
           ...(defaultSubType && { subType: defaultSubType }),
-          ...(tier === 'infrastructure' && { tech: defaultSubType || 'postgres' }),
+          ...((defaultTech || tier === 'infrastructure') && { tech: defaultTech || defaultSubType || 'postgres' }),
         },
       };
       setNodes((nds) => [...nds, newNode]);
@@ -493,9 +534,10 @@ export const AppContent: React.FC = () => {
             isUpdatingFromDocument.current = true;
             setNodes(reactNodes);
             setEdges(reactEdges);
-            setFileName(doc.name || 'architecture');
-            if (doc.domain) {
-              setDomain(doc.domain);
+            if (doc.framework) {
+              setFramework(doc.framework);
+            } else if (doc.domain) {
+              setFramework(doc.domain);
             }
             const wasInitial = !isInitialized.current;
             isInitialized.current = true;
@@ -559,143 +601,7 @@ export const AppContent: React.FC = () => {
     <CanvasContext.Provider value={{ updateNodeData, deleteNode }}>
       <div style={{ width: '100%', height: '100%', position: 'relative' }}>
         <div className="toolbar">
-          <DomainSelector value={domain} onChange={setDomain} />
-          <div className="toolbar-separator" />
-          {domain === 'frontend' ? (
-            <>
-              <button className="toolbar-btn" onClick={() => addNode('page', 'nextjs', 'presentation', 'New Page')}>
-                + Page
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('component', 'react', 'presentation', 'New Component')}>
-                + Component
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('store', 'zustand', 'logic', 'New Store')}>
-                + Store / Hook
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('action', 'server-action', 'execution', 'New Action')}>
-                + Action
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('schema', 'zod', 'contract', 'New Schema')}>
-                + Schema / DTO
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('external', 'rest', 'infrastructure', 'API Service')}>
-                + API / Service
-              </button>
-            </>
-          ) : domain === 'android' || domain === 'mobile' ? (
-            <>
-              <button className="toolbar-btn" onClick={() => addNode('screen', 'composable', 'presentation', 'New Screen')}>
-                + Screen
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('viewmodel', 'stateflow', 'logic', 'New ViewModel')}>
-                + ViewModel
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('usecase', 'domain', 'logic', 'New UseCase')}>
-                + UseCase
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('repository', 'repo', 'logic', 'New Repository')}>
-                + Repository
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('dao', 'room', 'contract', 'New DAO')}>
-                + DAO / Entity
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('external', 'room', 'infrastructure', 'Room DB')}>
-                + Room DB
-              </button>
-            </>
-          ) : domain === 'ios' ? (
-            <>
-              <button className="toolbar-btn" onClick={() => addNode('view', 'swiftui', 'presentation', 'New View')}>
-                + View
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('viewmodel', 'observable', 'logic', 'New ViewModel')}>
-                + ViewModel
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('coordinator', 'navigation', 'logic', 'New Coordinator')}>
-                + Coordinator
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('repository', 'repo', 'logic', 'New Repository')}>
-                + Repository
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('model', 'swiftdata', 'contract', 'New Model')}>
-                + Model
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('external', 'swiftdata', 'infrastructure', 'SwiftData')}>
-                + SwiftData
-              </button>
-            </>
-          ) : domain === 'systems' ? (
-            <>
-              <button className="toolbar-btn" onClick={() => addNode('crate', 'crate', 'container', 'New Crate')}>
-                + Crate / Mod
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('struct', 'struct', 'contract', 'New Struct')}>
-                + Struct
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('trait', 'trait', 'contract', 'New Trait')}>
-                + Trait
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('enum', 'enum', 'contract', 'New Enum')}>
-                + Enum
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('function', 'fn', 'execution', 'New Function')}>
-                + Function
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('external', 'ffi', 'infrastructure', 'Hardware / FFI')}>
-                + Driver / FFI
-              </button>
-            </>
-          ) : domain === 'backend' ? (
-            <>
-              <button className="toolbar-btn" onClick={() => addNode('module')}>
-                + Module
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('service')}>
-                + Service
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('controller', 'controller', 'logic', 'New Controller')}>
-                + Controller
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('function')}>
-                + Function
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('external', 'postgres', 'infrastructure', 'Database')}>
-                + Database
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('type', 'model')}>
-                + Model
-              </button>
-            </>
-          ) : (
-            <>
-              <button className="toolbar-btn" onClick={() => addNode('module')}>
-                + Module
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('component')}>
-                + Component
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('service')}>
-                + Service
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('type')}>
-                + Type
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('function')}>
-                + Function
-              </button>
-              <button className="toolbar-btn" onClick={() => addNode('external')}>
-                + External
-              </button>
-            </>
-          )}
-          <div className="toolbar-separator" />
-          <button
-            className="toolbar-btn"
-            onClick={() => setIsCustomModalOpen(true)}
-            title="Create a custom card archetype for any domain"
-          >
-            + Custom Card...
-          </button>
+          <FrameworkSelector value={framework} onChange={setFramework} />
           <div className="toolbar-separator" />
           <button
             className="toolbar-btn"
@@ -704,7 +610,6 @@ export const AppContent: React.FC = () => {
           >
             Auto Layout
           </button>
-          <div className="toolbar-separator" />
           <button
             className={`toolbar-btn ${focusModeEnabled ? 'active' : ''}`}
             onClick={() => setFocusModeEnabled((prev) => !prev)}
@@ -716,6 +621,61 @@ export const AppContent: React.FC = () => {
           >
             Focus Mode: {focusModeEnabled ? 'ON' : 'OFF'}
           </button>
+          <div className="toolbar-separator" />
+          {canScrollLeft && (
+            <button
+              type="button"
+              className="toolbar-nav-arrow left"
+              onClick={() => scrollStrip('left')}
+              title="Scroll left"
+              aria-label="Scroll left"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 11, height: 11 }}>
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          )}
+          <div
+            ref={stripRef}
+            className="toolbar-actions-strip"
+            onWheel={(e) => {
+              if (e.deltaY !== 0) {
+                e.currentTarget.scrollLeft += e.deltaY;
+              }
+            }}
+          >
+            {activePreset.archetypes.map((arch) => (
+              <button
+                key={`${arch.type}-${arch.subType || ''}-${arch.label}`}
+                className="toolbar-btn"
+                onClick={() => addNode(arch.type, arch.subType, arch.tier, arch.label, arch.tech)}
+                title={`Add ${arch.label} (${arch.tier} tier)`}
+              >
+                + {arch.label}
+              </button>
+            ))}
+            <div className="toolbar-separator" />
+            <button
+              className="toolbar-btn"
+              onClick={() => setIsCustomModalOpen(true)}
+              title="Create a custom card archetype for any domain or framework"
+            >
+              + Custom Card...
+            </button>
+          </div>
+          {canScrollRight && (
+            <button
+              type="button"
+              className="toolbar-nav-arrow right"
+              onClick={() => scrollStrip('right')}
+              title="Scroll right"
+              aria-label="Scroll right"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 11, height: 11 }}>
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          )}
         </div>
 
         {isLoading && (
@@ -727,9 +687,9 @@ export const AppContent: React.FC = () => {
 
         {!isLoading && nodes.length === 0 && (
           <div className="empty-canvas-hint">
-            <strong>Blank Architecture Canvas ({domain})</strong>
+            <strong>Blank Architecture Canvas ({activePreset.name})</strong>
             <p style={{ margin: '6px 0 0 0', fontSize: '12px' }}>
-              Select a domain preset above or click cards to start designing your architecture.
+              Select a framework preset above or click cards to start designing your architecture.
             </p>
           </div>
         )}

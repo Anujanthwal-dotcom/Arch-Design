@@ -1,7 +1,8 @@
 {
   "version": 2,
-  "domain": "backend",
-  "name": "test",
+  "domain": "universal",
+  "framework": "universal",
+  "name": "architecture",
   "nodes": [
     {
       "id": "e4f22001-9734-4033-a4bf-81a7acd30b05",
@@ -12,7 +13,10 @@
         "x": 251.89415796951027,
         "y": 252.19273436788535
       },
-      "properties": []
+      "properties": [],
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": false
     }
   ],
   "edges": []

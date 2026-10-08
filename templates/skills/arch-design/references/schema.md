@@ -19,7 +19,8 @@ Arch Design files (`.arch` or `.lld`) are stored in structured JSON (version 2).
 | Field | Type | Required | Description |
 | :--- | :--- | :--- | :--- |
 | `version` | `number` | **Yes** | Schema version. Must be strictly `2`. |
-| `domain` | `string` | No | Architectural profile preset: `"universal"`, `"backend"`, `"frontend"`, `"mobile"`, or `"systems"`. |
+| `domain` | `string` | No | Architectural profile domain: `"universal"`, `"backend"`, `"frontend"`, `"mobile"`, or `"systems"`. |
+| `framework` | `string` | No | Framework or pattern preset ID: `"nextjs"`, `"react"`, `"vue-nuxt"`, `"nestjs"`, `"springboot"`, `"fastapi"`, `"backend"`, `"android"`, `"ios"`, `"flutter"`, `"systems"`, `"go-clean"`, `"clean-arch"`, `"universal"`. |
 | `name` | `string` | No | Identifier for the architecture canvas (e.g. `"ecommerce-web"`, `"notes-mobile"`). |
 | `nodes` | `Array<Node>` | **Yes** | List of architectural card nodes. |
 | `edges` | `Array<Edge>` | **Yes** | List of directional connection edges between nodes. |

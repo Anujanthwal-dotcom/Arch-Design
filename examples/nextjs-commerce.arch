@@ -1,7 +1,8 @@
 {
   "version": 2,
   "domain": "frontend",
-  "name": "nextjs-commerce",
+  "framework": "nextjs",
+  "name": "architecture",
   "nodes": [
     {
       "id": "page-product",

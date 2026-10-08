@@ -177,6 +177,7 @@ export type DomainType =
 export type LLDDocument = {
   version: number;
   domain?: DomainType | string;
+  framework?: string;
   name?: string;
   nodes: LLDNode[];
   edges: Edge[];
@@ -185,6 +186,7 @@ export type LLDDocument = {
 export type LLDFile = {
   version: number;
   domain?: DomainType | string;
+  framework?: string;
   name?: string;
   nodes: LLDNode[];
   edges: Edge[];
