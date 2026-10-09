@@ -241,6 +241,34 @@ body::after {
   gap: 10px;
 }
 
+.nav-bmc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 221, 0, 0.1);
+  border: 1px solid rgba(255, 221, 0, 0.3);
+  color: #FFDD00;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.nav-bmc-btn:hover {
+  color: #fff;
+  background: #FFDD00;
+  color: #000;
+  border-color: #FFDD00;
+  box-shadow: 0 0 14px rgba(255, 221, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.nav-bmc-btn svg {
+  fill: currentColor;
+}
+
 .nav-star-btn {
   display: inline-flex;
   align-items: center;
@@ -874,6 +902,22 @@ body::after {
 .rf-control-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #38bdf8;
+}
+
+.rf-control-btn.rf-control-bmc {
+  text-decoration: none;
+}
+
+.rf-control-btn.rf-control-bmc:hover {
+  background: rgba(255, 221, 0, 0.15);
+}
+
+.rf-control-btn.rf-control-bmc svg {
+  transition: transform 0.15s ease;
+}
+
+.rf-control-btn.rf-control-bmc:hover svg {
+  transform: scale(1.15);
 }
 
 

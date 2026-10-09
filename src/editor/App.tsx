@@ -4,6 +4,7 @@ import {
   ReactFlowProvider,
   Background,
   Controls,
+  ControlButton,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -31,6 +32,7 @@ import { applyDagreLayout, resolveCollisionOnDrag } from './dagreLayout';
 import { LLDDocument, LLDNode, Edge as LLDFileEdge, DomainType, ArchitectureTier, resolveNodeTier } from '../types';
 import { vscode } from './vscodeApi';
 import { CanvasContext } from './context';
+import { BuyMeACoffeeIcon } from './icons';
 
 const baseNodeTypes: Record<string, React.ComponentType<any>> = {
   module: ModuleNode,
@@ -752,7 +754,21 @@ export const AppContent: React.FC = () => {
           proOptions={{ hideAttribution: true }}
         >
           <Background color="#2a2a30" gap={16} />
-          <Controls />
+          <Controls>
+            <ControlButton
+              className="bmc-control-button"
+              onClick={() => {
+                vscode.postMessage({
+                  type: 'openExternal',
+                  url: 'https://buymeacoffee.com/anuj_anthwal',
+                });
+              }}
+              title="Buy me a coffee"
+              aria-label="Buy me a coffee"
+            >
+              <BuyMeACoffeeIcon size={14} color="#FFDD00" />
+            </ControlButton>
+          </Controls>
         </ReactFlow>
 
         <div className="canvas-bottom-right-panel">

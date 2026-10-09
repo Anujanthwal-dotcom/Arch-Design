@@ -64,6 +64,12 @@ export class LLDCanvasEditorProvider implements vscode.CustomTextEditorProvider 
         case 'update':
           this.updateTextDocument(document, e.text);
           return;
+        case 'openExternal': {
+          if (typeof e.url === 'string' && (e.url.startsWith('https://') || e.url.startsWith('http://'))) {
+            vscode.env.openExternal(vscode.Uri.parse(e.url));
+          }
+          return;
+        }
         case 'openFile': {
           const rawPath = typeof e.filePath === 'string' ? e.filePath.trim() : '';
           if (!rawPath) return;

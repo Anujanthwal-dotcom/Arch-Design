@@ -1444,6 +1444,27 @@ html, body {
   fill: #ffffff;
 }
 
+.react-flow__controls-button.bmc-control-button {
+  color: #FFDD00;
+  fill: #FFDD00;
+}
+
+.react-flow__controls-button.bmc-control-button:hover {
+  background: rgba(255, 221, 0, 0.15);
+  color: #ffe633;
+  fill: #ffe633;
+}
+
+.react-flow__controls-button.bmc-control-button svg {
+  fill: #FFDD00;
+  transition: transform 0.15s ease;
+}
+
+.react-flow__controls-button.bmc-control-button:hover svg {
+  fill: #ffe633;
+  transform: scale(1.1);
+}
+
 .react-flow__controls-button svg {
   width: 14px;
   height: 14px;
