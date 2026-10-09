@@ -5,6 +5,7 @@ import { generateId } from '../utils';
 import { useCanvas } from '../context';
 import { GripIcon, ChevronIcon } from '../icons';
 import { AutoResizeTextarea } from '../components/AutoResizeTextarea';
+import { CardFileBar, HeaderFileButton } from '../components/CardFileBar';
 
 export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
   const nodeData = data as ModuleNodeData;
@@ -84,6 +85,7 @@ export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
           </span>
         </div>
         <div className="node-header-actions">
+          <HeaderFileButton filePath={nodeData.filePath} />
           <button
             className="node-header-btn nodrag"
             onClick={toggleCollapse}
@@ -112,6 +114,12 @@ export const ModuleNode: React.FC<NodeProps> = ({ data, id, selected }) => {
               placeholder="Description..."
             />
           </div>
+
+          <CardFileBar
+            nodeId={id}
+            filePath={nodeData.filePath}
+            placeholder="Module root (e.g. src/modules/auth/ or mod.rs)..."
+          />
           
           <div className="section">
             <div className="section-header">

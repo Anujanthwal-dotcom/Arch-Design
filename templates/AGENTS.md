@@ -15,3 +15,5 @@ When inspecting, modifying, or creating system architectures:
    ```bash
    node .agents/skills/arch-design/scripts/layout.js <file.arch>
    ```
+5. **Always Link Code**: Include `filePath` on cards (e.g. `"src/services/AuthService.ts"`) so users can click the card in the canvas to navigate directly to the file.
+

@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 2c. Copy Buttons in Code Cards & Prompt Items
-  const docsCopyBtns = document.querySelectorAll('.docs-code-copy-btn, .guide-copy-btn');
+  const docsCopyBtns = document.querySelectorAll('.docs-code-copy-btn, .guide-copy-btn, .framework-copy-btn');
   docsCopyBtns.forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
@@ -98,6 +98,27 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (err) {
         console.error('Failed to copy text', err);
       }
+    });
+  });
+
+  // 2d. Supported Frameworks Filtering
+  const frameworkFilterBtns = document.querySelectorAll('.framework-filter-btn');
+  const frameworkCards = document.querySelectorAll('.framework-card');
+
+  frameworkFilterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const filter = btn.getAttribute('data-filter');
+      frameworkFilterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      frameworkCards.forEach(card => {
+        const cat = card.getAttribute('data-category');
+        if (filter === 'all' || cat === filter) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
     });
   });
 

@@ -5,6 +5,7 @@ import { generateId } from '../utils';
 import { useCanvas } from '../context';
 import { GripIcon, ChevronIcon } from '../icons';
 import { AutoResizeTextarea } from '../components/AutoResizeTextarea';
+import { CardFileBar, HeaderFileButton } from '../components/CardFileBar';
 
 export const ArchetypeNode: React.FC<NodeProps> = ({ data, id, selected }) => {
   const nodeData = data as ArchetypeNodeData;
@@ -106,6 +107,7 @@ export const ArchetypeNode: React.FC<NodeProps> = ({ data, id, selected }) => {
           </span>
         </div>
         <div className="node-header-actions">
+          <HeaderFileButton filePath={nodeData.filePath} />
           <button
             className="node-header-btn nodrag"
             onClick={toggleCollapse}
@@ -134,6 +136,8 @@ export const ArchetypeNode: React.FC<NodeProps> = ({ data, id, selected }) => {
               placeholder={`${badgeTitle} responsibility or role...`}
             />
           </div>
+
+          <CardFileBar nodeId={id} filePath={nodeData.filePath} />
 
           <div className="field-group">
             <span className="field-label">Role / Subtype:</span>

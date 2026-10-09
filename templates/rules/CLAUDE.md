@@ -23,6 +23,10 @@ Whenever reading, creating, modifying, or refactoring architecture diagrams:
    node .agents/skills/arch-design/scripts/layout.js <path-to-file.arch>
    ```
 
+4. **Always Link Code**:
+   Specify `filePath` on cards (e.g. `"src/services/AuthService.ts"`) so users can click cards to open files in split view.
+
+
 ## Architectural Separation of Concerns
 - **Tiers**: `container` (modules), `presentation` (UI components/screens), `logic` (services/viewmodels/stores), `contract` (types/structs/traits), `execution` (functions/actions), `infrastructure` (databases/APIs).
 - **Enforced Rules**:

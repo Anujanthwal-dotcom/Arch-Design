@@ -29,3 +29,7 @@ When inspecting, generating, or modifying `.arch` or `.lld` visual architecture 
   ```bash
   node .agents/skills/arch-design/scripts/layout.js <path-to-file.arch>
   ```
+
+## 4. Code Linking & Navigation
+- Always attach `filePath?: string` (relative to workspace root, e.g. `"src/services/AuthService.ts"`) to cards so developers can click cards in Cursor/VS Code to jump directly into the code.
+

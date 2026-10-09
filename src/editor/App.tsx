@@ -316,6 +316,14 @@ export const AppContent: React.FC = () => {
     [setNodes, setEdges]
   );
 
+  const openFile = useCallback((filePath: string) => {
+    if (!filePath || !filePath.trim()) return;
+    vscode.postMessage({
+      type: 'openFile',
+      filePath: filePath.trim(),
+    });
+  }, []);
+
   const validateConnection = useCallback(
     (connection: Connection | Edge) => {
       return checkValidConnection(connection, nodes, edges);
@@ -374,6 +382,9 @@ export const AppContent: React.FC = () => {
       }
       if (nodeData.typeRef) {
         lldNode.typeRef = String(nodeData.typeRef);
+      }
+      if (nodeData.filePath) {
+        lldNode.filePath = String(nodeData.filePath);
       }
       if (nodeData.parameters && Array.isArray(nodeData.parameters)) {
         lldNode.parameters = nodeData.parameters as any;
@@ -512,6 +523,7 @@ export const AppContent: React.FC = () => {
                 properties: node.properties || [],
                 subType: node.subType,
                 typeRef: node.typeRef,
+                filePath: node.filePath || node.typeRef,
                 parameters: node.parameters || [],
                 returns: node.returns || [],
                 tech: node.tech,
@@ -598,7 +610,7 @@ export const AppContent: React.FC = () => {
   };
 
   return (
-    <CanvasContext.Provider value={{ updateNodeData, deleteNode }}>
+    <CanvasContext.Provider value={{ updateNodeData, deleteNode, openFile }}>
       <div style={{ width: '100%', height: '100%', position: 'relative' }}>
         <div className="toolbar">
           <FrameworkSelector value={framework} onChange={setFramework} />

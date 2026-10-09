@@ -404,4 +404,56 @@ try {
 
 console.log('✓ Framework preset schema compatibility and validation verified successfully.');
 
+// Test 8: Verify Card File Linking (filePath) Support & Validation
+console.log('--- Test 8: Testing Card Source File Navigation & filePath Support ---');
+const testDocWithFilePath = {
+  version: 2,
+  domain: 'universal',
+  name: 'code-linked-arch',
+  nodes: [
+    {
+      id: 's1',
+      type: 'service',
+      tier: 'logic',
+      label: 'AuthService',
+      filePath: 'src/services/AuthService.ts',
+      pos: { x: 100, y: 100 }
+    },
+    {
+      id: 'c1',
+      type: 'component',
+      tier: 'presentation',
+      label: 'LoginScreen',
+      filePath: 'src/components/LoginScreen.tsx',
+      pos: { x: 400, y: 100 }
+    }
+  ],
+  edges: [
+    {
+      id: 'e1',
+      from: 'c1',
+      to: 's1',
+      type: 'uses'
+    }
+  ]
+};
+
+const tmpFilePathTest = path.join(__dirname, 'temp-filepath-test.arch');
+fs.writeFileSync(tmpFilePathTest, JSON.stringify(testDocWithFilePath, null, 2));
+
+try {
+  const valOutput = execSync(`node "${validateScript}" "${tmpFilePathTest}"`, { encoding: 'utf8' });
+  assert.ok(valOutput.includes('Validation Passed'), 'validate.js must pass on .arch files with filePath');
+  const readBack = JSON.parse(fs.readFileSync(tmpFilePathTest, 'utf8'));
+  assert.strictEqual(readBack.nodes[0].filePath, 'src/services/AuthService.ts', 'filePath must be preserved');
+  assert.strictEqual(readBack.nodes[1].filePath, 'src/components/LoginScreen.tsx', 'filePath must be preserved');
+} finally {
+  if (fs.existsSync(tmpFilePathTest)) {
+    fs.unlinkSync(tmpFilePathTest);
+  }
+}
+
+console.log('✓ Card source file navigation (filePath) schema support and validation verified successfully.');
+
 console.log('\nAll automated tests passed successfully!');
+

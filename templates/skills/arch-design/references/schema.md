@@ -41,6 +41,7 @@ Every node in `nodes` shares common fields and belongs to one of 6 universal **A
   pos: { x: number; y: number }; // Canvas pixel position
   description?: string;    // Brief summary of responsibility
   subType?: string;        // Domain-specific subtype or role (e.g. "composable", "stateflow", "zustand")
+  filePath?: string;       // Relative workspace path to the source file (e.g. "src/services/AuthService.ts") - allows 1-click editor navigation!
   tech?: string;           // Technology icon badge for infrastructure (e.g. "room", "swiftdata", "tokio")
   properties?: Array<{
     id: string;

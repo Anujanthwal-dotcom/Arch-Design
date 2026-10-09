@@ -86,6 +86,7 @@ export type NodeDataBase = {
   tier?: ArchitectureTier;
   properties: Property[];
   subType?: string;
+  filePath?: string;
   [key: string]: any;
 };
 
@@ -138,6 +139,7 @@ export type LLDNode = {
   properties?: Property[];
   subType?: string;
   typeRef?: string;
+  filePath?: string;
   parameters?: Parameter[];
   returns?: Return[];
   tech?: string;

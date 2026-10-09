@@ -56,7 +56,7 @@ export class LLDCanvasEditorProvider implements vscode.CustomTextEditorProvider 
       changeDocumentSubscription.dispose();
     });
 
-    webviewPanel.webview.onDidReceiveMessage(e => {
+    webviewPanel.webview.onDidReceiveMessage(async e => {
       switch (e.type) {
         case 'ready':
           updateWebview();
@@ -64,6 +64,53 @@ export class LLDCanvasEditorProvider implements vscode.CustomTextEditorProvider 
         case 'update':
           this.updateTextDocument(document, e.text);
           return;
+        case 'openFile': {
+          const rawPath = typeof e.filePath === 'string' ? e.filePath.trim() : '';
+          if (!rawPath) return;
+
+          let targetUri: vscode.Uri;
+          if (path.isAbsolute(rawPath)) {
+            targetUri = vscode.Uri.file(rawPath);
+          } else {
+            const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
+            if (workspaceFolder) {
+              targetUri = vscode.Uri.joinPath(workspaceFolder.uri, rawPath);
+            } else {
+              const docDir = vscode.Uri.file(path.dirname(document.uri.fsPath));
+              targetUri = vscode.Uri.joinPath(docDir, rawPath);
+            }
+          }
+
+          try {
+            await vscode.workspace.fs.stat(targetUri);
+            const doc = await vscode.workspace.openTextDocument(targetUri);
+            await vscode.window.showTextDocument(doc, {
+              preview: false,
+              viewColumn: vscode.ViewColumn.Beside
+            });
+          } catch {
+            const relativeDisplay = vscode.workspace.asRelativePath ? vscode.workspace.asRelativePath(targetUri) : path.basename(targetUri.fsPath);
+            const choice = await vscode.window.showInformationMessage(
+              `File '${relativeDisplay}' does not exist yet. Would you like to create it?`,
+              'Create File',
+              'Cancel'
+            );
+            if (choice === 'Create File') {
+              try {
+                const initialContent = Buffer.from(`// ${path.basename(targetUri.fsPath)}\n`, 'utf8');
+                await vscode.workspace.fs.writeFile(targetUri, initialContent);
+                const doc = await vscode.workspace.openTextDocument(targetUri);
+                await vscode.window.showTextDocument(doc, {
+                  preview: false,
+                  viewColumn: vscode.ViewColumn.Beside
+                });
+              } catch (err: any) {
+                vscode.window.showErrorMessage(`Failed to create file: ${err?.message || err}`);
+              }
+            }
+          }
+          return;
+        }
       }
     });
 

@@ -5,6 +5,7 @@ import { generateId } from '../utils';
 import { useCanvas } from '../context';
 import { GripIcon, ChevronIcon } from '../icons';
 import { AutoResizeTextarea } from '../components/AutoResizeTextarea';
+import { CardFileBar, HeaderFileButton } from '../components/CardFileBar';
 
 export const ServiceNode: React.FC<NodeProps> = ({ data, id, selected }) => {
   const nodeData = data as ServiceNodeData;
@@ -88,6 +89,7 @@ export const ServiceNode: React.FC<NodeProps> = ({ data, id, selected }) => {
           </span>
         </div>
         <div className="node-header-actions">
+          <HeaderFileButton filePath={nodeData.filePath || nodeData.typeRef} />
           <button
             className="node-header-btn nodrag"
             onClick={toggleCollapse}
@@ -117,16 +119,11 @@ export const ServiceNode: React.FC<NodeProps> = ({ data, id, selected }) => {
           />
         </div>
 
-        <div className="field-group">
-          <span className="field-label">TypeRef:</span>
-          <input
-            className="field-input nodrag"
-            defaultValue={nodeData.typeRef || ''}
-            key={nodeData.typeRef}
-            onBlur={(e) => updateTypeRef(e.target.value)}
-            placeholder="services/AuthService..."
-          />
-        </div>
+        <CardFileBar
+          nodeId={id}
+          filePath={nodeData.filePath || nodeData.typeRef}
+          placeholder="Source file (e.g. src/services/AuthService.ts)..."
+        />
         
         <div className="section">
           <div className="section-header">

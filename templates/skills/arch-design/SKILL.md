@@ -49,6 +49,7 @@ Refer to the schema reference: [references/schema.md](./references/schema.md).
 - Specify `domain` (`"backend"`, `"frontend"`, `"mobile"`, `"systems"`, or `"universal"`) and optional `framework` preset (`"nextjs"`, `"react"`, `"vue-nuxt"`, `"nestjs"`, `"springboot"`, `"fastapi"`, `"android"`, `"ios"`, `"flutter"`, `"systems"`, `"go-clean"`, `"clean-arch"`, `"universal"`).
 - Create unique IDs prefixed by type: `m1` (Module), `c1` (Component), `s1` (Service), `t1` (Type), `f1` (Function), `e1` (External).
 - Assign types, labels, descriptions, parameters, returns, subTypes, and tech badges.
+- **Attach `filePath`**: Always specify `filePath` (relative to the workspace root, e.g. `"src/services/AuthService.ts"`, `"crates/server/src/main.rs"`) so users can click the card in VS Code to open and inspect the implementation file side-by-side!
 - Connect nodes according to the allowed connection rules: [references/rules.md](./references/rules.md).
 
 ### Step 2: Auto-Calculate Visual Coordinates
