@@ -4,7 +4,7 @@
   "displayName": "Arch Design",
   "description": "Visual architecture canvas for mapping Backend, Frontend, Mobile (Android/iOS), and Systems (Rust) architectures",
   "icon": "media/icon.png",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.74.0"
   },

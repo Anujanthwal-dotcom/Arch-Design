@@ -5,6 +5,8 @@
 [![Docs & CLI Reference](https://img.shields.io/badge/Docs-Agent%20Skills%20%26%20CLI-8b5cf6?style=flat&logo=gitbook&logoColor=white)](https://anujanthwal-dotcom.github.io/Arch-Design/#docs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
+> 🌐 **Live Demo & Documentation**: Try the interactive canvas online at [https://anujanthwal-dotcom.github.io/Arch-Design/](https://anujanthwal-dotcom.github.io/Arch-Design/)
+
 Arch Design is an interactive visual architecture canvas for Visual Studio Code. It allows software architects, engineers, and AI coding agents to map, design, and inspect modules, services, functions, and external infrastructure dependencies.
 
 The `.arch` file format is saved as structured JSON, making it intuitive for humans to design visually and seamless for AI coding agents to implement faithfully.
@@ -86,6 +88,8 @@ node .agents/skills/arch-design/scripts/layout.js architecture.arch
 - `sample-frontend.arch`: React / Zustand E-Commerce Frontend
 - `sample-mobile.arch`: Android / iOS Clean Architecture + MVVM
 - `sample-rust.arch`: Systems Programming Tokio Packet Engine
+
+For interactive examples, live canvas demo, and documentation, visit [https://anujanthwal-dotcom.github.io/Arch-Design/](https://anujanthwal-dotcom.github.io/Arch-Design/).
 
 ---
 
