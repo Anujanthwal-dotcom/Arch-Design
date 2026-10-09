@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // 2c. Copy Buttons in Code Cards & Prompt Items
-  const docsCopyBtns = document.querySelectorAll('.docs-code-copy-btn');
+  const docsCopyBtns = document.querySelectorAll('.docs-code-copy-btn, .guide-copy-btn');
   docsCopyBtns.forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
