@@ -28,7 +28,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "struct-config",
@@ -60,7 +60,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "struct-conn-mgr",
@@ -87,7 +87,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "trait-service",
@@ -114,7 +114,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "fn-process-stream",
@@ -141,7 +141,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "driver-tokio-io",
@@ -168,7 +168,7 @@
       "parameters": [],
       "returns": [],
       "tech": "tokio",
-      "isCollapsed": false
+      "isCollapsed": true
     }
   ],
   "edges": [

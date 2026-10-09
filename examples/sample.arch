@@ -10,7 +10,7 @@
       "label": "Auth",
       "pos": {
         "x": 60,
-        "y": 550
+        "y": 348
       },
       "description": "Authentication and authorization domain",
       "properties": [
@@ -27,7 +27,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "b9f23c4d-5e67-5f89-af12-2345678901bc",
@@ -35,8 +35,8 @@
       "tier": "logic",
       "label": "AuthService",
       "pos": {
-        "x": 480,
-        "y": 562
+        "x": 460,
+        "y": 348
       },
       "description": "Core authentication business logic",
       "properties": [
@@ -49,7 +49,7 @@
       "typeRef": "services/AuthService",
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "c0f34d5e-6f78-6f90-bg23-3456789012cd",
@@ -57,8 +57,8 @@
       "tier": "execution",
       "label": "validateToken",
       "pos": {
-        "x": 900,
-        "y": 1158
+        "x": 860,
+        "y": 670
       },
       "description": "Validates JWT token and returns decoded claims",
       "properties": [
@@ -93,7 +93,7 @@
           "description": "Decoded and verified JWT claims"
         }
       ],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "d1f45e6f-7g89-7g01-ch34-4567890123de",
@@ -101,8 +101,8 @@
       "tier": "execution",
       "label": "generateToken",
       "pos": {
-        "x": 900,
-        "y": 666
+        "x": 860,
+        "y": 450
       },
       "description": "Generates access and refresh tokens for authenticated user",
       "properties": [],
@@ -131,7 +131,7 @@
           "description": "Access and refresh token pair"
         }
       ],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "e2f56f7g-8h90-8h12-di45-5678901234ef",
@@ -139,8 +139,8 @@
       "tier": "infrastructure",
       "label": "users-db",
       "pos": {
-        "x": 900,
-        "y": 363
+        "x": 860,
+        "y": 245
       },
       "description": "User identity and credentials store",
       "properties": [
@@ -153,7 +153,7 @@
       "parameters": [],
       "returns": [],
       "tech": "postgres",
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "f3f67g8h-9i01-9i23-ej56-6789012345fg",
@@ -161,8 +161,8 @@
       "tier": "infrastructure",
       "label": "token-cache",
       "pos": {
-        "x": 900,
-        "y": 60
+        "x": 860,
+        "y": 55
       },
       "description": "Stores token blacklist and session data",
       "properties": [
@@ -175,7 +175,7 @@
       "parameters": [],
       "returns": [],
       "tech": "redis",
-      "isCollapsed": false
+      "isCollapsed": true
     }
   ],
   "edges": [

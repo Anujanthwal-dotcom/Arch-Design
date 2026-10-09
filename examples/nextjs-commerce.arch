@@ -29,7 +29,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "comp-cart-btn",
@@ -56,7 +56,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "store-cart",
@@ -88,7 +88,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "action-cart",
@@ -115,7 +115,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "schema-cart",
@@ -147,7 +147,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "api-shopify",
@@ -174,7 +174,7 @@
       "parameters": [],
       "returns": [],
       "tech": "graphql",
-      "isCollapsed": false
+      "isCollapsed": true
     }
   ],
   "edges": [

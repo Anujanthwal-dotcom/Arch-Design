@@ -25,7 +25,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "b9f23c4d-5e67-5f89-af12-2345678901bc",
@@ -46,7 +46,7 @@
       "typeRef": "services/AuthService",
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "c0f34d5e-6f78-6f90-bg23-3456789012cd",
@@ -89,7 +89,7 @@
           "description": "Decoded and verified JWT claims"
         }
       ],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "d1f45e6f-7g89-7g01-ch34-4567890123de",
@@ -126,7 +126,7 @@
           "description": "Access and refresh token pair"
         }
       ],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "e2f56f7g-8h90-8h12-di45-5678901234ef",
@@ -147,7 +147,7 @@
       "parameters": [],
       "returns": [],
       "tech": "postgres",
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "f3f67g8h-9i01-9i23-ej56-6789012345fg",
@@ -168,7 +168,7 @@
       "parameters": [],
       "returns": [],
       "tech": "redis",
-      "isCollapsed": false
+      "isCollapsed": true
     }
   ],
   "edges": [

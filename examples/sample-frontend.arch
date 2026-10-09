@@ -23,7 +23,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "c2",
@@ -45,7 +45,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "s1",
@@ -67,7 +67,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "f1",
@@ -105,7 +105,7 @@
           "description": "Localized currency string e.g. $19.99"
         }
       ],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "e1",
@@ -121,7 +121,7 @@
       "parameters": [],
       "returns": [],
       "tech": "rest",
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "t1",
@@ -143,7 +143,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     }
   ],
   "edges": [

@@ -28,7 +28,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "vm-foryou",
@@ -55,7 +55,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "usecase-topics",
@@ -77,7 +77,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "repo-topics",
@@ -104,7 +104,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "dao-topics",
@@ -131,7 +131,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "db-nia",
@@ -158,7 +158,7 @@
       "parameters": [],
       "returns": [],
       "tech": "room",
-      "isCollapsed": false
+      "isCollapsed": true
     }
   ],
   "edges": [

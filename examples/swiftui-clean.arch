@@ -28,7 +28,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "vm-order-list",
@@ -55,7 +55,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "coord-order",
@@ -82,7 +82,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "repo-orders",
@@ -109,7 +109,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "model-order",
@@ -141,7 +141,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "db-swiftdata",
@@ -168,7 +168,7 @@
       "parameters": [],
       "returns": [],
       "tech": "swiftdata",
-      "isCollapsed": false
+      "isCollapsed": true
     }
   ],
   "edges": [

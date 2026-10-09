@@ -81,6 +81,8 @@ export const AppContent: React.FC = () => {
   const isInitialized = useRef(false);
   const documentText = useRef('');
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const nodesRef = useRef<Node[]>(nodes);
+  nodesRef.current = nodes;
 
   const stripRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -479,6 +481,7 @@ export const AppContent: React.FC = () => {
           label: defaultLabel,
           description: '',
           properties: [],
+          isCollapsed: true,
           ...(defaultSubType && { subType: defaultSubType }),
           ...((defaultTech || tier === 'infrastructure') && { tech: defaultTech || defaultSubType || 'postgres' }),
         },
@@ -512,24 +515,34 @@ export const AppContent: React.FC = () => {
               return;
             }
             const doc: LLDDocument = JSON.parse(text);
-            const reactNodes: Node[] = (doc.nodes || []).map((node) => ({
-              id: node.id,
-              type: node.type,
-              position: node.pos || { x: 100, y: 100 },
-              data: {
-                nodeType: node.type,
-                label: node.label || '',
-                description: node.description || '',
-                properties: node.properties || [],
-                subType: node.subType,
-                typeRef: node.typeRef,
-                filePath: node.filePath || node.typeRef,
-                parameters: node.parameters || [],
-                returns: node.returns || [],
-                tech: node.tech,
-                isCollapsed: Boolean(node.isCollapsed),
-              },
-            }));
+            const wasInitial = !isInitialized.current;
+            const reactNodes: Node[] = (doc.nodes || []).map((node) => {
+              const existingNode = nodesRef.current.find((n) => n.id === node.id);
+              const isCollapsed = wasInitial
+                ? true
+                : existingNode
+                ? Boolean(existingNode.data?.isCollapsed)
+                : (node.isCollapsed !== undefined ? Boolean(node.isCollapsed) : true);
+
+              return {
+                id: node.id,
+                type: node.type,
+                position: node.pos || { x: 100, y: 100 },
+                data: {
+                  nodeType: node.type,
+                  label: node.label || '',
+                  description: node.description || '',
+                  properties: node.properties || [],
+                  subType: node.subType,
+                  typeRef: node.typeRef,
+                  filePath: node.filePath || node.typeRef,
+                  parameters: node.parameters || [],
+                  returns: node.returns || [],
+                  tech: node.tech,
+                  isCollapsed,
+                },
+              };
+            });
             const reactEdges: Edge[] = (doc.edges || []).map((edge) => ({
               id: edge.id,
               source: edge.from,
@@ -551,7 +564,6 @@ export const AppContent: React.FC = () => {
             } else if (doc.domain) {
               setFramework(doc.domain);
             }
-            const wasInitial = !isInitialized.current;
             isInitialized.current = true;
             setIsLoading(false);
             if (wasInitial && reactNodes.length > 0) {

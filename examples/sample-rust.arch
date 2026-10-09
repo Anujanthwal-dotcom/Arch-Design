@@ -22,7 +22,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "t1",
@@ -44,7 +44,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "t2",
@@ -66,7 +66,7 @@
       ],
       "parameters": [],
       "returns": [],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "f1",
@@ -97,7 +97,7 @@
           "description": "Decoded packet or frame parsing error"
         }
       ],
-      "isCollapsed": false
+      "isCollapsed": true
     },
     {
       "id": "e1",
@@ -113,7 +113,7 @@
       "parameters": [],
       "returns": [],
       "tech": "tokio",
-      "isCollapsed": false
+      "isCollapsed": true
     }
   ],
   "edges": [
