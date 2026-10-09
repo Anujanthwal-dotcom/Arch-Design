@@ -1,0 +1,9 @@
+# Arch Design Architecture & Agent Guidelines
+
+This repository uses Arch Design (.arch / .lld) visual architecture files.
+
+When working with architecture files:
+1. Refer to .agents/skills/arch-design/SKILL.md and references/schema.md
+2. Validate changes: node .agents/skills/arch-design/scripts/validate.js <file.arch>
+3. Auto-layout nodes: node .agents/skills/arch-design/scripts/layout.js <file.arch>
+4. Obey low-level design rules: UI components must not connect directly to raw infrastructure (DBs/APIs). Route through logic/services.

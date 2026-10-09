@@ -1,0 +1,31 @@
+---
+description: Arch Design visual architecture guidelines and Low-Level Design rules for .arch and .lld files
+globs: ["*.arch", "*.lld"]
+alwaysApply: false
+---
+
+# Arch Design Architecture Canvas Guidelines for Cursor
+
+When inspecting, generating, or modifying `.arch` or `.lld` visual architecture files in this project:
+
+## 1. Skill Reference & Schema
+- Full Agent Skill: [`.agents/skills/arch-design/SKILL.md`](../.agents/skills/arch-design/SKILL.md)
+- JSON Schema Specification: [`.agents/skills/arch-design/references/schema.md`](../.agents/skills/arch-design/references/schema.md)
+- Connection Rules Matrix: [`.agents/skills/arch-design/references/rules.md`](../.agents/skills/arch-design/references/rules.md)
+
+## 2. Low-Level Design Rules
+- Tiers: `container`, `presentation`, `logic`, `contract`, `execution`, `infrastructure`.
+- Prohibited connections:
+  - Direct links between UI (`presentation`) and raw database/APIs (`infrastructure`) are blocked.
+  - Infrastructure cannot connect directly to another infrastructure node.
+  - Self-loops and duplicate edges are blocked.
+
+## 3. CLI Validation & Auto-Layout
+- **Always validate** modified `.arch` files before completing your task:
+  ```bash
+  node .agents/skills/arch-design/scripts/validate.js <path-to-file.arch>
+  ```
+- **Auto-layout coordinates** using Dagre:
+  ```bash
+  node .agents/skills/arch-design/scripts/layout.js <path-to-file.arch>
+  ```

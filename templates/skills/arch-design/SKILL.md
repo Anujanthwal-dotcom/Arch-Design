@@ -110,3 +110,15 @@ Arch Design enforces Low-Level Design separation of concerns across all domains:
 - [Rust Systems Engine](./examples/tokio-hyper.arch): Async Tokio & Hyper engine (Crates, Structs, Traits, green-thread tasks, kernel epoll I/O).
 - [iOS SwiftUI Clean](./examples/swiftui-clean.arch): Apple SwiftUI + SwiftData (SwiftUI views, Observable ViewModels, Coordinators, SwiftData ModelContainer).
 - [Backend Auth Monolith](./examples/sample.arch): Backend authentication and JWT modular monolith.
+
+---
+
+## 5. Multi-Agent Ecosystem Interoperability
+
+This skill is designed to run seamlessly across all major AI coding agents:
+
+- **Antigravity (AGY)**: Discovered natively via `.agents/skills/arch-design/SKILL.md` (and `~/.gemini/config/skills/arch-design/`). Injected dynamically using progressive disclosure.
+- **OpenCode & OpenHands**: Follows the `AGENTS.md` project root standard initialized by the extension.
+- **Claude Code**: Referenced in `CLAUDE.md`. Claude can execute the CLI tools (`node .agents/skills/arch-design/scripts/validate.js`).
+- **Cursor (Agent / Composer)**: Activated via `.cursor/rules/arch-design.mdc` whenever `*.arch` or `*.lld` files are in focus.
+

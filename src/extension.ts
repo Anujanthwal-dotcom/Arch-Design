@@ -65,6 +65,8 @@ export function activate(context: vscode.ExtensionContext) {
 
       const templateSkillBaseUri = vscode.Uri.joinPath(context.extensionUri, 'templates', 'skills', 'arch-design');
       const templateAgentsUri = vscode.Uri.joinPath(context.extensionUri, 'templates', 'AGENTS.md');
+      const templateClaudeUri = vscode.Uri.joinPath(context.extensionUri, 'templates', 'rules', 'CLAUDE.md');
+      const templateCursorMdcUri = vscode.Uri.joinPath(context.extensionUri, 'templates', 'rules', 'cursor-arch-design.mdc');
 
       try {
         const templateAgentsRaw = await vscode.workspace.fs.readFile(templateAgentsUri);
@@ -109,6 +111,44 @@ export function activate(context: vscode.ExtensionContext) {
             const defaultUri = vscode.Uri.joinPath(workspaceFolder.uri, 'AGENTS.md');
             await vscode.workspace.fs.writeFile(defaultUri, Buffer.from(AGENTS_MD_CONTENT, 'utf8'));
           }
+
+          // Configure Claude Code (CLAUDE.md)
+          try {
+            const templateClaudeRaw = await vscode.workspace.fs.readFile(templateClaudeUri);
+            const CLAUDE_MD_CONTENT = Buffer.from(templateClaudeRaw).toString('utf8');
+            const claudeUri = vscode.Uri.joinPath(workspaceFolder.uri, 'CLAUDE.md');
+            let existingClaude: string | null = null;
+            try {
+              const raw = await vscode.workspace.fs.readFile(claudeUri);
+              existingClaude = Buffer.from(raw).toString('utf8');
+            } catch {
+              // File does not exist
+            }
+
+            if (existingClaude !== null) {
+              const alreadyConfigured =
+                existingClaude.includes('.agents/skills/arch-design') ||
+                existingClaude.includes('Arch Design');
+              if (!alreadyConfigured) {
+                const separator = existingClaude.trim().length > 0 ? '\n\n' : '';
+                const updatedContent = `${existingClaude.trimEnd()}${separator}${CLAUDE_MD_CONTENT}`;
+                await vscode.workspace.fs.writeFile(claudeUri, Buffer.from(updatedContent, 'utf8'));
+              }
+            } else {
+              await vscode.workspace.fs.writeFile(claudeUri, Buffer.from(CLAUDE_MD_CONTENT, 'utf8'));
+            }
+          } catch {
+            // Fallback gracefully if Claude template is unreadable
+          }
+
+          // Configure Cursor rules (.cursor/rules/arch-design.mdc)
+          try {
+            const templateCursorMdcRaw = await vscode.workspace.fs.readFile(templateCursorMdcUri);
+            const cursorMdcUri = vscode.Uri.joinPath(workspaceFolder.uri, '.cursor', 'rules', 'arch-design.mdc');
+            await vscode.workspace.fs.writeFile(cursorMdcUri, templateCursorMdcRaw);
+          } catch {
+            // Fallback gracefully if Cursor template is unreadable
+          }
         } else {
           const os = await import('os');
           baseUri = vscode.Uri.file(require('path').join(os.homedir(), '.gemini', 'config', 'skills', 'arch-design'));
@@ -138,7 +178,11 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         vscode.window.showInformationMessage(
-          `✓ Arch Design Agent Skill installed in ${scopeChoice.target === 'workspace' ? 'workspace' : 'global config'}. AI coding agents can now read, validate, and draw .arch diagrams!`
+          `✓ Arch Design Agent Skill installed in ${
+            scopeChoice.target === 'workspace'
+              ? 'workspace (configured for Antigravity, Claude Code, Cursor, OpenCode)'
+              : 'global config'
+          }. AI coding agents can now read, validate, and draw .arch diagrams!`
         );
       } catch (err: any) {
         vscode.window.showErrorMessage(`Failed to install Agent Skill: ${err?.message || err}`);

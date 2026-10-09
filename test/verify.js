@@ -248,11 +248,30 @@ function resolveAndApplyGuidelines(filesMap, skillContent) {
   }
 }
 
-const dummySkill = '# Architecture & Agent Guidelines\nSee .agents/skills/arch-design/SKILL.md';
+const dummySkill = '# Arch Design Architecture & Agent Guidelines\nSee .agents/skills/arch-design/SKILL.md';
 const mockFilesA = { 'agents.md': '# Existing Project Rules\nDo not break production.' };
 const resA = resolveAndApplyGuidelines(mockFilesA, dummySkill);
 assert.strictEqual(resA.targetFile, 'agents.md');
-assert.ok(mockFilesA['agents.md'].includes('# Architecture & Agent Guidelines'));
+assert.ok(mockFilesA['agents.md'].includes('# Arch Design Architecture & Agent Guidelines'));
+
+// Test Claude Code resolution logic
+function resolveAndApplyClaude(filesMap, claudeContent) {
+  if (Object.prototype.hasOwnProperty.call(filesMap, 'CLAUDE.md')) {
+    const existing = filesMap['CLAUDE.md'];
+    const alreadyConfigured = existing.includes('.agents/skills/arch-design') || existing.includes('Arch Design');
+    if (!alreadyConfigured) {
+      filesMap['CLAUDE.md'] = `${existing.trimEnd()}\n\n${claudeContent}`;
+    }
+    return { targetFile: 'CLAUDE.md', updated: !alreadyConfigured };
+  } else {
+    filesMap['CLAUDE.md'] = claudeContent;
+    return { targetFile: 'CLAUDE.md', updated: true };
+  }
+}
+const mockClaudeFiles = { 'CLAUDE.md': '# My Existing Claude Rules' };
+const resClaude = resolveAndApplyClaude(mockClaudeFiles, dummySkill);
+assert.strictEqual(resClaude.updated, true);
+assert.ok(mockClaudeFiles['CLAUDE.md'].includes('Arch Design'));
 
 console.log('✓ Agent guidelines resolution and appending logic passed.');
 
@@ -260,6 +279,9 @@ console.log('✓ Agent guidelines resolution and appending logic passed.');
 console.log('--- Test 5: Testing Agent Skill Templates Parity & Multi-Domain Completeness ---');
 const templatesDir = path.join(__dirname, '..', 'templates');
 const agentsMdPath = path.join(templatesDir, 'AGENTS.md');
+const claudeMdPath = path.join(templatesDir, 'rules', 'CLAUDE.md');
+const cursorMdcPath = path.join(templatesDir, 'rules', 'cursor-arch-design.mdc');
+const cursorrulesPath = path.join(templatesDir, 'rules', 'cursorrules');
 const skillMdPath = path.join(templatesDir, 'skills', 'arch-design', 'SKILL.md');
 const schemaMdPath = path.join(templatesDir, 'skills', 'arch-design', 'references', 'schema.md');
 const rulesMdPath = path.join(templatesDir, 'skills', 'arch-design', 'references', 'rules.md');
@@ -275,6 +297,9 @@ const tokioTemplatePath = path.join(templatesDir, 'skills', 'arch-design', 'exam
 const swiftTemplatePath = path.join(templatesDir, 'skills', 'arch-design', 'examples', 'swiftui-clean.arch');
 
 assert.ok(fs.existsSync(agentsMdPath), 'templates/AGENTS.md must exist');
+assert.ok(fs.existsSync(claudeMdPath), 'templates/rules/CLAUDE.md must exist');
+assert.ok(fs.existsSync(cursorMdcPath), 'templates/rules/cursor-arch-design.mdc must exist');
+assert.ok(fs.existsSync(cursorrulesPath), 'templates/rules/cursorrules must exist');
 assert.ok(fs.existsSync(skillMdPath), 'templates/skills/arch-design/SKILL.md must exist');
 assert.ok(fs.existsSync(schemaMdPath), 'templates/skills/arch-design/references/schema.md must exist');
 assert.ok(fs.existsSync(rulesMdPath), 'templates/skills/arch-design/references/rules.md must exist');
@@ -288,6 +313,12 @@ assert.ok(fs.existsSync(niaTemplatePath), 'nowinandroid.arch template must exist
 assert.ok(fs.existsSync(nextTemplatePath), 'nextjs-commerce.arch template must exist');
 assert.ok(fs.existsSync(tokioTemplatePath), 'tokio-hyper.arch template must exist');
 assert.ok(fs.existsSync(swiftTemplatePath), 'swiftui-clean.arch template must exist');
+
+const claudeMdContent = fs.readFileSync(claudeMdPath, 'utf8');
+const cursorMdcContent = fs.readFileSync(cursorMdcPath, 'utf8');
+assert.ok(claudeMdContent.includes('validate.js'), 'CLAUDE.md contains validate.js instruction');
+assert.ok(cursorMdcContent.includes('globs: ["*.arch", "*.lld"]'), 'cursor-arch-design.mdc contains file globs');
+assert.ok(cursorMdcContent.includes('validate.js'), 'cursor-arch-design.mdc contains validate.js instruction');
 
 const schemaMdContent = fs.readFileSync(schemaMdPath, 'utf8');
 const rulesMdContent = fs.readFileSync(rulesMdPath, 'utf8');
