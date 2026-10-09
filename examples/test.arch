@@ -5,19 +5,226 @@
   "name": "architecture",
   "nodes": [
     {
-      "id": "e4f22001-9734-4033-a4bf-81a7acd30b05",
+      "id": "mod-order",
       "type": "module",
       "tier": "container",
-      "label": "New Module",
+      "label": "OrderModule",
       "pos": {
-        "x": 251.89415796951027,
-        "y": 252.19273436788535
+        "x": 60,
+        "y": 611
       },
-      "properties": [],
+      "description": "Root module encapsulating order lifecycle, checkout flow, and payment processing",
+      "properties": [
+        {
+          "id": "p-scope",
+          "title": "Scope",
+          "description": "E-Commerce Checkout & Fulfillment"
+        },
+        {
+          "id": "p-arch",
+          "title": "Pattern",
+          "description": "Domain-Driven Design (DDD) Feature Module"
+        }
+      ],
+      "filePath": "src/modules/order/order.module.ts",
       "parameters": [],
       "returns": [],
       "isCollapsed": true
+    },
+    {
+      "id": "comp-checkout",
+      "type": "component",
+      "tier": "presentation",
+      "label": "CheckoutView",
+      "pos": {
+        "x": 900,
+        "y": 712
+      },
+      "description": "React checkout view rendering cart items, delivery options, and payment triggers",
+      "properties": [
+        {
+          "id": "p-ui",
+          "title": "State",
+          "description": "Controlled form with optimistic cart updates"
+        }
+      ],
+      "filePath": "src/modules/order/components/CheckoutView.tsx",
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": true
+    },
+    {
+      "id": "srv-order",
+      "type": "service",
+      "tier": "logic",
+      "label": "OrderService",
+      "pos": {
+        "x": 480,
+        "y": 510
+      },
+      "description": "Coordinates order placement, inventory reservations, and invoice dispatch",
+      "properties": [
+        {
+          "id": "p-txn",
+          "title": "Transaction",
+          "description": "Distributed saga orchestration with idempotent retry"
+        }
+      ],
+      "filePath": "src/modules/order/services/order.service.ts",
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": true
+    },
+    {
+      "id": "type-order",
+      "type": "type",
+      "tier": "contract",
+      "label": "OrderContract",
+      "pos": {
+        "x": 900,
+        "y": 611
+      },
+      "description": "Core domain schema and DTO contract for valid orders",
+      "properties": [
+        {
+          "id": "p-schema",
+          "title": "Validation",
+          "description": "Zod schema enforcement on API boundary"
+        }
+      ],
+      "filePath": "src/modules/order/types/order.contract.ts",
+      "parameters": [],
+      "returns": [],
+      "isCollapsed": true
+    },
+    {
+      "id": "fn-process-payment",
+      "type": "function",
+      "tier": "execution",
+      "label": "processPayment",
+      "pos": {
+        "x": 900,
+        "y": 510
+      },
+      "description": "Executes 3D-secure card charges through the payment gateway adapter",
+      "properties": [],
+      "filePath": "src/modules/order/actions/processPayment.ts",
+      "parameters": [
+        {
+          "id": "param-order-id",
+          "name": "orderId",
+          "type": "string",
+          "required": true,
+          "description": "Unique order tracking UUID"
+        },
+        {
+          "id": "param-amount",
+          "name": "amountCents",
+          "type": "number",
+          "required": true,
+          "description": "Total charge amount in integer cents"
+        }
+      ],
+      "returns": [
+        {
+          "id": "ret-payment",
+          "name": "receipt",
+          "type": "PaymentReceipt",
+          "required": true,
+          "description": "Confirmed transaction receipt token"
+        }
+      ],
+      "isCollapsed": true
+    },
+    {
+      "id": "infra-db",
+      "type": "external",
+      "tier": "infrastructure",
+      "label": "orders-db",
+      "pos": {
+        "x": 900,
+        "y": 161
+      },
+      "description": "Primary relational database storing order entities and audit logs",
+      "properties": [
+        {
+          "id": "p-conn",
+          "title": "Connection Pool",
+          "description": "Max 20 connections via PgBouncer"
+        }
+      ],
+      "filePath": "src/infra/database/postgres.client.ts",
+      "parameters": [],
+      "returns": [],
+      "tech": "postgres",
+      "isCollapsed": true
+    },
+    {
+      "id": "infra-cache",
+      "type": "external",
+      "tier": "infrastructure",
+      "label": "order-cache",
+      "pos": {
+        "x": 900,
+        "y": 60
+      },
+      "description": "Distributed cache for hot order state and idempotency keys",
+      "properties": [
+        {
+          "id": "p-ttl",
+          "title": "Idempotency TTL",
+          "description": "600 seconds with NX lock"
+        }
+      ],
+      "filePath": "src/infra/cache/redis.client.ts",
+      "parameters": [],
+      "returns": [],
+      "tech": "redis",
+      "isCollapsed": true
     }
   ],
-  "edges": []
+  "edges": [
+    {
+      "id": "edge-checkout-order-module",
+      "from": "comp-checkout",
+      "to": "mod-order",
+      "type": "belongsTo"
+    },
+    {
+      "id": "edge-checkout-service",
+      "from": "comp-checkout",
+      "to": "srv-order",
+      "type": "uses"
+    },
+    {
+      "id": "edge-service-module",
+      "from": "srv-order",
+      "to": "mod-order",
+      "type": "injects"
+    },
+    {
+      "id": "edge-service-contract",
+      "from": "type-order",
+      "to": "srv-order",
+      "type": "defines"
+    },
+    {
+      "id": "edge-service-fn",
+      "from": "fn-process-payment",
+      "to": "srv-order",
+      "type": "implements"
+    },
+    {
+      "id": "edge-db-service",
+      "from": "infra-db",
+      "to": "srv-order",
+      "type": "injects"
+    },
+    {
+      "id": "edge-cache-service",
+      "from": "infra-cache",
+      "to": "srv-order",
+      "type": "injects"
+    }
+  ]
 }

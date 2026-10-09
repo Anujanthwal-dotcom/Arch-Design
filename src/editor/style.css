@@ -163,6 +163,29 @@ html, body {
   background: rgba(197, 134, 192, 0.12);
 }
 
+.node-type-badge.external.has-tech-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.2px;
+  transition: all 0.2s ease;
+}
+
+.node-type-badge.external.has-tech-logo .tech-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.node-type-badge.external.has-tech-logo .tech-badge-name {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
 .node-type-badge.tier-container {
   color: #4ec9b0;
   background: rgba(78, 201, 176, 0.15);
@@ -304,6 +327,64 @@ html, body {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.tech-selector-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.tech-select-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.field-select {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 11px;
+  padding: 3px 6px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.field-select:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.field-select:focus {
+  border-color: #38bdf8;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.field-select optgroup {
+  background: #18191e;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.field-select option {
+  background: #18191e;
+  color: var(--text-primary);
+  font-weight: normal;
+}
+
+.custom-tech-input {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px dashed rgba(56, 189, 248, 0.4) !important;
+  border-radius: 4px;
+  padding: 3px 6px !important;
+  font-size: 11px;
 }
 
 /* Card File Linking & Navigation */

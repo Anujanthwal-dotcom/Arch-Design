@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
 import { ExternalNodeData, Property } from '../../types';
 import { generateId } from '../utils';
-import { TechIcon, GripIcon, ChevronIcon } from '../icons';
+import { TechIcon, GripIcon, ChevronIcon, getTechMeta, KNOWN_TECH_GROUPS } from '../icons';
 import { useCanvas } from '../context';
 import { AutoResizeTextarea } from '../components/AutoResizeTextarea';
 import { CardFileBar, HeaderFileButton } from '../components/CardFileBar';
@@ -13,6 +13,20 @@ export const ExternalNode: React.FC<NodeProps> = ({ data, id, selected }) => {
   const [properties, setProperties] = useState<Property[]>(nodeData.properties || []);
   const [isPropertiesExpanded, setIsPropertiesExpanded] = useState(true);
   const isCollapsed = Boolean(nodeData.isCollapsed);
+
+  const techMeta = getTechMeta(nodeData.tech || '');
+  const [isCustomTech, setIsCustomTech] = useState<boolean>(() => {
+    if (!nodeData.tech) return false;
+    return !techMeta.isKnown;
+  });
+
+  useEffect(() => {
+    if (nodeData.tech && !getTechMeta(nodeData.tech).isKnown) {
+      setIsCustomTech(true);
+    } else {
+      setIsCustomTech(false);
+    }
+  }, [nodeData.tech]);
 
   useEffect(() => {
     setProperties(nodeData.properties || []);
@@ -57,6 +71,22 @@ export const ExternalNode: React.FC<NodeProps> = ({ data, id, selected }) => {
     updateNodeData(id, { properties: updated });
   };
 
+  const handleTechSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    if (val === 'other') {
+      setIsCustomTech(true);
+    } else {
+      setIsCustomTech(false);
+      updateTech(val);
+      if (!nodeData.label || nodeData.label.toLowerCase().includes('external')) {
+        const meta = getTechMeta(val);
+        if (meta.isKnown) {
+          updateLabel(meta.label);
+        }
+      }
+    }
+  };
+
   return (
     <div className={`lld-node external ${selected ? 'selected' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
       <Handle
@@ -71,7 +101,22 @@ export const ExternalNode: React.FC<NodeProps> = ({ data, id, selected }) => {
           <span className="node-grip-handle" title="Drag card">
             <GripIcon size={12} />
           </span>
-          <span className="node-type-badge external">External</span>
+          {techMeta.isKnown ? (
+            <span
+              className="node-type-badge external has-tech-logo"
+              style={{
+                borderColor: techMeta.brandColor ? `${techMeta.brandColor}55` : undefined,
+                background: techMeta.brandColor ? `${techMeta.brandColor}18` : undefined,
+                color: techMeta.brandColor || '#c586c0',
+              }}
+              title={`Infrastructure: ${techMeta.label}`}
+            >
+              <TechIcon tech={nodeData.tech || ''} size={12} colored />
+              <span className="tech-badge-name">{techMeta.label}</span>
+            </span>
+          ) : (
+            <span className="node-type-badge external">External</span>
+          )}
           <span className="node-label">
             <input
               className="node-label-input nodrag"
@@ -121,15 +166,36 @@ export const ExternalNode: React.FC<NodeProps> = ({ data, id, selected }) => {
 
         <div className="field-group">
           <span className="field-label">Tech:</span>
-          <div className="tech-input-wrapper">
-            <TechIcon tech={nodeData.tech || ''} size={14} />
-            <input
-              className="field-input nodrag"
-              defaultValue={nodeData.tech || ''}
-              key={nodeData.tech}
-              onBlur={(e) => updateTech(e.target.value)}
-              placeholder="postgres, redis, s3..."
-            />
+          <div className="tech-selector-row">
+            <div className="tech-select-wrapper">
+              <TechIcon tech={nodeData.tech || ''} size={14} colored />
+              <select
+                className="field-select nodrag"
+                value={isCustomTech ? 'other' : (techMeta.isKnown ? techMeta.id : (nodeData.tech || ''))}
+                onChange={handleTechSelect}
+              >
+                <option value="">Select Technology...</option>
+                {KNOWN_TECH_GROUPS.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.options.map((opt) => (
+                      <option key={opt.id} value={opt.id}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+                <option value="other">Other / Custom...</option>
+              </select>
+            </div>
+            {isCustomTech && (
+              <input
+                className="field-input nodrag custom-tech-input"
+                defaultValue={techMeta.isKnown ? '' : (nodeData.tech || '')}
+                key={`custom-${nodeData.tech}`}
+                onBlur={(e) => updateTech(e.target.value)}
+                placeholder="Custom tech (e.g. Cassandra, DynamoDB)..."
+              />
+            )}
           </div>
         </div>
         
