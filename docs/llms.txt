@@ -1,0 +1,44 @@
+# Arch Design
+
+> Visual low-level architecture canvas for VS Code, built for software engineers and AI coding agents to map modules, services, functions, and infrastructure dependencies.
+
+Arch Design (`.arch` and `.lld` files) is a native VS Code visual architecture modeling extension with strict architectural guardrails, automatic Dagre graph layout, and bidirectional synchronization between human visual canvases and machine-readable JSON blueprints.
+
+## Core Capabilities
+
+- **4-Tier & Universal 6-Tier Architecture**: Organizes systems into `container` (Modules/Crates), `presentation` (UI Screens/Views), `logic` (Services/ViewModels/Stores), `contract` (Structs/Traits/DTOs), `execution` (Typed Functions/Actions), and `infrastructure` (Databases/Caches/Queues/APIs).
+- **Interactive Focus Mode**: Isolates upstream callers and downstream dependencies with interactive graph tracing.
+- **Architectural Guardrails**: Enforces Low-Level Design (LLD) separation of concerns, blocking illegal connections (e.g. UI directly querying raw databases, self-loops, orphaned nodes).
+- **1-Click Code Navigation (`filePath`)**: Nodes link directly to local workspace implementation files (e.g. `src/services/AuthService.ts`) for side-by-side editing.
+- **Dagre Topological Auto-Layout**: Assigns non-overlapping pixel coordinates automatically via CLI or GUI.
+- **14 Curated Framework Presets**: Web (Next.js, React SPA, Vue/Nuxt), Backend (NestJS, Spring Boot, FastAPI, Go Clean Architecture), Mobile (Android Jetpack Compose, iOS SwiftUI, Flutter), Systems (Rust Crates/Tokio, C++), and Universal Clean Architecture.
+- **AI Agent Skill & CLI Tooling**: Standalone CLI validation (`validate.js`) and auto-layout (`layout.js`) runnable by AI coding agents (Antigravity, Cursor, Claude Code, Windsurf, Copilot).
+
+## Essential Resources
+
+- [Full LLM Context (Monolithic Documentation)](https://anujanthwal-dotcom.github.io/Arch-Design/llms-full.txt): Complete schema specifications, connection rules, CLI tooling guides, and domain examples in a single promptable document.
+- [Visual Interactive Documentation](https://anujanthwal-dotcom.github.io/Arch-Design/): Live interactive canvas demo, framework explorer, and user guide.
+- [GitHub Repository](https://github.com/Anujanthwal-dotcom/Arch-Design): Open-source source code, agent skills, templates, and issue tracking.
+- [VS Code Marketplace Extension](https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design): Official Visual Studio Code extension package (`AnujAnthwal.arch-for-LLD-design`).
+
+## File Formats & Schemas
+
+Arch Design files are stored in human-readable JSON schema (v2):
+- Extensions: `.arch` and `.lld`
+- Root Structure: `{ "version": 2, "domain": "backend|frontend|mobile|systems|universal", "name": "...", "nodes": [...], "edges": [...] }`
+- Node IDs: Prefixed by type — `m1` (Module), `c1` (Component/Screen), `s1` (Service/ViewModel), `t1` (Type/Struct/Trait), `f1` (Function), `e1` (External/Infrastructure).
+- Connection Types: `injects`, `implements`, `renders`, `observes`, `uses`, `defines`, `belongsTo`, `submodule`, `helper`.
+
+## Agent CLI Tools
+
+When AI agents create or modify `.arch` files in a workspace, run these commands:
+- **Validate Schema & Connection Rules**:
+  `node .agents/skills/arch-design/scripts/validate.js architecture.arch`
+- **Auto-Assign Coordinates with Dagre**:
+  `node .agents/skills/arch-design/scripts/layout.js architecture.arch`
+
+## AI Agent Integration
+
+AI coding agents can install the agent skill directly into any workspace via VS Code Command Palette:
+`Arch: Install Agent Skill` (or copy templates from `templates/skills/arch-design`).
+Prompting pattern: *"Inspect architecture.arch and implement the services and schemas defined in the diagram with strict adherence to the connected contracts."*

@@ -7,8 +7,26 @@
   <meta name="description" content="Visual architecture canvas for mapping modules, services, functions, and external dependencies. Built for software engineers and AI coding agents.">
   <meta name="keywords" content="VS Code extension, Arch Design, system design, low-level design, LLD, architecture diagram, software design, AI coding agent">
 
+  <!-- Favicons for Browser Tab & Devices (matching Navbar Logo) -->
+  <link rel="icon" type="image/x-icon" href="./favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/icon.png">
+  <link rel="icon" type="image/svg+xml" href="./assets/arch-dark.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/icon.png">
+  <meta name="theme-color" content="#090d16">
+
+  <link rel="canonical" href="https://anujanthwal-dotcom.github.io/Arch-Design/">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+  <!-- LLM & AI Agent Context Discovery (llms.txt) -->
+  <link rel="alternate" type="text/plain" href="./llms.txt" title="LLM Context (llms.txt)">
+  <link rel="alternate" type="text/plain" href="./llms-full.txt" title="LLM Full Documentation">
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="./sitemap.xml">
+
   <!-- Open Graph / Social Sharing Meta Tags -->
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://anujanthwal-dotcom.github.io/Arch-Design/">
   <meta property="og:title" content="Arch Design - Visual Architecture Canvas for VS Code">
   <meta property="og:description" content="Design low-level software architecture visually. Native VS Code extension with AI-agent-friendly JSON schema.">
   <meta property="og:image" content="./assets/icon.png">
@@ -18,6 +36,45 @@
   <meta name="twitter:title" content="Arch Design - Visual Architecture Canvas">
   <meta name="twitter:description" content="Interactive visual architecture canvas for mapping modules, services, functions and external dependencies in VS Code.">
   <meta name="twitter:image" content="./assets/icon.png">
+
+  <!-- Schema.org JSON-LD Structured Data for Google Indexing -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://anujanthwal-dotcom.github.io/Arch-Design/#website",
+        "url": "https://anujanthwal-dotcom.github.io/Arch-Design/",
+        "name": "Arch Design",
+        "description": "Visual Architecture Canvas for VS Code & AI Coding Agents",
+        "publisher": {
+          "@type": "Person",
+          "name": "Anuj Anthwal"
+        }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://anujanthwal-dotcom.github.io/Arch-Design/#softwareapplication",
+        "name": "Arch Design",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Visual Studio Code, Windows, macOS, Linux",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Anuj Anthwal"
+        },
+        "description": "Visual architecture canvas for mapping Backend, Frontend, Mobile, and Systems architectures in VS Code. Built for software engineers and AI coding agents.",
+        "downloadUrl": "https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design",
+        "softwareVersion": "1.2.0"
+      }
+    ]
+  }
+  </script>
 
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -366,6 +423,14 @@
               <button class="docs-code-copy-btn" data-copy="node .agents/skills/arch-design/scripts/layout.js architecture.arch">Copy</button>
             </div>
             <pre class="docs-code-content">node .agents/skills/arch-design/scripts/layout.js architecture.arch</pre>
+          </div>
+
+          <div class="docs-code-card">
+            <div class="docs-code-card-header">
+              <span>Agent Documentation &amp; Context (llms.txt)</span>
+              <a href="./llms.txt" target="_blank" style="color:#38bdf8;font-size:11px;text-decoration:none;">Open llms.txt &rarr;</a>
+            </div>
+            <pre class="docs-code-content">curl -s https://anujanthwal-dotcom.github.io/Arch-Design/llms.txt</pre>
           </div>
 
           <div class="docs-code-card" style="margin-bottom:0;">
@@ -1689,6 +1754,8 @@ node .agents/skills/arch-design/scripts/layout.js architecture.arch ./output.arc
       <p style="margin-top:8px;">
         <a href="https://github.com/Anujanthwal-dotcom/Arch-Design" target="_blank">GitHub Repository</a> &bull;
         <a href="https://marketplace.visualstudio.com/items?itemName=AnujAnthwal.arch-for-LLD-design" target="_blank">VS Code Marketplace</a> &bull;
+        <a href="./llms.txt" target="_blank">llms.txt (AI Agents)</a> &bull;
+        <a href="./sitemap.xml" target="_blank">Sitemap</a> &bull;
         <a href="https://buymeacoffee.com/anuj_anthwal" target="_blank" rel="noopener noreferrer">Buy Me a Coffee</a>
       </p>
     </div>

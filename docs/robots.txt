@@ -1,0 +1,43 @@
+# robots.txt for Arch Design (https://anujanthwal-dotcom.github.io/Arch-Design/)
+# Visual Architecture Canvas for VS Code & AI Coding Agents
+
+User-agent: *
+Allow: /
+
+# Google Search Indexing
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /assets/
+
+# AI Coding Agents & LLM Web Crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# LLM Context and Machine-Readable Docs
+# https://anujanthwal-dotcom.github.io/Arch-Design/llms.txt
+# https://anujanthwal-dotcom.github.io/Arch-Design/llms-full.txt
+
+Sitemap: https://anujanthwal-dotcom.github.io/Arch-Design/sitemap.xml

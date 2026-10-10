@@ -1,0 +1,285 @@
+# Arch Design - Full LLM & AI Agent Documentation
+
+> Comprehensive machine-readable specification, schema reference, connection guardrails, CLI tooling, and domain presets for AI coding agents (Claude, Gemini, Antigravity, Cursor, Windsurf, Copilot).
+
+---
+
+## 1. Executive Summary
+
+**Arch Design** is a native Visual Studio Code extension and Low-Level Design (LLD) visual canvas. It enables software engineers and autonomous AI coding agents to visually map, trace, and implement software architectures.
+
+- **File Extensions**: `.arch` and `.lld`
+- **File Format**: Pure UTF-8 JSON (version 2 schema)
+- **Bidirectional Workflow**: Humans design architectures visually on an infinite canvas; AI coding agents inspect, validate, and generate code directly against the `.arch` blueprint, or generate new `.arch` files from codebases.
+- **Enforced Rules**: Unlike generic diagramming tools (like Mermaid, Excalidraw, or draw.io), Arch Design enforces domain-specific Low-Level Design separation of concerns.
+
+---
+
+## 2. Arch Design JSON Schema Specification (v2.1)
+
+Arch Design files are deterministic JSON files with no proprietary binary wrappers.
+
+### 2.1 Root Structure
+
+```json
+{
+  "version": 2,
+  "domain": "backend | frontend | mobile | systems | universal",
+  "framework": "nextjs | react | vue-nuxt | nestjs | springboot | fastapi | android | ios | flutter | systems | go-clean | clean-arch | universal",
+  "name": "system-name",
+  "nodes": [],
+  "edges": []
+}
+```
+
+#### Root Fields
+
+| Field | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `version` | `number` | **Yes** | Schema version number. Must be strictly `2`. |
+| `domain` | `string` | No | Architectural profile domain: `"backend"`, `"frontend"`, `"mobile"`, `"systems"`, or `"universal"`. |
+| `framework` | `string` | No | Framework or pattern preset ID: `"nextjs"`, `"react"`, `"vue-nuxt"`, `"nestjs"`, `"springboot"`, `"fastapi"`, `"backend"`, `"android"`, `"ios"`, `"flutter"`, `"systems"`, `"go-clean"`, `"clean-arch"`, `"universal"`. |
+| `name` | `string` | No | Human-readable system or canvas name (e.g. `"auth-service"`, `"checkout-flow"`). |
+| `nodes` | `Array<Node>` | **Yes** | Array of architectural cards. |
+| `edges` | `Array<Edge>` | **Yes** | Array of directional dependency edges. |
+
+---
+
+### 2.2 Node Schema
+
+Every card in `nodes` implements the following structure:
+
+```typescript
+interface Node {
+  id: string;              // Unique node ID, e.g. "m1", "c1", "s1", "t1", "f1", "e1"
+  type: string;            // Standard archetype: "module" | "component" | "service" | "type" | "function" | "external"
+  tier?: "container" | "presentation" | "logic" | "contract" | "execution" | "infrastructure"; // Inferred if omitted
+  label: string;           // Display card title
+  pos: { x: number; y: number }; // Pixel coordinates on canvas
+  description?: string;    // Clear summary of architectural role
+  subType?: string;        // Domain archetype, e.g. "screen", "viewmodel", "struct", "trait", "composable"
+  filePath?: string;       // Relative workspace path (e.g. "src/services/AuthService.ts") - enables 1-click navigation in VS Code!
+  tech?: string;           // Infrastructure logo badge key, e.g. "postgres", "redis", "tokio", "room", "s3", "kafka"
+  parameters?: Array<{ name: string; type: string }>; // Typed method parameters (functions)
+  returns?: string;        // Return type signature (functions)
+  properties?: Array<{ id: string; title: string; description: string }>; // Custom fields
+  isCollapsed?: boolean;   // Visual fold state
+}
+```
+
+#### Node ID Conventions
+AI agents must prefix IDs systematically:
+- `m1`, `m2`: Module / Crate / Domain Boundary
+- `c1`, `c2`: Component / UI Screen / View
+- `s1`, `s2`: Service / ViewModel / State Store / Repository
+- `t1`, `t2`: Type / Struct / Trait / Model / Schema / DTO
+- `f1`, `f2`: Function / Method / Endpoint / Server Action
+- `e1`, `e2`: External Infrastructure / Database / Queue / Third-Party API
+
+#### The 6 Universal Architecture Tiers
+If the `tier` field is omitted on a node, it is automatically resolved based on `type`:
+
+1. **`container`** (`type: "module"`, crates, packages, features)
+   - Scope: Structural packaging and module isolation boundaries.
+2. **`presentation`** (`type: "component"`, screens, views, widgets, composables)
+   - Scope: UI rendering, layouts, page routing.
+3. **`logic`** (`type: "service"`, viewmodels, stores, hooks, use cases, controllers)
+   - Scope: State management, domain orchestrators, business rules.
+4. **`contract`** (`type: "type"`, structs, traits, models, schemas, entities, DTOs)
+   - Scope: Typed data shapes, trait interfaces, request/response models.
+5. **`execution`** (`type: "function"`, methods, endpoints, server actions, background tasks)
+   - Scope: Concrete callable routines with typed parameters and return values.
+6. **`infrastructure`** (`type: "external"`, databases, caches, runtimes, hardware, external APIs)
+   - Scope: Persistent storage, hardware drivers, cloud resources, asynchronous brokers.
+
+---
+
+### 2.3 Edge Schema
+
+Every edge connects a source node (`from`) to a target node (`to`):
+
+```typescript
+interface Edge {
+  from: string;            // Source node ID
+  to: string;              // Target node ID
+  type: "injects" | "implements" | "renders" | "observes" | "uses" | "defines" | "belongsTo" | "submodule" | "helper";
+  label?: string;          // Optional edge description
+}
+```
+
+---
+
+## 3. Universal Tier Connection Rules & Guardrails
+
+Arch Design enforces separation of concerns. AI agents MUST verify connections against this matrix:
+
+| Source Tier | Target Tier | Edge Type | Allowed? | Rationale |
+| :--- | :--- | :--- | :---: | :--- |
+| **`presentation`** | **`presentation`** | `renders` | **YES** | UI component composition, route navigation |
+| **`logic`** | **`presentation`** | `observes` | **YES** | ViewModel/Store emits reactive state observed by UI |
+| **`presentation`** | **`logic`** | `uses` | **YES** | UI dispatches user actions/events to ViewModel/Store |
+| **`logic`** | **`logic`** | `uses` / `injects` | **YES** | Layered logic: ViewModel &rarr; UseCase &rarr; Repository |
+| **`execution`** | **`logic`** | `implements` | **YES** | Method/action implements business service logic |
+| **`execution`** | **`presentation`** | `helper` | **YES** | UI formatting helper or event callback |
+| **`execution`** | **`contract`** | `implements` | **YES** | Method implemented directly on Struct or Trait (`impl Trait for Struct`) |
+| **`contract`** | **`contract`** | `implements` | **YES** | Struct implements Trait; Interface inheritance |
+| **`contract`** | **`logic` / `presentation` / `execution`** | `defines` | **YES** | Data contract, DTO, or entity definition |
+| **`infrastructure`** | **`logic`** | `injects` | **YES** | Database, API client, or OS runtime injected into Repository/Service |
+| **`infrastructure`** | **`container`** | `injects` | **YES** | Infrastructure runtime or Cloud boundary injected into module |
+| **Any Tier** | **`container`** | `belongsTo` / `declares` / `submodule` | **YES** | Containment into Feature Module, Crate, or Package |
+| **`infrastructure`** | **`presentation`** | - | **BLOCKED** | UI components must NEVER directly query raw databases |
+| **`presentation`** | **`infrastructure`** | - | **BLOCKED** | Direct UI-to-DB coupling is an architectural anti-pattern |
+| **`infrastructure`** | **`infrastructure`** | - | **BLOCKED** | External resources do not directly inject into each other |
+| **`container`** | **Non-Container** | - | **BLOCKED** | Containers do not point downwards into children |
+| **Any** | **Same Node** | - | **BLOCKED** | Self-loops are strictly prohibited |
+| **Duplicate** | **Duplicate** | - | **BLOCKED** | Only one edge allowed per source-target pair |
+
+---
+
+## 4. Standalone CLI Tooling for AI Coding Agents
+
+When working inside a repository with Arch Design installed, AI agents must execute the standalone CLI scripts:
+
+### 4.1 CLI Validator (`validate.js`)
+Validates schema version, required fields, node references, tier rules, and circular/invalid connections.
+
+```bash
+node .agents/skills/arch-design/scripts/validate.js path/to/architecture.arch
+```
+
+- **Exit Code 0**: Architecture is valid.
+- **Exit Code 1**: Syntax or architectural rule violation. The CLI prints clear diagnostic errors indicating offending node/edge IDs and expected tiers.
+
+### 4.2 CLI Auto-Layouter (`layout.js`)
+Calculates clean non-overlapping visual coordinates using the Dagre directed graph layout engine:
+
+```bash
+node .agents/skills/arch-design/scripts/layout.js path/to/architecture.arch
+```
+
+- Modifies the file in-place, assigning clean `pos: { x, y }` coordinates to all nodes while preserving all metadata, properties, and edges.
+
+---
+
+## 5. Supported Framework Presets (14 Stacks)
+
+Arch Design includes out-of-the-box support and semantic archetypes for 14 major frameworks across 5 domains:
+
+### Web & Frontend
+1. **Next.js (`nextjs`)**: App Router, React Server Components (RSC), Server Actions, Zustand stores, Zod schemas.
+2. **React SPA (`react`)**: Views, Custom Hooks, Redux/Zustand State Stores, REST/GraphQL clients.
+3. **Vue & Nuxt (`vue-nuxt`)**: Nuxt Pages, Vue Composables, Pinia Stores, Server Nitro routes.
+
+### Backend & APIs
+4. **NestJS (`nestjs`)**: Controllers, Injectable Services, Repositories, TypeORM/Prisma entities.
+5. **Spring Boot (`springboot`)**: `@RestController`, `@Service`, `@Repository`, JPA Entities, Kafka/Postgres.
+6. **FastAPI (`fastapi`)**: Pydantic DTOs, APIRouter endpoints, SQLAlchemy services, Celery tasks.
+7. **Go Clean Architecture (`go-clean`)**: HTTP Handlers, Usecases, Domain Entities, Repository interfaces.
+8. **Universal Backend (`backend`)**: Modular monolith or microservices, domain services, databases, caches.
+
+### Mobile Apps
+9. **Android (`android`)**: Jetpack Compose Screens, ViewModels with StateFlow, Repositories, Room SQLite.
+10. **iOS (`ios`)**: SwiftUI Views, MVVM Observable ViewModels, SwiftData / CoreData stores.
+11. **Flutter (`flutter`)**: Flutter Widgets, BLoC / Riverpod State Providers, Repositories, Dio API clients.
+
+### Systems & Runtimes
+12. **Systems (Rust/C++) (`systems`)**: Crates, Structs, Traits (`impl Trait`), Tokio async runtime, FFI/Hardware drivers.
+
+### Universal & Design Patterns
+13. **Clean Architecture (`clean-arch`)**: Strict Presentation &rarr; Domain Usecases &rarr; Data Repositories &rarr; Drivers.
+14. **Universal Generic (`universal`)**: 4-Tier generic layout adaptable to any programming language.
+
+---
+
+## 6. End-to-End Concrete Example (.arch)
+
+Here is a complete, fully conforming `ecommerce-auth.arch` file:
+
+```json
+{
+  "version": 2,
+  "domain": "backend",
+  "framework": "nestjs",
+  "name": "ecommerce-auth",
+  "nodes": [
+    {
+      "id": "m1",
+      "type": "module",
+      "label": "AuthModule",
+      "pos": { "x": 60, "y": 80 },
+      "description": "User authentication, JWT token lifecycle, and password hashing domain boundary.",
+      "filePath": "src/auth/auth.module.ts"
+    },
+    {
+      "id": "s1",
+      "type": "service",
+      "label": "AuthService",
+      "pos": { "x": 380, "y": 80 },
+      "description": "Business coordinator for credentials verification and JWT generation.",
+      "filePath": "src/auth/auth.service.ts"
+    },
+    {
+      "id": "f1",
+      "type": "function",
+      "label": "login",
+      "pos": { "x": 720, "y": 40 },
+      "description": "Validates credentials and returns bearer token pair.",
+      "filePath": "src/auth/auth.service.ts",
+      "parameters": [
+        { "name": "dto", "type": "LoginDto" }
+      ],
+      "returns": "Promise<AuthTokens>"
+    },
+    {
+      "id": "t1",
+      "type": "type",
+      "label": "LoginDto",
+      "subType": "model",
+      "pos": { "x": 720, "y": 180 },
+      "description": "Request contract with validation decorators.",
+      "filePath": "src/auth/dto/login.dto.ts"
+    },
+    {
+      "id": "e1",
+      "type": "external",
+      "label": "Users Database",
+      "tech": "postgres",
+      "pos": { "x": 380, "y": 320 },
+      "description": "Primary PostgreSQL database storing user credential hashes.",
+      "filePath": "src/database/schema.sql"
+    },
+    {
+      "id": "e2",
+      "type": "external",
+      "label": "Session Cache",
+      "tech": "redis",
+      "pos": { "x": 720, "y": 320 },
+      "description": "In-memory Redis store for revoked token denylist.",
+      "filePath": "src/redis/redis.provider.ts"
+    }
+  ],
+  "edges": [
+    { "from": "s1", "to": "m1", "type": "injects" },
+    { "from": "f1", "to": "s1", "type": "implements" },
+    { "from": "t1", "to": "s1", "type": "defines" },
+    { "from": "e1", "to": "s1", "type": "injects" },
+    { "from": "e2", "to": "s1", "type": "injects" }
+  ]
+}
+```
+
+---
+
+## 7. AI Coding Agent Implementation Workflow
+
+When an AI coding agent is tasked with building or refactoring software using Arch Design:
+
+1. **Discover Architecture**: Scan the repo for `*.arch` files using `find . -name "*.arch"`.
+2. **Read Blueprint**: Parse the nodes, contracts, parameters, return types, and `filePath` attributes.
+3. **Implement to Specification**: Write code that matches the defined cards and connection pathways:
+   - Create classes/functions matching `label` and `type`.
+   - Obey contracts defined in `t1`, `f1`.
+   - Never introduce cross-tier imports that violate the connection matrix.
+4. **Update Diagram**: When creating new services or modules, add corresponding nodes to `.arch`.
+5. **Run CLI Auto-Layout**: Run `node .agents/skills/arch-design/scripts/layout.js <file.arch>` to auto-calculate non-overlapping coordinates.
+6. **Verify Integrity**: Run `node .agents/skills/arch-design/scripts/validate.js <file.arch>` to guarantee zero rule violations.
